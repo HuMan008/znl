@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html  xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <title>订单提交</title>
+    <script>
+
+
+    </script>
+</head>
+<body >
+
+      <form id="orderform" th:object="${unionOrder}" th:action="${url}" th:method="post">
+
+          <input type="text" id="inputCharset" name="inputCharset"  th:value="*{inputCharset}" />
+          <input type="text" id="pickupUrl" name="pickupUrl"  th:value="*{pickupUrl}" />
+          <input type="text" id="receiveUrl" name="receiveUrl"  th:value="*{receiveUrl}" />
+          <input type="text" id="version" name="version"  th:value="*{version}" />
+          <input type="text" id="language" name="language"  th:value="*{language}" />
+          <input type="text" id="signType" name="signType"  th:value="*{signType}" />
+          <input type="text" id="merchantId" name="merchantId"  th:value="*{merchantId}" />
+          <input type="text" id="payerName" name="payerName"  th:value="*{payerName}" />
+          <input type="text" id="payerEmail" name="payerEmail"  th:value="*{payerEmail}" />
+          <input type="text" id="payerTelephone" name="payerTelephone"  th:value="*{payerTelephone}" />
+          <input type="text" id="payerIDCard" name="payerIDCard"  th:value="*{payerIDCard}" />
+          <input type="text" id="pid" name="pid"  th:value="*{pid}" />
+          <input type="text" id="orderNo" name="orderNo"  th:value="*{orderNo}" />
+          <input type="text" id="orderAmount" name="orderAmount"  th:value="*{orderAmount}" />
+          <input type="text" id="orderCurrency" name="orderCurrency"  th:value="*{orderCurrency}" />
+          <input type="text" id="orderDatetime" name="orderDatetime"  th:value="*{orderDatetime}" />
+          <input type="text" id="orderExpireDatetime" name="orderExpireDatetime"  th:value="*{orderExpireDatetime}" />
+          <input type="text" id="productName" name="productName"  th:value="*{productName}" />
+          <input type="text" id="productPrice" name="productPrice"  th:value="*{productPrice}" />
+          <input type="text" id="productNum" name="productNum"  th:value="*{productNum}" />
+          <input type="text" id="productId" name="productId"  th:value="*{productId}" />
+          <input type="text" id="productDesc" name="productDesc"  th:value="*{productDesc}" />
+          <input type="text" id="ext1" name="ext1"  th:value="*{ext1}" />
+          <input type="text" id="ext2" name="ext2"  th:value="*{ext2}" />
+          <input type="text" id="extTL" name="extTL"  th:value="*{extTL}" />
+          <input type="text" id="payType" name="payType"  th:value="*{payType}" />
+          <input type="text" id="issuerId" name="issuerId"  th:value="*{issuerId}" />
+          <input type="text" id="pan" name="pan"  th:value="*{pan}" />
+          <input type="text" id="tradeNature" name="tradeNature"  th:value="*{tradeNature}" />
+          <input type="text" id="signMsg" name="signMsg"  th:value="*{signMsg}" />
+          <input type="text" id="customsExt" name="customsExt"  th:value="*{customsExt}" />
+
+          <input type="submit" />
+
+      </form>
+
+
+
+</body>
+</html>

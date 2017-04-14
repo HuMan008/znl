@@ -1,0 +1,85 @@
+server:
+  port: 80
+#  ssl:
+#    key-store: classpath:213955697120108.p12
+#    key-store-password: a123456
+#    keyStoreType: PKCS12
+#    keyAlias: tomcat
+  tomcat:
+    uri-encoding: UTF-8
+  address: 0.0.0.0
+  display-name: znl
+spring:
+  mvc:
+    throw-exception-if-no-handler-found: false
+#  datasource:
+#      initialize: true
+#      url:
+#      username:
+#      password:
+#      test-while-idle:
+#      validation-query:
+#      driver-class-name:
+#      driverClassName:
+
+  thymeleaf:
+      cache: false
+  http:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+      force-request: true
+      force-response: true
+  redis:
+    database: 4
+    host: 201.201.201.173
+    port: 6379
+    timeout: 5000
+    pool:
+      max-active: 64
+      max-idle: 8
+      max-wait: -1
+  freemarker:
+    prefer-file-system-access:
+logging:
+  level: debug
+  path: logs
+
+management:
+  add-application-context-header: false
+
+#系统配置
+sysconfig:
+  runServerSchema: https://
+  runServerHostName: fastweb.guotongshiyou.com
+
+
+#微信配置
+wxapp:
+  sessionHost: https://api.weixin.qq.com/sns/oauth2/access_token
+  appId: wx30d2a05655df7746
+  secret: b13bd0576973d0b8850e8ca7384ea683
+  grantType: authorization_code
+
+#通联配置
+allinpay:
+  syb_cusid: 242690089996452 #通联用户id
+  syb_appid: 00007511 #通联应用id
+  syb_appkey: transguotongsecret #t通联应用对应的key
+  syb_apiurl: https://vsp.allinpay.com/apiweb/unitorder" #请求的路径
+  gatewayconsts: #网关支付的一些配置
+    merchantid: 008500189990304  #商户id
+    merchantkey: fcc3c40d59c191b3e91f47a03c010900
+    url_unionregister: https://cashier.allinpay.com/usercenter/merchant/UserInfo/reg.do #通联用户注册地址
+    url_ordersubmit: https://cashier.allinpay.com/mobilepayment/mobile/SaveMchtOrderServlet.action #订单提交
+    url_orderquery: https://cashier.allinpay.com/gateway/index.do #订单查询（单个）
+    url_orderquerybatch: https://cashier.allinpay.com/mchtoq/index.do #订单查询（批量）
+    url_refund: https://cashier.allinpay.com/gateway/index.do #退款申请
+    url_refundstatus: https://cashier.allinpay.com/mchtoq/refundQuery #退款状态查询
+
+
+
+
+
+

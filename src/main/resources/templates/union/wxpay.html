@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html  xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>微信网页支付</title>
+
+</head>
+<body >
+
+        <input  type="text" name="appId" th:value="${appId}" id="appId"/>
+        <input  type="text" name="timeStamp" th:value="${timeStamp}" id="timeStamp"/>
+        <input  type="text" name="nonceStr" th:value="${nonceStr}" id="nonceStr"/>
+        <input  type="text" name="prepay_id" th:value="${prepay_id}" id="prepay_id"/>
+        <input  type="text" name="paySign" th:value="${paySign}" id="paySign"/>
+
+
+
+</body>
+
+<script type="text/javascript">
+
+
+    var appId=document.getElementById("appId").value;
+
+
+    var timeStamp=document.getElementById("timeStamp").value;
+
+    var nonceStr=document.getElementById("nonceStr").value;
+
+    var prepay_id=document.getElementById("prepay_id").value;
+
+    var paySign=document.getElementById("paySign").value;
+
+
+
+    function onBridgeReady(){
+
+        WeixinJSBridge.invoke(
+                'getBrandWCPayRequest', {
+                    "appId":appId,     //公众号名称，由商户传入
+                    "timeStamp":timeStamp,         //时间戳，自1970年以来的秒数
+                    "nonceStr":nonceStr, //随机串
+                    "package":prepay_id,
+                    "signType":"MD5",         //微信签名方式：
+                    "paySign":paySign //微信签名
+                },
+                function(data){
+                    var str = JSON.stringify(data);
+                    alert(str);
+                    switch (data.err_msg){
+                        case 'get_brand_wcpay_request:cancel':
+
+                            cancelPay.removeClass('hide')
+                            break;
+                        case 'get_brand_wcpay_request:fail':
+                             alert('支付失败')    ;
+                            break;
+                        case 'get_brand_wcpay_request:ok':
+                                alert('9555')
+                            break;
+                    }
+                    window._ajax = null;
+                }
+
+        );
+
+    }
+    if (typeof WeixinJSBridge == "undefined"){
+        if( document.addEventListener ){
+            document.addEventListener('WeixinJSBridgeReady', onBridgeReady, false);
+        }else if (document.attachEvent){
+            document.attachEvent('WeixinJSBridgeReady', onBridgeReady);
+            document.attachEvent('onWeixinJSBridgeReady', onBridgeReady);
+        }
+    }else{
+        onBridgeReady();
+    }
+
+
+
+
+</script>
+</html>

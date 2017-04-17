@@ -7,6 +7,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.BindException;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.NoHandlerFoundException;
@@ -14,6 +17,7 @@ import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 @Component
 public class AllExceptionHandler implements HandlerExceptionResolver, Ordered {
@@ -30,6 +34,19 @@ public class AllExceptionHandler implements HandlerExceptionResolver, Ordered {
     public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
 
         logger.error("RestExceptionHandler.resolveException:{}", ex);
+        if(ex instanceof BindException){
+            MappingJackson2JsonView view = new MappingJackson2JsonView();
+            ModelAndView modelAndView = new ModelAndView();
+            modelAndView.setView(view);
+            modelAndView.addObject("status", 666);
+            List<ObjectError> list  =((BeanPropertyBindingResult) ((BindException) ex).getBindingResult()).getAllErrors();
+            StringBuilder sb = new StringBuilder();
+            list.stream().forEach(o->{
+                sb.append(o.getDefaultMessage()) .append("\n</br>") ;
+            });
+            modelAndView.addObject("message", sb.toString());
+            return modelAndView;
+        }
 
         if (ex instanceof MicroServerException) {
             MappingJackson2JsonView view = new MappingJackson2JsonView();

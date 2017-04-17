@@ -99,6 +99,7 @@ public class SybUtil {
 		}
 		String sign = md5(sb.toString().getBytes("UTF-8"));//记得是md5编码的加签
 		params.remove("key");
+		System.out.println("---------------"+sign);
 		return sign;
 	}
 	

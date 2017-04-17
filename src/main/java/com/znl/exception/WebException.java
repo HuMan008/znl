@@ -16,10 +16,18 @@ package com.znl.exception;
 
 
 import com.znl.exception.MicroServerException;
+import org.springframework.validation.ObjectError;
+
+import java.util.List;
 
 public class WebException extends MicroServerException {
 
     public WebException(WebExceptionEnum exenum) {
         super(exenum.getCode(), exenum.getMessage());
     }
+
+    public WebException(ValidatorEnum error) {
+        super(error.getCode(),error.getMessage());
+    }
+
 }

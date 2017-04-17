@@ -1,0 +1,12 @@
+.gradle
+.idea
+build
+pages
+logs
+utils
+app.js
+app.json
+app.wxss
+gradle*
+settings.gradle
+*.iml

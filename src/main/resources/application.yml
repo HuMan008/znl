@@ -51,7 +51,7 @@ management:
 
 #系统配置
 sysconfig:
-  runServerSchema: https://
+  runServerSchema: http://
   runServerHostName: fastweb.guotongshiyou.com
 
 
@@ -61,16 +61,17 @@ wxapp:
   appId: wx30d2a05655df7746
   secret: b13bd0576973d0b8850e8ca7384ea683
   grantType: authorization_code
+  notifyUrl: 120.25.91.237/pay/wxpaynotify
 
 #通联配置
 allinpay:
-  syb_cusid: 242690089996452 #通联用户id
-  syb_appid: 00007511 #通联应用id
+  syb_cusid: '242690089996452' #通联用户id
+  syb_appid: '00007511' #通联应用id
   syb_appkey: transguotongsecret #t通联应用对应的key
-  syb_apiurl: https://vsp.allinpay.com/apiweb/unitorder" #请求的路径
+  syb_apiurl: https://vsp.allinpay.com/apiweb/unitorder #请求的路径
   gatewayconsts: #网关支付的一些配置
-    merchantid: 008500189990304  #商户id
-    merchantkey: fcc3c40d59c191b3e91f47a03c010900
+    merchantid: '008500189990304'  #商户id
+    merchantkey: 'fcc3c40d59c191b3e91f47a03c010900'
     url_unionregister: https://cashier.allinpay.com/usercenter/merchant/UserInfo/reg.do #通联用户注册地址
     url_ordersubmit: https://cashier.allinpay.com/mobilepayment/mobile/SaveMchtOrderServlet.action #订单提交
     url_orderquery: https://cashier.allinpay.com/gateway/index.do #订单查询（单个）

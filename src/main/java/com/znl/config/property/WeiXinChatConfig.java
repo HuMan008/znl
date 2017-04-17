@@ -18,5 +18,7 @@ public class WeiXinChatConfig {
     private String appId;
     private String secret;
     private String grantType;
+    private String notifyUrl;
+
 
 }

@@ -4,6 +4,8 @@ import com.znl.web.message.request.union.*;
 import com.znl.web.message.response.union.OrderQueryResponse;
 import com.znl.web.message.response.union.UnionRegisterResponse;
 
+import java.util.Map;
+
 /**
  * Created by Suyj <suyajiang@gotoil.cn> on 2017/4/7.13:57
  */
@@ -19,4 +21,13 @@ public interface UnionService {
     String refund(RefundRequest refundRequest) throws Exception;
 
     String refundStatus(RefundStatusRequest refundStatusRequest) throws Exception;
+
+    Map getWxSession(String wxJsCode);
+
+    Map<String,String> unionWxPay(long trxamt, String reqsn, String paytype, String body, String remark, String acct, String authcode,
+                                  String limit_pay) throws Exception;
+
+    Map<String,String> unionWxPay(WxPayRequest wxPayRequest, String openId
+           /* long trxamt,String reqsn,String paytype,String body,String remark,String acct,String authcode,
+                                         String limit_pay*/) throws Exception;
 }

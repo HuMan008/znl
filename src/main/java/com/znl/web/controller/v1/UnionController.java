@@ -1,29 +1,35 @@
 package com.znl.web.controller.v1;
 
 import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.znl.common.tools.date.DateUtils;
 import com.znl.config.property.SybConstants;
 import com.znl.common.union.SybPayService;
 import com.znl.common.union.SybUtil;
+import com.znl.config.property.SysConfig;
 import com.znl.exception.MicroServerException;
+import com.znl.exception.ValidatorEnum;
 import com.znl.exception.WebException;
 import com.znl.exception.WebExceptionEnum;
 import com.znl.service.UnionService;
-import com.znl.service.WxService;
 import com.znl.web.controller.BaseController;
 import com.znl.web.message.request.union.*;
 import com.znl.web.message.response.union.PayResultResponse;
 import com.znl.web.message.response.union.UnionRegisterResponse;
 import com.znl.web.message.response.union.WxPayInfoResponse;
+import lombok.extern.java.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.Map;
@@ -35,16 +41,32 @@ import java.util.TreeMap;
 @Controller
 public class UnionController extends BaseController {
 
+    private Logger logger  = LoggerFactory.getLogger(UnionController.class);
+
     private SybPayService sybPayService = new SybPayService();
-    @Autowired
-    private WxService wxService  ;
 
     @Autowired
     private UnionService unionService;
 
-    @RequestMapping("pay")
-    public Object pay(@RequestParam @NotNull String code) throws Exception{
-        Map<String,Object> wxSessionMap =  wxService.getWxSession(code);
+    /**
+     * 微信支付
+     * @param code
+     * @param wxPayRequest
+     * @param bindingResult
+     * @param httpServletRequest
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping("dopay")
+    public Object pay(@RequestParam @NotNull String code,
+                      @ModelAttribute @Valid WxPayRequest  wxPayRequest,
+                      BindingResult bindingResult,
+                      HttpServletRequest httpServletRequest) throws Exception{
+        if(bindingResult.hasErrors()){
+            return new WebException(ValidatorEnum.RequestArgVailiError);
+
+        }
+        Map<String,Object> wxSessionMap =  unionService.getWxSession(code);
         if(wxSessionMap==null || wxSessionMap.isEmpty()){
             return  new WebException(WebExceptionEnum.NoSupportJsCode);
         }
@@ -55,7 +77,9 @@ public class UnionController extends BaseController {
         String wxOpenId = (String)wxSessionMap.get("openid");
 //        String wxOpenId = "oQxUFuCHo8J0HeYa-20oK-MGEYGc"   ;
         String reqsn = String.valueOf(System.currentTimeMillis());
-        Map<String, String> map = sybPayService.pay(1, reqsn, "W02", "标题", "备注", wxOpenId, "123","http://fastweb.guotongshiyou.com/v1/wxpaynotify","");
+
+//        Map<String, String> map =unionService.unionWxPay(trxamt,reqsn,"","--body--","--备注--",wxOpenId,"authcode","");
+        Map<String,String> map = unionService.unionWxPay(wxPayRequest,wxOpenId);
         if("SUCCESS".equals(map.get("retcode"))){
             String payInfo = map.get("payinfo");
             System.out.println(payInfo);
@@ -67,8 +91,6 @@ public class UnionController extends BaseController {
             modelAndView.addObject("nonceStr",wxPayInfoResponse.getNonceStr()) ;
             modelAndView.addObject("prepay_id",wxPayInfoResponse.getaPackage()) ;
             modelAndView.addObject("paySign",wxPayInfoResponse.getPaySign()) ;
-
-
 
             return modelAndView ;
 
@@ -82,13 +104,16 @@ public class UnionController extends BaseController {
 
     @RequestMapping("wxpaynotify")
     public void wxpaynotify(HttpServletRequest request, HttpServletResponse response) throws Exception{
+        logger.info("------------------------------------------------接收到通知-------------");
         System.out.println("接收到通知");
         request.setCharacterEncoding("gbk");//通知传输的编码为GBK
         response.setCharacterEncoding("gbk");
         TreeMap<String,String> params =SybUtil.getParams(request);//动态遍历获取所有收到的参数,此步非常关键,因为收银宝以后可能会加字段,动态获取可以兼容
+        logger.info("参数+" +  params.toString());
         try {
             boolean isSign = SybUtil.validSign(params, SybConstants.SYB_APPKEY);// 接受到推送通知,首先验签
             System.out.println("验签结果:"+isSign);
+            logger.info("验签结果"+isSign);
             //验签完毕进行业务处理
         } catch (Exception e) {//处理异常
             // TODO: handle exception
@@ -100,6 +125,9 @@ public class UnionController extends BaseController {
         }
     }
 
+    /**
+     * 通联用户注册
+     */
     @RequestMapping("unionregister")
     public void unionRegister (){
         UnionRegisterRequest registerRequest = new UnionRegisterRequest();

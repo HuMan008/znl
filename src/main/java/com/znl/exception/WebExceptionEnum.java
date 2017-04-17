@@ -18,17 +18,8 @@ package com.znl.exception;
 public enum WebExceptionEnum {
 
     SignatureError(9000, "Signature verify faild"),
-    Entegrity(9001, "Request verify failed"),
-    Timeout(9002, "Timeout"),
-    FlightError(9003, "Unkown User"),
-    RandomTokenDuplicated(9004, "Duplicated token."),
-
-    UnknowUser(9005,"Not fund SessionId") ,
 
     NoSupportJsCode(9007," wx JS code is ERROR"),
-
-    ParseWxUserInfoError(9006,"Parse WxUser Find Error"),
-
     ValidateError(9100, "Input Validate Error"),
     ;
 

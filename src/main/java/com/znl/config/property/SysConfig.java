@@ -16,4 +16,10 @@ public class SysConfig {
 
     private String runServerSchema    ;
     private String runServerHostName;
+
+    public String getFullServerHostAddress(){
+        return runServerSchema+runServerHostName;
+    }
+
+
 }

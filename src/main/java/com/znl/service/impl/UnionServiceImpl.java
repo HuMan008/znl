@@ -1,14 +1,21 @@
 package com.znl.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.znl.common.tools.ObjectHelper;
 import com.znl.common.tools.http.HttpConnectionUtil;
+import com.znl.common.tools.http.HttpUtil;
+import com.znl.common.union.SybPayService;
 import com.znl.config.property.SybConstants;
+import com.znl.config.property.SysConfig;
+import com.znl.config.property.WeiXinChatConfig;
 import com.znl.service.UnionService;
 import com.znl.web.message.request.union.*;
 import com.znl.web.message.response.union.UnionRegisterResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -16,6 +23,15 @@ import java.util.Map;
  */
 @Service
 public class UnionServiceImpl implements UnionService {
+
+    @Autowired
+    private WeiXinChatConfig weiXinChatConfig;
+    @Autowired
+    private SysConfig sysConfig;
+
+    private SybPayService sybPayService = new SybPayService();
+
+
 
     /**
      *通联 用户注册请求接口
@@ -80,6 +96,7 @@ public class UnionServiceImpl implements UnionService {
         batchOrderQueryRequest.doSign();
         HttpConnectionUtil http = new HttpConnectionUtil(SybConstants.GateWayConsts.URL_ORDERQUERYBATCH);
         http.init();
+        System.out.println("批量查询请求路径--"+SybConstants.GateWayConsts.URL_ORDERQUERYBATCH);
         Map<String,String>  params  = ObjectHelper.introspectStringValueMapValueNotEmpty(batchOrderQueryRequest);
         byte[] bys = http.postParams(params,true);
         String result = new String(bys,"UTF-8");
@@ -123,6 +140,45 @@ public class UnionServiceImpl implements UnionService {
         return result;
     }
 
+     @Override
+    public Map getWxSession(String wxJsCode){
+        StringBuffer sb = new StringBuffer();
+        sb.append("appid=").append(weiXinChatConfig.getAppId());
+        sb.append("&secret=").append(weiXinChatConfig.getSecret());
+//        sb.append("&js_code=").append(wxJsCode);
+        sb.append("&code=").append(wxJsCode);
+        sb.append("&grant_type=").append(weiXinChatConfig.getGrantType());
+
+        String res = HttpUtil.sendGet(weiXinChatConfig.getSessionHost() ,sb.toString());
+        if(res == null || res.equals("")){
+            return null;
+        }
+        System.out.println("响应: "+ res);
+        return JSON.parseObject(res, Map.class);
+    }
+
+
+    @Override
+    public Map<String,String> unionWxPay(long trxamt,String reqsn,String paytype,String body,String remark,String acct,String authcode,
+                                          String limit_pay) throws Exception{
+                // limit_pay 暂时只对微信支付有效,仅支持no_credi
+       return sybPayService.pay(trxamt, reqsn, paytype.isEmpty()?"W02":paytype, body, remark, acct, authcode, sysConfig.getFullServerHostAddress() ,limit_pay);
+
+
+    }
+
+    @Override
+    public Map<String,String> unionWxPay(WxPayRequest wxPayRequest,String openId
+           /* long trxamt,String reqsn,String paytype,String body,String remark,String acct,String authcode,
+                                         String limit_pay*/) throws Exception{
+        // limit_pay 暂时只对微信支付有效,仅支持no_credi
+        return sybPayService.pay(wxPayRequest.getTrxamt(), wxPayRequest.getReqsn(), wxPayRequest.getPayType()
+                , wxPayRequest.getBody(), wxPayRequest.getRemark(), openId, wxPayRequest.getAuthCode(),
+                weiXinChatConfig.getNotifyUrl(),
+                wxPayRequest.getLimitPay());
+
+
+    }
 
 
 }

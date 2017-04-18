@@ -17,9 +17,11 @@ package com.znl.exception;
 
 public enum WebExceptionEnum {
 
+    NetConnectTimeOut(1001,"Connection timed out") ,
+
     SignatureError(9000, "Signature verify faild"),
 
-    NoSupportJsCode(9007," wx JS code is ERROR"),
+    NoSupportWechatCode(9007," wx code is ERROR"),
     ValidateError(9100, "Input Validate Error"),
     ;
 

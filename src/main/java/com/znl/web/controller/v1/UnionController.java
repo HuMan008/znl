@@ -1,10 +1,9 @@
 package com.znl.web.controller.v1;
 
 import com.alibaba.fastjson.JSONObject;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import com.znl.classes.OrderHelper;
 import com.znl.common.tools.date.DateUtils;
 import com.znl.config.property.SybConstants;
-import com.znl.common.union.SybPayService;
 import com.znl.common.union.SybUtil;
 import com.znl.config.property.SysConfig;
 import com.znl.exception.MicroServerException;
@@ -15,11 +14,13 @@ import com.znl.service.UnionService;
 import com.znl.web.controller.BaseController;
 import com.znl.web.message.request.union.*;
 import com.znl.web.message.response.union.PayResultResponse;
+import com.znl.web.message.response.union.UnionRegisterRespon4API;
 import com.znl.web.message.response.union.UnionRegisterResponse;
 import com.znl.web.message.response.union.WxPayInfoResponse;
-import lombok.extern.java.Log;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -31,6 +32,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import java.net.ConnectException;
 import java.util.Date;
 import java.util.Map;
 import java.util.TreeMap;
@@ -43,10 +46,12 @@ public class UnionController extends BaseController {
 
     private Logger logger  = LoggerFactory.getLogger(UnionController.class);
 
-    private SybPayService sybPayService = new SybPayService();
 
     @Autowired
     private UnionService unionService;
+
+    @Autowired
+    private SysConfig sysConfig;
 
     /**
      * 微信支付
@@ -68,7 +73,7 @@ public class UnionController extends BaseController {
         }
         Map<String,Object> wxSessionMap =  unionService.getWxSession(code);
         if(wxSessionMap==null || wxSessionMap.isEmpty()){
-            return  new WebException(WebExceptionEnum.NoSupportJsCode);
+            return  new WebException(WebExceptionEnum.NoSupportWechatCode);
         }
         //获取异常
         if(wxSessionMap.containsKey("errcode")){
@@ -128,37 +133,72 @@ public class UnionController extends BaseController {
     /**
      * 通联用户注册
      */
+    @ResponseBody
     @RequestMapping("unionregister")
-    public void unionRegister (){
+    public Object unionRegisterAction (@RequestParam(required = false) @Size(max =32,message = "请传入正确的参数") String puid, HttpServletRequest request,
+                                 HttpServletResponse
+            response){
         UnionRegisterRequest registerRequest = new UnionRegisterRequest();
-        registerRequest.setPartnerUserId("1898981411");
+        UnionRegisterRespon4API unionRegisterRespon4API = new UnionRegisterRespon4API();
+        unionRegisterRespon4API.setPartnerUserId(puid);
+
+        if(StringUtils.isEmpty(puid)){
+            puid= com.znl.common.tools.string.StringUtils.createUid(request);
+            unionRegisterRespon4API.setPartnerUserId(puid);
+        }
+        registerRequest.setPartnerUserId(puid);
         registerRequest.doSign();
 
         try {
             UnionRegisterResponse unionRegisterResponse = unionService.unionRegister(registerRequest);
-            System.out.println(unionRegisterResponse.toString());
-            //UnionRegisterResponse{merchantId='null', signType='null', userId='170410792118546', resultCode='0006', returnDatetime='null', signMsg='null'}
-        }catch (Exception e){
+
+            BeanUtils.copyProperties(unionRegisterResponse,unionRegisterRespon4API);
+
+            return unionRegisterRespon4API;
+        }catch (ConnectException e){
             e.printStackTrace();
+            return new WebException(WebExceptionEnum.NetConnectTimeOut)  ;
+        }catch (Exception e1)  {
+            return new MicroServerException(4000,e1.getMessage());
         }
     }
 
 
-    @RequestMapping("ordersubmit")
-    public ModelAndView orderSubmit(  HttpServletRequest request, HttpServletResponse response,Model model) throws Exception{
+    @RequestMapping(value = "ordersubmit",method = RequestMethod.POST)
+    public Object orderSubmit( @ModelAttribute @Valid OrderSubmitRequest orderSubmitRequest, HttpServletRequest request, HttpServletResponse response,
+                                     Model model) throws
+            Exception{
 
-        OrderSubmitRequest orderSubmitRequest =  new OrderSubmitRequest();
-        orderSubmitRequest.setUnionUserId("170410792118546");
-        orderSubmitRequest.setPickupUrl("https://localhost:8443/v1/doPickup");     //todo        这个地址要改的
-        orderSubmitRequest.setReceiveUrl("http://ceshi.allinpay.com/demo/eshop/recv-pay-result/recv.do");    //
-        orderSubmitRequest.setProductName("苏亚江");
-        orderSubmitRequest.setOrderNo("order_001");
-        orderSubmitRequest.setOrderAmount(1);
-        orderSubmitRequest.setProductNum(1);
-        orderSubmitRequest.setProductPrice(1);
-        orderSubmitRequest.setOrderExpireDatetime(10);
-        orderSubmitRequest.setPayType("0");
 
+//        orderSubmitRequest.setUnionUserId("170410792118546");
+//        orderSubmitRequest.setOrderAmount(1);
+//        orderSubmitRequest.setProductNum(1);
+        orderSubmitRequest.setPickupUrl( sysConfig.getFullServerHostAddress()+"/pay/dopickup");
+        orderSubmitRequest.setReceiveUrl(sysConfig.getFullServerHostAddress()+"/pay/receiveurl");    //
+        if(StringUtils.isEmpty(orderSubmitRequest.getProductName())){
+            orderSubmitRequest.setProductName("国通石油");
+        }
+        if(StringUtils.isEmpty(orderSubmitRequest.getOrderNo())){
+            String orderNo  =  OrderHelper.createOrder(request);
+            if(StringUtils.isEmpty(orderNo)){
+                return new MicroServerException(9001,"APPKEY长度限制在0-8位;并且必须已字母或者数字开头，并且不能包含特殊字符")  ;
+            }
+            orderSubmitRequest.setOrderNo(orderNo);
+        }
+        if(orderSubmitRequest.getOrderAmount()==0){
+            return new MicroServerException(9003,"订单金额不能小于1") ;
+        }
+        if(orderSubmitRequest.getProductNum()*orderSubmitRequest.getProductPrice()!=0 )  {
+            if(orderSubmitRequest.getProductNum()*orderSubmitRequest.getProductPrice()!=orderSubmitRequest.getOrderAmount())  {
+                return new MicroServerException(9002,"订单数量、单价与订单金额逻辑错误")  ;
+            }
+        }
+        if(orderSubmitRequest.getOrderExpireDatetime()==0){
+            orderSubmitRequest.setOrderExpireDatetime(10);
+        }
+        if(StringUtils.isEmpty(orderSubmitRequest.getPayType())){
+            orderSubmitRequest.setPayType("0");
+        }
         orderSubmitRequest.doSign();
 
         model.addAttribute("unionOrder",orderSubmitRequest);
@@ -256,13 +296,17 @@ public class UnionController extends BaseController {
      * @param model
      * @return
      */
-     @RequestMapping(value = "doPickup")
+     @RequestMapping(value = "dopickup")
     public String doPickup(PayResultResponse payResultResponse, HttpServletRequest request, HttpServletResponse response,Model model) {
          System.out.println(payResultResponse.toString());
          //PayResultResponse{merchantId='008500189990304', version='v1.0', language='1', signType='0', issuerId='', paymentOrderId='201704111646298209', orderNo='order_001', orderDatetime='20170411164619', orderAmount=1, payDatetime='20170411164636', payAmount=1, ext1='<USER>170410792118546</USER>', ext2='', payResult='1', returnDatetime='20170411164642'}
          return null;
      }
-
+    @RequestMapping(value = "receiveurl")
+    public String  receiveUrl(HttpServletRequest request,HttpServletResponse response) {
+        System.out.println(request.getParameterMap().toString());
+        return null;
+    }
 
 
 

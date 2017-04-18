@@ -6,6 +6,7 @@ import com.znl.config.property.SybConstants;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.validation.constraints.Max;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
@@ -42,13 +43,13 @@ public class OrderSubmitRequest {
     private String pid;// 合作伙伴的商 户号30 可为空 用于商户与第三方合作伙伴拓展支付业务，Partner merchantId
     @Size(max = 50)
     private String orderNo;// 商户订单号 50 不可空 字符串，只允许使用字母、数字、- 、_,并以字母 或数字开头；每商户交的订单号，必须在当天的 该商户所有交易中唯一
-    @Max(value = 9999999999l)
+    @NotNull(message = "订单金额不能为空")
+    @Max(value = 9999999999l,message = "订单金额最大为9999999999")
     private long orderAmount;// 商户订单金额 10 不可空 整型数字，金额与币种有关 如果是人民币，则单位是分，即 10   元交时金额 应为 1000      如果是美元，单位是美分，即 10 美元交时金额 为 1000
     @Size(max = 3)
     private String orderCurrency = "0";//订单金额币种 类型 3 不可空 默认填 0 0 和 156 代表人民币、840 代表美元、344 代表港币， 跨境支付商户不建议使用 0
     @Size(max = 14)
     private String orderDatetime = DateUtils.SimpleDatetimeNoConnectorFormat().format(new Date());// 商户订单交 时间 14 不可空 日期格式：yyyyMMDDhhmmss，例如：20121116020101
-    @Size(max = 14)
     @Max(value = 9999)
     private long orderExpireDatetime;// 订单过期时间 14 可为空 整形数字，单位为分钟。最大值为 9999 分钟。 如填写则以商户上送时间为准，如不填写或填 0 或填非法值，则服务端默认该订单 9999 分钟后过期，超期后不允许商户发起同一商户订单支付
     @Size(max = 256)
@@ -70,7 +71,7 @@ public class OrderSubmitRequest {
     private String signMsg;//签名字符串 1024 不可空 为防止非法篡改要求商户对请求内容进行签名，供 服务端进行校验；签名串生成机制：按上述顺序所有非空参数与密钥key 组合，经加密后生成 signMsg；
     private String customsExt = "";// 海关扩展字段 1024 可为空 详见“3.13.3海关扩展字段要求”章节
 
-
+    @NotNull
     private String unionUserId;     //这个字段是为了设置ext1用的
 
     public String getUnionUserId() {

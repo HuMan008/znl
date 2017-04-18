@@ -11,7 +11,7 @@ import com.alipay.api.request.AlipayTradeQueryRequest;
 import com.alipay.api.request.AlipayTradeWapPayRequest;
 import com.alipay.api.response.AlipayTradeAppPayResponse;
 import com.alipay.api.response.AlipayTradeQueryResponse;
-import com.znl.config.AlipayConfig;
+import com.znl.config.define.AlipayConfig;
 import com.znl.service.AlipayService;
 import com.znl.web.message.request.alipay.AlipayPayRequest;
 import com.znl.web.message.request.alipay.AlipayQueryRequest;

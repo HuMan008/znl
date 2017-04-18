@@ -2,7 +2,7 @@ package com.znl.web.controller.v1;
 
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.internal.util.AlipaySignature;
-import com.znl.config.AlipayConfig;
+import com.znl.config.define.AlipayConfig;
 import com.znl.service.AlipayService;
 import com.znl.web.message.request.alipay.AlipayQueryRequest;
 import com.znl.web.message.request.alipay.AlipayPayRequest;

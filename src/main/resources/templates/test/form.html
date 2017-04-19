@@ -1,0 +1,125 @@
+<ul class="layui-tab-title" >
+               <li   onclick="appList();" shiro:hasPermission="app:query" class="layui-btn">应用列表</li>
+                <shiro:hasanypermissions name="app:edit,app:add">
+                    <li class="layui-this"   onclick=""><span th:text="${actionType}">添加</span>应用</li>
+                </shiro:hasanypermissions>
+
+            </ul>
+
+            <form class="layui-form form_container"  method="post"  th:object="${app}">
+
+                <div class="layui-form-item">
+
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">系统名称</label>
+                    <div class="layui-input-block layui-input-has-addon">
+                        <input type="hidden" id="id" name="id" th:value="*{id}"/>
+                        <input type="hidden" id="state" name="state" th:value="*{state}"/>
+                        <input type="text" id="appname" name="appname"   th:value="*{appname}"
+                               placeholder="名称"   th:disabled="${isReadOnly}"   th:maxlength ="16"
+                               lay-verify="validName" class="layui-input"/>
+
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">密钥</label>
+                    <div class="layui-input-block layui-input-has-addon">
+                        <input type="text" id="apikey" name="apikey"   th:value="*{apikey}"
+                               placeholder="密钥自动生成" th:disabled="true"
+                               class="layui-input"/>
+
+                    </div>
+                </div>
+
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">系统类型</label>
+                    <div class="layui-input-block">
+                        <select name="type" id="type" lay-verify="required" th:field="*{type}"  th:value="*{type}"    >
+                            <option value=""></option>
+                            <option th:each="t:${appType}" th:value="${t.code}" th:text="${t.name}" ></option>
+
+                        </select>
+
+                    </div>
+                    
+                </div>
+
+               
+                <div class="layui-form-item">
+                    <label class="layui-form-label">备注</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="mark" id="mark"  th:value="*{mark}" th:maxlength ="100"
+                               class="layui-input"   />
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <div class="layui-input-block" >
+                        <!--<button class="layui-btn" lay-submit="" lay-filter="froms"">保存</button>-->
+                        <shiro:hasanypermissions name="app:edit,app:add">
+                            <a  class="layui-btn" lay-submit="" lay-filter="froms" onsubmit="return false;" id="saveOrEditBtn"    onclick="disableBtnFunc();">保存</a>
+                        </shiro:hasanypermissions>
+
+                        <!--<button type="reset" class="layui-btn layui-btn-primary">重置</button>-->
+                        <a class="layui-btn" onclick="appList();" shiro:hasPermission="app:query">列表</a>
+                    </div>
+                </div>
+            </form>
+
+<script>
+
+    /*<![CDATA[*/
+    layui.use(['form','main','jquery','util','layer'], function() {
+        var form = layui.form();
+        var jquery=layui.jquery,
+            layedit = layui.layedit,
+                main=layui.main,
+            laydate = layui.laydate;
+
+        form.render('select');
+
+        form.verify({
+            validName:function (va) {
+                if(va.length<2 || va.length>16){
+                  return  '名称格式错误，长度要求在2-16位'
+                }
+            }
+        });
+
+        form.on('submit(froms)',function(data){
+            main.lockSubmit("#saveOrEditBtn")     ;
+            jquery.post('/app/save',data.field,function(res){
+                if(res.status==0){
+                    jquery("#id").val(res.id);
+                    layer.msg(res.message);
+                    appList();
+                }else{
+                    layer.msg(res.message);
+                }
+                main.unlockSubmit("#saveOrEditBtn")     ;
+            },"json");
+        }) ;
+
+
+
+    });
+
+    function editRecord(recordID) {
+        $(".mybody_content").load( "/app/form/"+recordID +"?t="+new Date().getTime());
+    }
+    function appList() {
+        $(".mybody_content").load( "/app" +"?t="+new Date().getTime());
+    }
+    function appAdd() {
+        $(".mybody_content").load( "/app/form/add" +"?t="+new Date().getTime());
+    }
+
+    function  disableBtnFunc() {
+//        $("#saveOrEditBtn").hide();
+    }
+
+    /*]]>*/
+</script>

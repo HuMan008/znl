@@ -28,6 +28,7 @@ public enum OS {
     }
 
     public static OS fromName(String name) {
+
         if (iOS.getName().equalsIgnoreCase(name)) {
             return iOS;
         }

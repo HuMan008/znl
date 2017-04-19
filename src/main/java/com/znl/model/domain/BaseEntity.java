@@ -1,4 +1,4 @@
-package com.znl.domain;
+package com.znl.model.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;

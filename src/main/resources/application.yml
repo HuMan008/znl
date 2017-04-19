@@ -21,6 +21,21 @@ spring:
 #      validation-query:
 #      driver-class-name:
 #      driverClassName:
+  jpa:
+      properties:
+          hibernate:
+              enable_lazy_load_no_trans: true
+              dialect: org.hibernate.dialect.MySQL5Dialect
+
+      show-sql: true
+      hibernate:
+          ddl-auto:  update
+      database:  MYSQL
+
+  datasource:
+      url: jdbc:mysql://localhost:3306/znl?useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true&autoReconnect=true&failOverReadOnly=false&useSSL=false&allowMultiQueries=true
+      username:  root
+      password:  hitwh
 
   thymeleaf:
       cache: false

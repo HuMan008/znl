@@ -1,4 +1,4 @@
-package com.znl.config;
+package com.znl.config.define;
 
 /**
  * Created by wh on 2017/4/12.

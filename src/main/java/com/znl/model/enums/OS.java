@@ -19,6 +19,7 @@ public enum OS {
 
     Android((byte) 1, "Android"),
     iOS((byte) 2, "iOS"),
+    PCWeb((byte) 3, "PcWeb"),
     Unknow((byte) 100, "Unknow");
 
 
@@ -34,6 +35,9 @@ public enum OS {
 
         if (Android.getName().equalsIgnoreCase(name)) {
             return Android;
+        }
+        if(PCWeb.getName().equalsIgnoreCase(name)){
+            return PCWeb;
         }
 
         return Unknow;

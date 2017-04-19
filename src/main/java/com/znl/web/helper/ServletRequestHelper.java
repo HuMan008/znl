@@ -22,9 +22,10 @@ import javax.servlet.http.HttpServletRequest;
 
 public class ServletRequestHelper {
 
-    public static String XU() {
-        return httpServletRequest().getHeader("Pay_AppId");
+    public static String appId() {
+        return httpServletRequest().getHeader("AppId");
     }
+
 
     public static String userAgent() {
         return httpServletRequest().getHeader("User-Agent");

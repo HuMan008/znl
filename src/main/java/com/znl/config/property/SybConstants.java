@@ -59,7 +59,7 @@ public class SybConstants {
          */
         public static  String URL_REFUNDSTATUS ;
 
-        private static String   URL_DOPICKUP;    //通联支付同步通知
+        public static String   URL_DOPICKUP;    //通联支付同步通知
         public static String     URL_RECEIVEURL;       //通联支付异步通知
 
 

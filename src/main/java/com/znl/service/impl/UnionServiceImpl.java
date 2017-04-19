@@ -8,14 +8,13 @@ import com.znl.common.tools.http.HttpUtil;
 import com.znl.common.union.SybPayService;
 import com.znl.config.property.SybConstants;
 import com.znl.config.property.SysConfig;
-import com.znl.config.property.WeiXinChatConfig;
+import com.znl.config.property.WeChatConfig;
 import com.znl.service.UnionService;
 import com.znl.web.message.request.union.*;
 import com.znl.web.message.response.union.UnionRegisterResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
 import java.util.Map;
 
 /**
@@ -25,7 +24,7 @@ import java.util.Map;
 public class UnionServiceImpl implements UnionService {
 
     @Autowired
-    private WeiXinChatConfig weiXinChatConfig;
+    private WeChatConfig weChatConfig;
     @Autowired
     private SysConfig sysConfig;
 
@@ -143,13 +142,13 @@ public class UnionServiceImpl implements UnionService {
      @Override
     public Map getWxSession(String wxJsCode){
         StringBuffer sb = new StringBuffer();
-        sb.append("appid=").append(weiXinChatConfig.getAppId());
-        sb.append("&secret=").append(weiXinChatConfig.getSecret());
+        sb.append("appid=").append(weChatConfig.getAppId());
+        sb.append("&secret=").append(weChatConfig.getSecret());
 //        sb.append("&js_code=").append(wxJsCode);
         sb.append("&code=").append(wxJsCode);
-        sb.append("&grant_type=").append(weiXinChatConfig.getGrantType());
+        sb.append("&grant_type=").append(weChatConfig.getGrantType());
 
-        String res = HttpUtil.sendGet(weiXinChatConfig.getSessionHost() ,sb.toString());
+        String res = HttpUtil.sendGet(weChatConfig.getSessionHost() ,sb.toString());
         if(res == null || res.equals("")){
             return null;
         }
@@ -174,7 +173,7 @@ public class UnionServiceImpl implements UnionService {
         // limit_pay 暂时只对微信支付有效,仅支持no_credi
         return sybPayService.pay(wxPayRequest.getTrxamt(), wxPayRequest.getReqsn(), wxPayRequest.getPayType()
                 , wxPayRequest.getBody(), wxPayRequest.getRemark(), openId, wxPayRequest.getAuthCode(),
-                weiXinChatConfig.getNotifyUrl(),
+                weChatConfig.getNotifyUrl(),
                 wxPayRequest.getLimitPay());
 
 

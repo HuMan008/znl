@@ -173,8 +173,8 @@ public class UnionController extends BaseController {
 //        orderSubmitRequest.setUnionUserId("170410792118546");
 //        orderSubmitRequest.setOrderAmount(1);
 //        orderSubmitRequest.setProductNum(1);
-        orderSubmitRequest.setPickupUrl( sysConfig.getFullServerHostAddress()+"/pay/dopickup");
-        orderSubmitRequest.setReceiveUrl(sysConfig.getFullServerHostAddress()+"/pay/receiveurl");    //
+        orderSubmitRequest.setPickupUrl( SybConstants.GateWayConsts.URL_DOPICKUP);
+        orderSubmitRequest.setReceiveUrl(SybConstants.GateWayConsts.URL_RECEIVEURL);    //
         if(StringUtils.isEmpty(orderSubmitRequest.getProductName())){
             orderSubmitRequest.setProductName("国通石油");
         }

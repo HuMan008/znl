@@ -9,10 +9,10 @@ import org.springframework.stereotype.Component;
  * Created by Suyj <suyajiang@gotoil.cn> on 2017/1/19.14:30
  */
 @Component
-@ConfigurationProperties("wxapp")
+@ConfigurationProperties("wechatconfig")
 @Setter
 @Getter
-public class WeiXinChatConfig {
+public class WeChatConfig {
 
     private String sessionHost;
     private String appId;

@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.PostConstruct;
+import javax.validation.Valid;
 
 /**
  * Created by Suyj <suyajiang@gotoil.cn> on 2017/4/14.16:50
@@ -30,6 +31,12 @@ public class ConstantsInitializer {
     private String url_unionregister;
     @Value("${allinpay.gatewayconsts.url_ordersubmit}")
     private String url_ordersubmit;
+
+    @Value("${allinpay.gatewayconsts.url_dopickup}")
+    private String url_dopickup;
+    @Value("${allinpay.gatewayconsts.url_receiveurl}")
+    private String url_receiveurl ;
+
     @Value("${allinpay.gatewayconsts.url_orderquery}")
     private String url_orderquery;
     @Value("${allinpay.gatewayconsts.url_orderquerybatch}")
@@ -54,5 +61,7 @@ public class ConstantsInitializer {
         SybConstants.GateWayConsts.URL_ORDERQUERYBATCH=url_orderquerybatch;
         SybConstants.GateWayConsts.URL_REFUND=url_refund;
         SybConstants.GateWayConsts.URL_REFUNDSTATUS=url_refundstatus;
+        SybConstants.GateWayConsts.URL_DOPICKUP=url_dopickup;
+        SybConstants.GateWayConsts.URL_RECEIVEURL = url_receiveurl;
     }
 }

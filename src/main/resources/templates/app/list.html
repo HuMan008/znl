@@ -75,7 +75,7 @@
                     <td th:text="${app.name}">name</td>
                     <td th:text="${app.appkey}">appkey</td>
 
-                    <td th:text="${T(com.znl.model.domain.App.StateEnum).getNameByCode(app.state)}" style="min-width: 50px;">type</td>
+                    <td th:text="${T(cn.gotoil.znl.model.domain.App.StateEnum).getNameByCode(app.state)}" style="min-width: 50px;">type</td>
 
                     <td th:switch="${app.state}">
                         <span th:case="0" style="" th:text="${T(cn.gotoil.owstoniadmin.model.enums.StateEnum).getNameByCode(app.state)}">state</span>

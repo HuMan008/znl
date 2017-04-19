@@ -1,7 +1,8 @@
 package cn.gotoil.znl.web.interceptor;
 
-import cn.gotoil.znl.exception.AuthenticationException;
-import cn.gotoil.znl.exception.ValidatorEnum;
+
+import cn.gotoil.bill.exception.AuthenticationError;
+import cn.gotoil.bill.exception.AuthenticationException;
 import cn.gotoil.znl.web.helper.UserAgentAnalyzer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
@@ -37,7 +38,7 @@ public class AuthenticationInterceptorSignatureVerifier {
 
     public void verify() {
         //参数校验
-        if(!checker())    throw new AuthenticationException(ValidatorEnum.Entegrity);
+        if(!checker())    throw new AuthenticationException(AuthenticationError.Entegrity);
         //签名校验
         // TODO: 2017/4/19
         //根据APPID 找到 APP信息

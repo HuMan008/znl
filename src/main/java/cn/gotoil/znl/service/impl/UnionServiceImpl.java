@@ -96,7 +96,8 @@ public class UnionServiceImpl implements UnionService {
         HttpConnectionUtil http = new HttpConnectionUtil(SybConstants.GateWayConsts.URL_ORDERQUERYBATCH);
         http.init();
         System.out.println("批量查询请求路径--"+SybConstants.GateWayConsts.URL_ORDERQUERYBATCH);
-        Map<String,String>  params  = ObjectHelper.introspectStringValueMapValueNotEmpty(batchOrderQueryRequest);
+        Map<String,String>  params  = ObjectHelper.introspectStringValueMap(batchOrderQueryRequest);
+
         byte[] bys = http.postParams(params,true);
         String result = new String(bys,"UTF-8");
         return result;

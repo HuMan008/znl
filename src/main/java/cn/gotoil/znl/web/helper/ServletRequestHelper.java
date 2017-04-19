@@ -20,23 +20,11 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 
-public class ServletRequestHelper {
+public class ServletRequestHelper extends cn.gotoil.bill.web.helper.ServletRequestHelper {
 
     public static String appId() {
         return httpServletRequest().getHeader("AppId");
     }
 
 
-    public static String userAgent() {
-        return httpServletRequest().getHeader("User-Agent");
-    }
-
-    public static UserAgentAnalyzer userAgentAnalyzer() {
-        return new UserAgentAnalyzer(userAgent());
-    }
-
-    public static HttpServletRequest httpServletRequest() {
-        ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
-        return servletRequestAttributes.getRequest();
-    }
 }

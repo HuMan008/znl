@@ -1,5 +1,6 @@
 package cn.gotoil.znl.web.interceptor;
 
+import cn.gotoil.bill.web.interceptor.authentication.hashcompare.HashcompareAuthenticationInterceptor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -12,14 +13,18 @@ import javax.servlet.http.HttpServletResponse;
  * Created by Suyj <suyajiang@gotoil.cn> on 2017/4/19.10:22
  */
 @Component
-public class AuthenticationInterceptor implements HandlerInterceptor {
+public class AuthenticationInterceptor  extends HashcompareAuthenticationInterceptor {
 
     @Value(value = "${enableAuth}")
     private boolean enableAuth;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        if(!enableAuth)    {
+            return true;
+        }
 
+        super.preHandle(request,response,handler);
      /*   if(StringUtils.isEmpty(ServletRequestHelper.appId())){
             throw new WebException(ValidatorEnum.RequestNoAppId)  ;
         }
@@ -32,8 +37,8 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         if(!enableAuth){
             return true;
         }*/
-        AuthenticationInterceptorSignatureVerifier authenticationInterceptorSignatureVerifier = new AuthenticationInterceptorSignatureVerifier(request);
-        authenticationInterceptorSignatureVerifier.verify();
+/*        AuthenticationInterceptorSignatureVerifier authenticationInterceptorSignatureVerifier = new AuthenticationInterceptorSignatureVerifier(request);
+        authenticationInterceptorSignatureVerifier.verify();*/
 
         return true;
     }

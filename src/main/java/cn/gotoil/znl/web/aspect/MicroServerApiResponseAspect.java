@@ -16,77 +16,20 @@ package cn.gotoil.znl.web.aspect;
 
 
 
-import cn.gotoil.znl.exception.WebExceptionEnum;
-import cn.gotoil.znl.web.message.MicroServerResponse;
+import cn.gotoil.bill.aspect.ApiResponseAspect;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
-import org.springframework.validation.ObjectError;
+import org.aspectj.lang.annotation.Aspect;
+import org.springframework.stereotype.Component;
 
-/*@Aspect
-@Component*/
-public class MicroServerApiResponseAspect {
+@Aspect
+@Component
+public class MicroServerApiResponseAspect extends ApiResponseAspect {
 
-    private static Logger logger = LoggerFactory.getLogger(MicroServerApiResponseAspect.class);
-
-    private static String formatBindingErrorMessages(BindingResult bindingResult) {
-
-        /*
-        return bindingResult.getAllErrors()
-                .stream().map(err -> {
-                    if (err instanceof FieldError && !err.getDefaultMessage().matches("<\\w*>")) {
-                        return String.format("<%s> %s", ((FieldError) err).getField(), err.getDefaultMessage());
-                    }
-                    return err.getDefaultMessage();
-                }).reduce("", (p, c) -> p + c + ", ");
-
-        */
-
-
-        StringBuilder builder = new StringBuilder(128);
-        for (ObjectError error : bindingResult.getAllErrors()) {
-            if (error instanceof FieldError && !error.getDefaultMessage().matches("<\\w*>")) {
-                builder.append('<');
-                builder.append(((FieldError) error).getField());
-                builder.append("> ");
-            }
-            builder.append(error.getDefaultMessage());
-            builder.append(',');
-        }
-
-        if (builder.length() > 0) {
-            builder.deleteCharAt(builder.length() - 1);
-        }
-
-        return builder.toString();
-    }
-
-    @Around("execution(* com.znl.web.controller.v1..*.*Action(..))")
+    @Around("execution(* cn.gotoil.znl.web.controller..*.*Action(..))")
     public Object around(ProceedingJoinPoint point) throws Throwable {
-
-        Object[] args = point.getArgs();
-        for (Object arg : args) {
-            if (arg instanceof BindingResult) {
-                BindingResult bindingResult = (BindingResult) arg;
-                if (bindingResult.hasErrors()) {
-                    MicroServerResponse response = new MicroServerResponse();
-                    response.setStatus(WebExceptionEnum.ValidateError.getCode());
-                    response.setMessage(formatBindingErrorMessages(bindingResult));
-                    return response;
-                }
-            }
-        }
-
-        Object actionObject = point.proceed();
-
-        if (actionObject instanceof MicroServerResponse) {
-            return actionObject;
-        } else {
-            return new MicroServerResponse(actionObject);
-        }
+        return aroundCall(point);
     }
+
 
 }

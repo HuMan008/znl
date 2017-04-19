@@ -99,3 +99,9 @@ allinpay:
     url_refund: https://cashier.allinpay.com/gateway/index.do #退款申请
     url_refundstatus: https://cashier.allinpay.com/mchtoq/refundQuery #退款状态查询
 
+bill:
+  defaultAuthenticationType: Signature
+  apiResponseAroundControllerPackagesExecution: "execution(* cn.gotoil.owstoni.web.controller.v1..*.*Action(..))"
+  keyOfHashCompareAuthenticationProviderClass: cn.gotoil.owstoni.classes.HashCompareAuthenticationKeyProvider
+  keyOfHashCompareAuthenticationProviderMethod: key
+  exceptBodyContentHttpServletRequestWrapperUrls: "/v1/upload"

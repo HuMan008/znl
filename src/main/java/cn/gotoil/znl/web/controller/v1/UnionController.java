@@ -1,22 +1,23 @@
 package cn.gotoil.znl.web.controller.v1;
 
+import cn.gotoil.bill.exception.BillError;
+import cn.gotoil.bill.exception.BillException;
+import cn.gotoil.znl.classes.OrderHelper;
 import cn.gotoil.znl.common.tools.date.DateUtils;
 import cn.gotoil.znl.common.union.SybUtil;
-import cn.gotoil.znl.web.message.request.union.*;
-import com.alibaba.fastjson.JSONObject;
-import cn.gotoil.znl.classes.OrderHelper;
 import cn.gotoil.znl.config.property.SybConstants;
 import cn.gotoil.znl.config.property.SysConfig;
-import cn.gotoil.znl.exception.MicroServerException;
-import cn.gotoil.znl.exception.ValidatorEnum;
-import cn.gotoil.znl.exception.WebException;
-import cn.gotoil.znl.exception.WebExceptionEnum;
+import cn.gotoil.znl.exception.UnionError;
+import cn.gotoil.znl.exception.ZnlError;
+import cn.gotoil.znl.exception.handler.UnionException;
 import cn.gotoil.znl.service.UnionService;
 import cn.gotoil.znl.web.controller.BaseController;
+import cn.gotoil.znl.web.message.request.union.*;
 import cn.gotoil.znl.web.message.response.union.PayResultResponse;
 import cn.gotoil.znl.web.message.response.union.UnionRegisterRespon4API;
 import cn.gotoil.znl.web.message.response.union.UnionRegisterResponse;
 import cn.gotoil.znl.web.message.response.union.WxPayInfoResponse;
+import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,17 +68,15 @@ public class UnionController extends BaseController {
                       @ModelAttribute @Valid WxPayRequest wxPayRequest,
                       BindingResult bindingResult,
                       HttpServletRequest httpServletRequest) throws Exception{
-        if(bindingResult.hasErrors()){
-            return new WebException(ValidatorEnum.RequestArgVailiError);
 
-        }
         Map<String,Object> wxSessionMap =  unionService.getWxSession(code);
         if(wxSessionMap==null || wxSessionMap.isEmpty()){
-            return  new WebException(WebExceptionEnum.NoSupportWechatCode);
+//            new WebException(WebExceptionEnum.NoSupportWechatCode);
+            return new BillException(UnionError.WxCodeNoSupport);
         }
         //获取异常
         if(wxSessionMap.containsKey("errcode")){
-            return new MicroServerException(-1, wxSessionMap.get("errcode").toString());
+            return  new BillException((BillError) new UnionException(3101,wxSessionMap.get("errcode").toString()));
         }
         String wxOpenId = (String)wxSessionMap.get("openid");
 //        String wxOpenId = "oQxUFuCHo8J0HeYa-20oK-MGEYGc"   ;
@@ -157,9 +156,9 @@ public class UnionController extends BaseController {
             return unionRegisterRespon4API;
         }catch (ConnectException e){
             e.printStackTrace();
-            return new WebException(WebExceptionEnum.NetConnectTimeOut)  ;
+            return ZnlError.NetConnectTimeOut;
         }catch (Exception e1)  {
-            return new MicroServerException(4000,e1.getMessage());
+            return new BillException(4000,e1.getMessage());
         }
     }
 
@@ -181,16 +180,16 @@ public class UnionController extends BaseController {
         if(StringUtils.isEmpty(orderSubmitRequest.getOrderNo())){
             String orderNo  =  OrderHelper.createOrder(request);
             if(StringUtils.isEmpty(orderNo)){
-                return new MicroServerException(9001,"APPKEY长度限制在0-8位;并且必须已字母或者数字开头，并且不能包含特殊字符")  ;
+                return UnionError.AppIdError;
             }
             orderSubmitRequest.setOrderNo(orderNo);
         }
         if(orderSubmitRequest.getOrderAmount()==0){
-            return new MicroServerException(9003,"订单金额不能小于1") ;
+            return UnionError.OrderAmonutError ;
         }
         if(orderSubmitRequest.getProductNum()*orderSubmitRequest.getProductPrice()!=0 )  {
             if(orderSubmitRequest.getProductNum()*orderSubmitRequest.getProductPrice()!=orderSubmitRequest.getOrderAmount())  {
-                return new MicroServerException(9002,"订单数量、单价与订单金额逻辑错误")  ;
+                return UnionError.OrderFeeError ;
             }
         }
         if(orderSubmitRequest.getOrderExpireDatetime()==0){

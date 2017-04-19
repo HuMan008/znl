@@ -9,6 +9,7 @@ package cn.gotoil.znl;
         import org.springframework.boot.SpringApplication;
         import org.springframework.boot.autoconfigure.SpringBootApplication;
         import org.springframework.context.ApplicationContext;
+        import org.springframework.context.annotation.ComponentScan;
         import org.springframework.scheduling.annotation.EnableAsync;
         import org.springframework.scheduling.annotation.EnableScheduling;
         import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -17,6 +18,7 @@ package cn.gotoil.znl;
 @EnableScheduling
 @EnableTransactionManagement
 @EnableAsync
+@ComponentScan({"cn.gotoil.znl", "cn.gotoil.bill"})
 public class Application {
 
     private static ApplicationContext applicationContext;

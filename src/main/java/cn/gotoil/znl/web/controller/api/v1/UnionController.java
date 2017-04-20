@@ -9,7 +9,7 @@ import cn.gotoil.znl.config.property.SybConstants;
 import cn.gotoil.znl.config.property.SysConfig;
 import cn.gotoil.znl.exception.UnionError;
 import cn.gotoil.znl.exception.ZnlError;
-import cn.gotoil.znl.exception.handler.UnionException;
+import cn.gotoil.znl.exception.UnionException;
 import cn.gotoil.znl.service.UnionService;
 import cn.gotoil.znl.web.controller.BaseController;
 import cn.gotoil.znl.web.message.request.union.*;

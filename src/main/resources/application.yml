@@ -101,7 +101,9 @@ allinpay:
 
 bill:
   defaultAuthenticationType: Signature
-  apiResponseAroundControllerPackagesExecution: "execution(* cn.gotoil.owstoni.web.controller.v1..*.*Action(..))"
-  keyOfHashCompareAuthenticationProviderClass: cn.gotoil.owstoni.classes.HashCompareAuthenticationKeyProvider
+  apiResponseAroundControllerPackagesExecution: "execution(* cn.gotoil.znl.web.controller.api.**.*Action(..))"
+  keyOfHashCompareAuthenticationProviderClass: cn.gotoil.znl.classes.HashCompareAuthenticationKeyProvider
   keyOfHashCompareAuthenticationProviderMethod: key
-  exceptBodyContentHttpServletRequestWrapperUrls: "/v1/upload"
+  exceptBodyContentHttpServletRequestWrapperUrls:
+    ? /v1/upload
+    ? /aa.*

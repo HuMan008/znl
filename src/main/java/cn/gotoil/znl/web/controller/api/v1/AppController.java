@@ -1,4 +1,4 @@
-package cn.gotoil.znl.web.controller.v1;
+package cn.gotoil.znl.web.controller.api.v1;
 
 import cn.gotoil.znl.config.define.PageInfo;
 import cn.gotoil.znl.model.domain.App;

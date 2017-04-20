@@ -1,4 +1,4 @@
-package cn.gotoil.znl.web.controller.v1;
+package cn.gotoil.znl.web.controller.api.v1;
 
 import cn.gotoil.znl.config.define.AlipayConfig;
 import cn.gotoil.znl.service.AlipayService;

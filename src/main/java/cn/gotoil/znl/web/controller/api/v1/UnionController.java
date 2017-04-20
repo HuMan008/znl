@@ -1,4 +1,4 @@
-package cn.gotoil.znl.web.controller.v1;
+package cn.gotoil.znl.web.controller.api.v1;
 
 import cn.gotoil.bill.exception.BillError;
 import cn.gotoil.bill.exception.BillException;

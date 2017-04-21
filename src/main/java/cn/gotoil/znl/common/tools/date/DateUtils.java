@@ -8,8 +8,16 @@ import java.text.SimpleDateFormat;
  */
 public class DateUtils extends cn.gotoil.bill.tools.date.DateUtils {
 
+    private static final String DATETIMENOCONNECTOR="yyyyMMddHHmmss";   //无连接符的日期时间格式化
 
-
-
-
+    private static ThreadLocal<SimpleDateFormat> threadLocalDateTimeNoConnectorFormatter = new ThreadLocal<SimpleDateFormat>() {
+        @Override
+        protected SimpleDateFormat initialValue() {
+            return new SimpleDateFormat(DATETIMENOCONNECTOR);
+        }
+    };
+    public final static SimpleDateFormat SimpleDatetimeNoConnectorFormat(){
+        SimpleDateFormat simpleDateFormat =  threadLocalDateTimeNoConnectorFormatter.get();
+        return simpleDateFormat;
+    }
 }

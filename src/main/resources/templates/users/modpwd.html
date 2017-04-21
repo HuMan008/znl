@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout-layui :: site-head"></head>
+<body>
+
+<form class="layui-form" method="post">
+    <div class="layui-inline">
+        <div class="layui-form-item">
+            <label class="layui-form-label">旧密码</label>
+            <div class="layui-input-inline">
+                <input type="password" id="oldpassword" name="oldpassword"
+                       placeholder="请输入您的原始密码" lay-verify="required" maxlength ="18"
+                       class="layui-input"/>
+            </div>
+        </div>
+    </div>
+    <div class="layui-inline">
+        <div class="layui-form-item">
+            <label class="layui-form-label">新密码</label>
+            <div class="layui-input-inline">
+                <input type="password" id="password" name="password"
+                       placeholder="密码长度要求在4-18位" lay-verify="passwd" maxlength ="18"
+                       class="layui-input"/>
+            </div>
+        </div>
+
+    </div>
+    <div class="layui-inline">
+        <div class="layui-form-item">
+
+            <label class="layui-form-label">新确认密码</label>
+            <div class="layui-input-inline">
+                <input type="password" id="repassword" name="repassword"
+                       placeholder="要求与密码一致" lay-verify="repasswd" maxlength ="18"
+                       class="layui-input"/>
+            </div>
+        </div>
+    </div>
+    <div class="layui-input-block">
+        <div>
+            <a class="layui-btn" lay-submit="" lay-filter="froms" onsubmit="return false;">确认</a>
+            <a class="layui-btn" onclick="cancel()">取消</a>
+
+        </div>
+
+    </div>
+</form>
+<script>
+
+    /*<![CDATA[*/
+    layui.use(['form', 'main', 'jquery', 'util', 'layer'], function () {
+        var form = layui.form();
+        var jquery = layui.jquery,
+            layedit = layui.layedit,
+            laydate = layui.laydate,
+            layer = layui.layer;
+        form.verify({
+            passwd: function (va) {
+                if (va.length < 4 || va.length > 18) {
+                    return '密码长度要求在4-18位'
+                }
+            },
+            repasswd: function (repasswd) {
+                if (repasswd != jquery("#password").val()) {
+                    return "两次密码不一致"
+                }
+
+            }
+        });
+
+        form.on('submit(froms)', function (data) {
+
+            jquery.post('/web/modifyPwd', data.field, function (res) {
+                if (res.success == true) {
+                    layer.alert(res.msg, {icon: 1});
+                    setTimeout(function () {
+                        parent.layer.closeAll();
+                        //跳到登录去  重新登录
+//                        window.parent.open("http://" + window.location.host +"/","_self");
+                    }, 2000);
+                } else {
+                    layer.msg(res.msg);
+                }
+            }, "json");
+            return true;
+        });
+
+
+    });
+
+    function cancel() {
+        parent.layer.closeAll();
+    }
+    /*]]>*/
+</script>
+</body>
+</html>

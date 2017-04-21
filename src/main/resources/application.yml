@@ -63,7 +63,7 @@ logging:
 
 management:
   add-application-context-header: false
-enableAuth: false
+enableAuth: true
 
 #系统配置
 sysconfig:
@@ -99,8 +99,8 @@ allinpay:
     url_refundstatus: https://cashier.allinpay.com/mchtoq/refundQuery #退款状态查询
 
 bill:
-  defaultAuthenticationType: None
-  apiResponseAroundControllerPackagesExecution: "execution(* cn.gotoil.znl.web.controller.api.**.*Action(..))"
+  defaultAuthenticationType: Integrity
+  apiResponseAroundControllerPackagesExecution: "execution(* cn.gotoil.znl.web.controller.api.*.*Action(..))"
   keyOfHashCompareAuthenticationProviderClass: cn.gotoil.znl.classes.HashCompareAuthenticationKeyProvider
   keyOfHashCompareAuthenticationProviderMethod: key
   exceptBodyContentHttpServletRequestWrapperUrls: "/web/"

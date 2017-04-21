@@ -10,7 +10,7 @@ public class HashCompareAuthenticationKeyProvider {
 
     @SuppressWarnings("all")
     public static String key(String XU) {
-        return "";
+        return "1111111111111111111111111111111111111111";
 /*        AppService appService = Application.getApplicationContext().getBean(AppService.class);
         return appService.findApiKey(XU);*/
     }

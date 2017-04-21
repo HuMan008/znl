@@ -3,6 +3,7 @@ package cn.gotoil.znl.classes;
 import cn.gotoil.bill.tools.encoder.Hash;
 import cn.gotoil.znl.web.helper.ServletRequestHelper;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
@@ -13,7 +14,9 @@ import java.util.Date;
 public class OrderHelper {
     public static String createOrder(HttpServletRequest request) {
         String startStr = ServletRequestHelper.appId();
-
+             if(StringUtils.isEmpty(startStr))    {
+                 return RandomStringUtils.randomNumeric(32)    ;
+             }
             return startStr+ "_"+RandomStringUtils.randomNumeric(32)  ;
 
     }

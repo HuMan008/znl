@@ -1,14 +1,13 @@
 package cn.gotoil.znl.common.union;
 
+import com.alibaba.fastjson.JSONObject;
+
+import javax.servlet.http.HttpServletRequest;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
-
-import com.alibaba.fastjson.JSONObject;
-
-import javax.servlet.http.HttpServletRequest;
 
 public class SybUtil {
 	/**
@@ -20,7 +19,7 @@ public class SybUtil {
 	 */
 	public static <T> T json2Obj(String jsonstr,Class<T> cls){
 		return JSONObject.parseObject(jsonstr,cls) ;
-    	/*JSONObject jo =JSONObject.fromObject(jsonstr);
+    /*	JSONObject jo =JSONObject.fromObject(jsonstr);
 		T obj = (T)JSONObject.toBean(jo, cls);
 		return obj;*/
     }

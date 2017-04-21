@@ -8,8 +8,12 @@ import cn.gotoil.znl.model.domain.App;
  */
 public interface AppService {
 
+    App findOne(String recordID);
+
+    boolean updateStatus(String recordID);
 
     PageInfo<App> getAppList(int pageNum, int pageSize, App condition);
 
+    boolean  save(App app);
 
 }

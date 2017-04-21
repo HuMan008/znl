@@ -11,7 +11,6 @@ import cn.gotoil.znl.exception.UnionError;
 import cn.gotoil.znl.exception.ZnlError;
 import cn.gotoil.znl.exception.handler.UnionException;
 import cn.gotoil.znl.service.UnionService;
-import cn.gotoil.znl.web.controller.BaseController;
 import cn.gotoil.znl.web.message.request.union.*;
 import cn.gotoil.znl.web.message.response.union.PayResultResponse;
 import cn.gotoil.znl.web.message.response.union.UnionRegisterRespon4API;
@@ -43,7 +42,7 @@ import java.util.TreeMap;
  * Created by Suyj <suyajiang@gotoil.cn> on 2017/4/7.10:48
  */
 @Controller
-public class UnionController extends BaseController {
+public class UnionController {
 
     private Logger logger  = LoggerFactory.getLogger(UnionController.class);
 

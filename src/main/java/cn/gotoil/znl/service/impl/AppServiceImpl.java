@@ -4,6 +4,7 @@ import cn.gotoil.znl.config.define.PageInfo;
 import cn.gotoil.znl.model.domain.App;
 import cn.gotoil.znl.model.repository.JPAAppRepository;
 import cn.gotoil.znl.service.AppService;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.criteria.*;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by wh on 2017/4/19.
@@ -26,6 +28,25 @@ public class AppServiceImpl implements AppService {
     @Autowired
     private JPAAppRepository jpaAppRepository;
 
+
+
+
+    public  App findOne(String recordID){
+        return  jpaAppRepository.findOne(recordID);
+    }
+
+    public boolean updateStatus(String recordID){
+
+        App app = jpaAppRepository.findOne( recordID );
+        if( app.getState()== App.StateEnum.Enable.getCode() ){
+            app.setState(App.StateEnum.Disable.getCode());
+        }else if( app.getState()== App.StateEnum.Disable.getCode() ){
+            app.setState(App.StateEnum.Enable.getCode());
+        }
+
+        return  jpaAppRepository.save(app)==null?false:true;
+
+    }
 
     public PageInfo<App> getAppList(int pageNum,int pageSize, App condition){
 
@@ -40,6 +61,9 @@ public class AppServiceImpl implements AppService {
             public Predicate toPredicate(Root<App> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
                 Predicate predicate = cb.conjunction();
                 List<Expression<Boolean>> expressions = predicate.getExpressions();
+                if(null==condition){
+                    return predicate;
+                }
                 //
                 if( App.StateEnum.getNameByCode(condition.getState()) != null ){
                     expressions.add(cb.equal(root.<String>get("state"), condition.getState() ));
@@ -61,6 +85,9 @@ public class AppServiceImpl implements AppService {
 
     public  boolean  save(App app){
 
+        if(StringUtils.isEmpty(app.getAppID())){
+            app.setAppkey(  RandomStringUtils.randomAlphanumeric(24 )  );
+        }
         return  null==jpaAppRepository.save(app)?false:true;
 
     }

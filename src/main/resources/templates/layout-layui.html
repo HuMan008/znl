@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+>
+<head th:fragment="site-head">
+    <meta charset="UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1"/>
+    <title>后台管理系统</title>
+
+    <script th:src="@{/public/modules/layui/layui.js}"></script>
+    <link rel="stylesheet" th:href="@{/public/modules/layui/css/layui.css}"/>
+    <link rel="stylesheet" th:href="@{/public/css/main.css}"/>
+    <script th:src="@{/public/js/main.js}"></script>
+
+
+    <script>
+
+        var $;
+
+        layui.config({
+            base: '/public/js/' //你的模块目录
+        }).use('main'); //加载入口
+
+        layui.use(['jquery', 'layer'], function () {
+            $ = layui.jquery;
+            layer = layui.layer;
+
+        });
+
+
+        function modifyPwd() {
+            layui.layer.closeAll();
+            var index = layer.open({
+                type: 2,
+                shade: false,
+                title: "修改密码",
+                area: ['360px', '260px'],
+                maxmin: false,
+                content: "/modifyPwd",
+                zIndex: layer.zIndex, //重点1
+                success: function (layero) {
+                    //
+                    layer.setTop(layero); //重点2
+                },
+
+            });
+        }
+
+        function toHome() {
+            window.open("http://" + window.location.host + "/index?t="+new Date().getTime(), "_self")
+        }
+
+        function logout() {
+            layer.confirm('您确定要退出系统？', {title: '警告'}, function (index) {
+                layer.close(index);
+                layui.jquery.ajax({
+                    url: "/logout",
+                    dataType: "JSON",
+                    context: document.body,
+                    success: function (data) {
+                        layui.layer.msg(data.message);
+                        setTimeout(function () {
+                            window.open("http://" + window.location.host + "", "_self")
+                        }, 200);
+                    },
+                    error: function (d) {
+                        window.open("http://" + window.location.host + "", "_self")
+                    }
+
+                });
+
+            });
+
+        }
+
+        function gooIndex() {
+            window.location.href = "http://" + window.location.host +"/web/index";
+        }
+        function goToAppManage() {
+            window.location.href = "http://" + window.location.host +"/web/app/index";
+        }
+
+
+    </script>
+
+
+
+
+
+    <meta th:include="this :: head" th:remove="tag"/>
+</head>
+<body>
+<header th:fragment="menu" th:remove="tag">
+    <header>
+        <!--头部-->
+        <div class="header layui-unselect">
+            <h1 class="header-title header-title-left" href="#">
+               支付后台管理系统
+            </h1>
+            <div class="header-action header-action-right">
+                <ul class="layui-nav" lay-filter="">
+                    <li class="layui-nav-item" onclick="toHome()" title="返回首页">
+                        <a><i class="layui-icon">&#xe600;</i>首页</a>
+                    </li>
+                    <li class="layui-nav-item">
+                        <a th:text="${session.uname}"><i class="icon fa">&#xf2be;用户名</i></a>
+                        <dl class="layui-nav-child">
+                            <dd><a onclick="modifyPwd()">修改密码</a></dd>
+                        </dl>
+                    </li>
+                    <li class="layui-nav-item" onclick="logout()">
+                        <a><i class="icon fa">&#xf011;</i></a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+
+    </header>
+
+
+
+    <!--侧边栏-->
+    <div class="side layui-unselect">
+        <input type="hidden" id="selectedItem" th:value="${selectedItem}" />
+        <div class="side-scroll">
+            <ul class="layui-nav layui-nav-tree">
+                <li class="layui-nav-item " id="index">
+                    <a href="javascript:void(0)" onclick="gooIndex();"  ><i class="icon fa">&#xf0e4;</i>首页</a>
+                </li>
+                <li class="layui-nav-item "  id="appManage" >
+                    <a href="javascript:void(0)" onclick="goToAppManage();"  ><i class="icon fa">&#xf091;</i>App管理</a>
+                </li>
+
+            </ul>
+        </div>
+    </div>
+</header>
+
+
+
+
+<footer th:fragment="site-footer">
+    <h1>Welcome</h1>
+    <p>Welcome to the Spring MVC Blog.</p>
+    &copy; <p>2016 © 支付后台管理系统</p>
+</footer>
+
+
+</body>
+</html>

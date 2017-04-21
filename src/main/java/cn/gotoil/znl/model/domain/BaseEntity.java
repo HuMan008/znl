@@ -3,6 +3,7 @@ package cn.gotoil.znl.model.domain;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.RandomStringUtils;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -36,8 +37,10 @@ public abstract class BaseEntity implements Serializable {
 
     @PrePersist
     public void prePersist() {
+
         if(null==createdAt){
             createdAt = new Date();
+            updateAt = createdAt;
         }
     }
 

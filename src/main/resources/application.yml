@@ -33,9 +33,12 @@ spring:
       database:  MYSQL
 
   datasource:
-      url: jdbc:mysql://201.201.201.173:3306/znl?useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true&autoReconnect=true&failOverReadOnly=false&useSSL=false&allowMultiQueries=true
-      username:  developer
-      password:  developerDev$$##22
+#      url: jdbc:mysql://201.201.201.173:3306/znl?useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true&autoReconnect=true&failOverReadOnly=false&useSSL=false&allowMultiQueries=true
+      url: jdbc:mysql://localhost:3306/znl?useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true&autoReconnect=true&failOverReadOnly=false&useSSL=false&allowMultiQueries=true
+#      username:  developer
+#      password:  developerDev$$##22
+      username:  root
+      password:  hitwh
 
   thymeleaf:
       cache: false
@@ -63,7 +66,7 @@ logging:
 
 management:
   add-application-context-header: false
-enableAuth: true
+enableAuth: false
 
 #系统配置
 sysconfig:

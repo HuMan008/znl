@@ -1,10 +1,13 @@
 package cn.gotoil.znl.model.domain;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import cn.gotoil.znl.web.message.Combobox;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -25,7 +28,7 @@ public class App extends  BaseEntity   {
      * 主键
      */
     @Id
-    @Column(name = "appid",columnDefinition = "char(32)  COMMENT '主键'",unique = true,nullable = false)
+    @Column(name = "appid",columnDefinition = "char(24)  COMMENT '主键'",unique = true,nullable = false)
     private String appID;
 
     /**
@@ -38,7 +41,7 @@ public class App extends  BaseEntity   {
     /**
      * 密钥
      */
-    @Column( columnDefinition = "char(40)  COMMENT '密钥'" ,nullable = false )
+    @Column( columnDefinition = "char(24)  COMMENT '密钥'" ,nullable = false )
     private String appkey;
 
     /**
@@ -57,9 +60,16 @@ public class App extends  BaseEntity   {
      * 到期日期
      */
     @Column(  name="expire_date" ,nullable = false  )
+    @JsonFormat(timezone = "GMT+8", pattern = "YYYY-MM-dd HH:mm")
     private Date expireDate;
 
 
+    @PrePersist
+    void preSave(){
+        if(StringUtils.isEmpty(appID)){
+            appID = RandomStringUtils.random(24,true,true);
+        }
+    }
 
 
     public App() {
@@ -92,7 +102,10 @@ public class App extends  BaseEntity   {
          *  转换类型
          *  @return
          */
-        public static StateEnum getNameByCode(byte code) {
+        public static StateEnum getNameByCode(Byte code) {
+            if(null == code){
+                return  null;
+            }
             for (StateEnum en : StateEnum.values()) {
                 if ( en.getCode() == code ) {
                     return en;
@@ -128,4 +141,6 @@ public class App extends  BaseEntity   {
             return name;
         }
     }
+
+
 }

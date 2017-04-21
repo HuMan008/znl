@@ -3,20 +3,21 @@ package cn.gotoil.znl.web.controller.api.v1;
 import cn.gotoil.bill.exception.BillError;
 import cn.gotoil.bill.exception.BillException;
 import cn.gotoil.znl.classes.OrderHelper;
+import cn.gotoil.znl.common.tools.ObjectHelper;
 import cn.gotoil.znl.common.tools.date.DateUtils;
 import cn.gotoil.znl.common.union.SybUtil;
 import cn.gotoil.znl.config.property.SybConstants;
 import cn.gotoil.znl.config.property.SysConfig;
 import cn.gotoil.znl.exception.UnionError;
+import cn.gotoil.znl.exception.UnionException;
 import cn.gotoil.znl.exception.ZnlError;
-import cn.gotoil.znl.exception.handler.UnionException;
 import cn.gotoil.znl.service.UnionService;
+import cn.gotoil.znl.web.controller.BaseController;
 import cn.gotoil.znl.web.message.request.union.*;
-import cn.gotoil.znl.web.message.response.union.PayResultResponse;
-import cn.gotoil.znl.web.message.response.union.UnionRegisterRespon4API;
-import cn.gotoil.znl.web.message.response.union.UnionRegisterResponse;
-import cn.gotoil.znl.web.message.response.union.WxPayInfoResponse;
+import cn.gotoil.znl.web.message.response.union.*;
 import com.alibaba.fastjson.JSONObject;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +43,8 @@ import java.util.TreeMap;
  * Created by Suyj <suyajiang@gotoil.cn> on 2017/4/7.10:48
  */
 @Controller
-public class UnionController {
+@Api(value = "通联支付",description = "通联支付")
+public class UnionController extends BaseController {
 
     private Logger logger  = LoggerFactory.getLogger(UnionController.class);
 
@@ -132,10 +134,11 @@ public class UnionController {
      * 通联用户注册
      */
     @ResponseBody
-    @RequestMapping("unionregister")
+    @RequestMapping(value = "unionregister",method = RequestMethod.GET)
+    @ApiOperation(value = "通联用户注册")
     public Object unionRegisterAction (@RequestParam(required = false) @Size(max =32,message = "请传入正确的参数") String puid, HttpServletRequest request,
-                                 HttpServletResponse
-            response){
+                                       HttpServletResponse
+                                               response){
         UnionRegisterRequest registerRequest = new UnionRegisterRequest();
         UnionRegisterRespon4API unionRegisterRespon4API = new UnionRegisterRespon4API();
         unionRegisterRespon4API.setPartnerUserId(puid);
@@ -157,6 +160,7 @@ public class UnionController {
             e.printStackTrace();
             return ZnlError.NetConnectTimeOut;
         }catch (Exception e1)  {
+            e1.printStackTrace();
             return new BillException(4000,e1.getMessage());
         }
     }
@@ -212,19 +216,23 @@ public class UnionController {
      * @param model
      * @return
      */
-    @RequestMapping(value = "orderquery")
-    public String orderQuery (HttpServletRequest request, HttpServletResponse response,Model model) throws Exception{
+    @RequestMapping(value = "orderquery/{orderDate:^\\d{14}$}/{orderNo:^.*$}")
+    public Object orderQueryAction (HttpServletRequest request, HttpServletResponse response,Model model,
+                                    @PathVariable String orderDate  ,
+                                    @PathVariable String orderNo
+    ) throws Exception{
         OrderQueryRequest orderQueryRequest = new OrderQueryRequest();
 //        PayResultResponse{merchantId='008500189990304', version='v1.0', language='1', signType='0', issuerId='', paymentOrderId='201704111646298209', orderNo='order_001', orderDatetime='20170411164619', orderAmount=1, payDatetime='20170411164636', payAmount=1, ext1='<USER>170410792118546</USER>', ext2='', payResult='1', returnDatetime='20170411164642'}
-        orderQueryRequest.setOrderDatetime("20170411164619");
-        orderQueryRequest.setOrderNo("order_001");
+        orderQueryRequest.setOrderDatetime(orderDate);
+        orderQueryRequest.setOrderNo(orderNo);
 
         orderQueryRequest.doSign();
-     /*   OrderQueryResponse  orderQueryResponse = (OrderQueryResponse)ObjectHelper.mapToObject(unionService.orderQuery(orderQueryRequest),OrderQueryResponse.class); ;
-        System.out.println(orderQueryResponse.toString());*/
-        System.out.println(unionService.orderQuery(orderQueryRequest));
-        //payDatetime=20170411164636&userName=&credentialsType=&pan=&txOrgId=&ext1=%3CUSER%3E170410792118546%3C%2FUSER%3E&payAmount=1&returnDatetime=20170411164743&credentialsNo=&issuerId=&signMsg=6EB48C82DE9840A2B181F3E1CC6C1E72&payType=0&language=1&errorCode=&merchantId=008500189990304&orderDatetime=20170411164619&version=v1.0&orderNo=order_001&ext2=&signType=0&orderAmount=1&extTL=&paymentOrderId=201704111646298209&payResult=1&
-        return "";
+
+        String reStr = unionService.orderQuery(orderQueryRequest);
+
+        Map map2=  ObjectHelper.stringToMap(reStr)  ;
+        OrderQueryResponse orderQueryResponse = (OrderQueryResponse) ObjectHelper.mapToObject(map2,OrderQueryResponse.class) ;
+        return orderQueryResponse;
     }
 
     /**
@@ -237,7 +245,7 @@ public class UnionController {
      * @throws Exception
      */
     @RequestMapping(value = "batchorderquery")
-    public String batchOrderQuery(HttpServletRequest request, HttpServletResponse response,Model model) throws Exception{
+    public String batchOrderQueryAction(HttpServletRequest request, HttpServletResponse response,Model model) throws Exception{
         BatchOrderQueryRequest batchOrderQueryRequest = new BatchOrderQueryRequest();
         batchOrderQueryRequest.setBeginDateTime(DateUtils.simpleDateFormatter().format(new Date()).replace("-","")+"00");
         batchOrderQueryRequest.setEndDateTime(DateUtils.simpleDateFormatter().format(new Date()).replace("-","")+"23");
@@ -278,7 +286,7 @@ public class UnionController {
         refundStatusRequest.setRefundDatetime("20170411164619");
         refundStatusRequest.setRefundAmount(1);
         refundStatusRequest.doSign();
-       String x = unionService.refundStatus(refundStatusRequest)   ;
+        String x = unionService.refundStatus(refundStatusRequest)   ;
         System.out.println(x);
         return "";
 
@@ -294,12 +302,12 @@ public class UnionController {
      * @param model
      * @return
      */
-     @RequestMapping(value = "dopickup")
+    @RequestMapping(value = "dopickup")
     public String doPickup(PayResultResponse payResultResponse, HttpServletRequest request, HttpServletResponse response,Model model) {
-         System.out.println(payResultResponse.toString());
-         //PayResultResponse{merchantId='008500189990304', version='v1.0', language='1', signType='0', issuerId='', paymentOrderId='201704111646298209', orderNo='order_001', orderDatetime='20170411164619', orderAmount=1, payDatetime='20170411164636', payAmount=1, ext1='<USER>170410792118546</USER>', ext2='', payResult='1', returnDatetime='20170411164642'}
-         return null;
-     }
+        System.out.println(payResultResponse.toString());
+        //PayResultResponse{merchantId='008500189990304', version='v1.0', language='1', signType='0', issuerId='', paymentOrderId='201704111646298209', orderNo='order_001', orderDatetime='20170411164619', orderAmount=1, payDatetime='20170411164636', payAmount=1, ext1='<USER>170410792118546</USER>', ext2='', payResult='1', returnDatetime='20170411164642'}
+        return null;
+    }
     @RequestMapping(value = "receiveurl")
     public String  receiveUrl(HttpServletRequest request,HttpServletResponse response) {
         System.out.println(request.getParameterMap().toString());

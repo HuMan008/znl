@@ -25,12 +25,11 @@ public class SwaggerConfig {
     public Docket api() {
         Docket docket = new Docket(DocumentationType.SWAGGER_2)
                 .select()
-//                .apis(RequestHandlerSelectors.any())
-                .apis(RequestHandlerSelectors.basePackage("com.znl.web.controller.v1"))
+                .apis(RequestHandlerSelectors.basePackage("cn.gotoil.znl.web.controller.api."))
                 .paths(PathSelectors.any())
 //                .paths(PathSelectors.regex("\\s+Controller"))
                 .build();
-//        docket.apiInfo(new ApiInfo("", "彩票查询服务API", "1.0", "urn:tos", ApiInfo.DEFAULT_CONTACT, "国通石油", "http://www.gt680.com"));
+        docket.apiInfo(new ApiInfo("", "支付接口", "1.0", "urn:tos", ApiInfo.DEFAULT_CONTACT, "国通石油", "#"));
         return docket;
     }
 

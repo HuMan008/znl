@@ -23,7 +23,11 @@ public class AuthenticationInterceptor  extends HashcompareAuthenticationInterce
         if(!enableAuth)    {
             return true;
         }
-
+       // TODO: 2017/4/20
+        String uri = request.getRequestURI();
+        if(uri.startsWith("/web")){
+            return true;
+        }
         super.preHandle(request,response,handler);
      /*   if(StringUtils.isEmpty(ServletRequestHelper.appId())){
             throw new WebException(ValidatorEnum.RequestNoAppId)  ;

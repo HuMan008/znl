@@ -70,7 +70,6 @@ enableAuth: false
 
 #系统配置
 sysconfig:
-
 #正是环境中服务器的域名 必须添加白名单里
   runServerSchema: http://
   runServerHostName: fastweb.guotongshiyou.com
@@ -103,10 +102,8 @@ allinpay:
     url_refundstatus: https://cashier.allinpay.com/mchtoq/refundQuery #退款状态查询
 
 bill:
-  defaultAuthenticationType: Signature
-  apiResponseAroundControllerPackagesExecution: "execution(* cn.gotoil.znl.web.controller.api.**.*Action(..))"
+  defaultAuthenticationType: Integrity
+  apiResponseAroundControllerPackagesExecution: "execution(* cn.gotoil.znl.web.controller.api.*.*Action(..))"
   keyOfHashCompareAuthenticationProviderClass: cn.gotoil.znl.classes.HashCompareAuthenticationKeyProvider
   keyOfHashCompareAuthenticationProviderMethod: key
-  exceptBodyContentHttpServletRequestWrapperUrls:
-    ? /v1/upload
-    ? /aa.*
+  exceptBodyContentHttpServletRequestWrapperUrls: "/web/"

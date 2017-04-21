@@ -10,3 +10,4 @@ app.wxss
 gradle*
 settings.gradle
 *.iml
+out

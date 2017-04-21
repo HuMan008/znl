@@ -24,7 +24,7 @@ import org.springframework.stereotype.Component;
 
 @Aspect
 @Component
-public class MicroServerApiResponseAspect extends ApiResponseAspect {
+public class ZnlApiResponseAspect extends ApiResponseAspect {
 
     @Around("execution(* cn.gotoil.znl.web.controller..*.*Action(..))")
     public Object around(ProceedingJoinPoint point) throws Throwable {

@@ -1,4 +1,4 @@
-package cn.gotoil.znl.exception.handler;
+package cn.gotoil.znl.exception;
 
 import cn.gotoil.bill.exception.BillError;
 import cn.gotoil.bill.exception.BillException;

@@ -72,19 +72,26 @@ public class AlipayController {
         return  "alipay/query";
     }
 
-    @RequestMapping(value = "/query" ,method = RequestMethod.POST,produces = "application/json;charset=UTF-8")
-    @ResponseBody
-    public String  query(  @RequestBody @Valid AlipayQueryRequest alipayQueryRequest
+    @RequestMapping(value = "/query" ,method = RequestMethod.POST)
+//    @ResponseBody
+    public void  query(  @RequestBody @Valid AlipayQueryRequest alipayQueryRequest
             ,BindingResult bindingResult
             ,HttpServletRequest request,HttpServletResponse response ) throws IOException {
 
-
+        PrintWriter writer = response.getWriter();
         try {
 
-            return alipayService.query( alipayQueryRequest );
+            response.setContentType("application/json;charset=UTF-8");
+            writer.write( alipayService.query( alipayQueryRequest ) );
+            writer.flush();
+
         } catch (AlipayApiException e) {
             e.printStackTrace();
-            return e.getMessage();
+
+            response.setContentType("application/json;charset=UTF-8");
+            writer.write( e.getMessage() );
+            writer.flush();
+
         }
 
 

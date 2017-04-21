@@ -4,7 +4,7 @@
 
 
 </head>
-<body   >
+<body  onload="initPage()" >
 
 
 <div class="layout">
@@ -19,12 +19,25 @@
 
     <div class="body " >
 
+        首页
 
     </div>
     
 
 </div>
 
+<script>
+
+    /*<![CDATA[*/
+
+
+    function initPage() {
+        $("#"+$("#selectedItem").val()).addClass("layui-this");
+    }
+
+
+    /*]]>*/
+</script>
 
 </body>
 </html>

@@ -4,6 +4,7 @@ import cn.gotoil.znl.config.define.PageInfo;
 import cn.gotoil.znl.model.domain.App;
 import cn.gotoil.znl.model.repository.JPAAppRepository;
 import cn.gotoil.znl.service.AppService;
+import com.google.gson.Gson;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,11 +14,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.criteria.*;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by wh on 2017/4/19.
@@ -29,10 +32,22 @@ public class AppServiceImpl implements AppService {
     private JPAAppRepository jpaAppRepository;
 
 
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
+
 
 
     public  App findOne(String recordID){
-        return  jpaAppRepository.findOne(recordID);
+
+        String appStr = stringRedisTemplate.opsForValue().get(recordID);
+        if(StringUtils.isEmpty(appStr)){
+            App app =  jpaAppRepository.findOne(recordID);
+            stringRedisTemplate.opsForValue().set(recordID,new Gson().toJson(app),7200, TimeUnit.SECONDS);
+            return  app;
+        }else{
+            return  new Gson().fromJson(appStr,App.class);
+        }
+
     }
 
     public boolean updateStatus(String recordID){
@@ -43,6 +58,8 @@ public class AppServiceImpl implements AppService {
         }else if( app.getState()== App.StateEnum.Disable.getCode() ){
             app.setState(App.StateEnum.Enable.getCode());
         }
+
+        stringRedisTemplate.delete(recordID);
 
         return  jpaAppRepository.save(app)==null?false:true;
 

@@ -58,4 +58,12 @@ public class AlipayPayRequest {
     }
 
 
+    public AlipayPayRequest(String out_trade_no, String subject, Double total_amount, String desc, String product_code, String timeout_express) {
+        this.out_trade_no = out_trade_no;
+        this.subject = subject;
+        this.total_amount = total_amount;
+        this.desc = desc;
+        this.product_code = product_code;
+        this.timeout_express = timeout_express;
+    }
 }

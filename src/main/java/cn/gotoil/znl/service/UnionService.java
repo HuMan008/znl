@@ -22,11 +22,13 @@ public interface UnionService {
     String refundStatus(RefundStatusRequest refundStatusRequest) throws Exception;
 
     Map getWxSession(String wxJsCode);
-
+/*
     Map<String,String> unionWxPay(long trxamt, String reqsn, String paytype, String body, String remark, String acct, String authcode,
-                                  String limit_pay) throws Exception;
+                                  String limit_pay) throws Exception;*/
 
     Map<String,String> unionWxPay(WxPayRequest wxPayRequest, String openId
            /* long trxamt,String reqsn,String paytype,String body,String remark,String acct,String authcode,
                                          String limit_pay*/) throws Exception;
+
+    Object parseBatchOrderStr(String x);
 }

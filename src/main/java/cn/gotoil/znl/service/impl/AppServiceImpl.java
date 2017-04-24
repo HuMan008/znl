@@ -4,7 +4,7 @@ import cn.gotoil.znl.config.define.PageInfo;
 import cn.gotoil.znl.model.domain.App;
 import cn.gotoil.znl.model.repository.JPAAppRepository;
 import cn.gotoil.znl.service.AppService;
-import com.google.gson.Gson;
+import com.alibaba.fastjson.JSON;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,10 +42,10 @@ public class AppServiceImpl implements AppService {
         String appStr = stringRedisTemplate.opsForValue().get(recordID);
         if(StringUtils.isEmpty(appStr)){
             App app =  jpaAppRepository.findOne(recordID);
-            stringRedisTemplate.opsForValue().set(recordID,new Gson().toJson(app),7200, TimeUnit.SECONDS);
+            stringRedisTemplate.opsForValue().set(recordID, JSON.toJSONString(app),7200, TimeUnit.SECONDS);
             return  app;
         }else{
-            return  new Gson().fromJson(appStr,App.class);
+            return  JSON.parseObject(appStr,App.class);
         }
 
     }

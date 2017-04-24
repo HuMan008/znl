@@ -142,7 +142,7 @@
         <h1>支付宝手机网站alipay.trade.query (统一收单线下交易查询)</h1>
 </header>
 <div id="main">
-        <form  action="/alipay/v1/query" method="post" target="_blank">
+        <!--<form       >-->
             <div id="body" style="clear:left">
                 <dl class="content">
                     <dt>商户订单号
@@ -162,13 +162,13 @@
                     </dd>
                     <dd id="btn-dd">
                         <span class="new-btn-login-sp">
-                            <button class="new-btn-login" type="submit" style="text-align:center;">确 认</button>
+                            <button class="new-btn-login" onclick="submitBtn();" style="text-align:center;">确 认</button>
                         </span>
                         <span class="note-help">如果您点击“确认”按钮，即表示您同意该次的执行操作。</span>
                     </dd>
                 </dl>
             </div>
-		</form>
+		<!--</form>-->
         <div id="foot">
 			<ul class="foot-ul">
 				<li>
@@ -177,5 +177,31 @@
 			</ul>
 		</div>
 	</div>
+
+<script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
+<script>
+
+    function  submitBtn() {
+
+        var param = {};
+        param.out_trade_no = $("#out_trade_no").val();
+        param.trade_no = $("#trade_no").val();
+
+        $.ajax({
+            url:"/alipay/v1/query",
+            type: 'post',
+            data: JSON.stringify(param),
+            dataType:"text",
+            headers : {
+                'Content-Type' : 'application/json;charset=utf-8'
+            },
+            success: function(res){
+
+                $("#body").html(res);
+
+            }
+        });
+    }
+</script>
 </body>
 </html>

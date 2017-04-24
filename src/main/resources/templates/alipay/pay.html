@@ -142,7 +142,10 @@
         <h1>支付宝手机网站支付接口快速通道(接口名：alipay.trade.wap.pay)</h1>
 </header>
 <div id="main">
-        <form name="alipayment" action="/alipay/v1/wap/pay" method="post" target="_blank">
+
+
+
+        <!--<form name="alipayment" class="layui-form form_container"  method="post"   target="_blank">-->
             <div id="body" style="clear:left">
 
 
@@ -176,14 +179,16 @@
                     <span class="one_line" ></span>
                     <dt></dt>
                     <dd id="btn-dd">
+
                         <span class="new-btn-login-sp">
-                            <button class="new-btn-login" type="submit" style="text-align:center;">确 认</button>
+                            <button class="new-btn-login" onclick="submitBtn();" style="text-align:center;">确 认</button>
                         </span>
+
                         <span class="note-help">如果您点击“确认”按钮，即表示您同意该次的执行操作。</span>
                     </dd>
                 </dl>
             </div>
-		</form>
+		<!--</form>-->
         <div id="foot">
 			<ul class="foot-ul">
 				<li>
@@ -193,6 +198,7 @@
 		</div>
 	</div>
 </body>
+<script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
 <script language="javascript">
 	function GetDateNow() {
 		var vNow = new Date();
@@ -210,5 +216,29 @@
         document.getElementById("desc").value = "购买测试商品0.01元";
 	}
 	GetDateNow();
+	
+	function  submitBtn() {
+
+	    var param = {};
+        param.out_trade_no = $("#out_trade_no").val();
+        param.subject = $("#subject").val();
+        param.total_amount = $("#total_amount").val();
+        param.desc = $("#desc").val();
+        param.product_code = $("#product_code").val();
+        $.ajax({
+            url:"/alipay/v1/wap/pay",
+            type: 'post',
+            data: JSON.stringify(param),
+            dataType:"text",
+            headers : {
+                'Content-Type' : 'application/json;charset=utf-8'
+            },
+            success: function(res){
+
+                $("#body").html(res);
+
+            }
+        });
+    }
 </script>
 </html>

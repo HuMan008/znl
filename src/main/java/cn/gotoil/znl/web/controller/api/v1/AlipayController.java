@@ -10,10 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -42,7 +39,7 @@ public class AlipayController {
     }
 
     @RequestMapping(value = "/wap/pay",method = RequestMethod.POST )
-    public void wap_pay(@ModelAttribute @Valid AlipayPayRequest alipayPayRequest
+    public void wap_pay(@RequestBody @Valid AlipayPayRequest alipayPayRequest
             ,BindingResult bindingResult
             ,HttpServletRequest request,HttpServletResponse response) throws IOException {
 
@@ -75,19 +72,26 @@ public class AlipayController {
         return  "alipay/query";
     }
 
-    @RequestMapping(value = "/query" ,method = RequestMethod.POST,produces = "application/json;charset=UTF-8")
-    @ResponseBody
-    public String  query(  @ModelAttribute @Valid AlipayQueryRequest alipayQueryRequest
+    @RequestMapping(value = "/query" ,method = RequestMethod.POST)
+//    @ResponseBody
+    public void  query(  @RequestBody @Valid AlipayQueryRequest alipayQueryRequest
             ,BindingResult bindingResult
             ,HttpServletRequest request,HttpServletResponse response ) throws IOException {
 
-
+        PrintWriter writer = response.getWriter();
         try {
 
-            return alipayService.query( alipayQueryRequest );
+            response.setContentType("application/json;charset=UTF-8");
+            writer.write( alipayService.query( alipayQueryRequest ) );
+            writer.flush();
+
         } catch (AlipayApiException e) {
             e.printStackTrace();
-            return e.getMessage();
+
+            response.setContentType("application/json;charset=UTF-8");
+            writer.write( e.getMessage() );
+            writer.flush();
+
         }
 
 

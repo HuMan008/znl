@@ -15,8 +15,10 @@ public class Suyj1 {
         System.out.println(Long.MAX_VALUE);
     }
 
+
     @Test
     public void test02(){
-        System.out.println(URLEncoder.encode("http://fastweb.guotongshiyou.com/pay/dopay?trxamt=1"));
+
+
     }
 }

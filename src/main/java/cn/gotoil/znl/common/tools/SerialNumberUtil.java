@@ -34,7 +34,6 @@ public class SerialNumberUtil {
         DecimalFormat decimalFormat = new DecimalFormat(bd.toString());
 
         return decimalFormat.format(number);
-
     }
 
     public enum NumberTypeEnum {

@@ -48,12 +48,8 @@ public class ObjectHelper extends cn.gotoil.bill.tools.ObjectHelper {
         return obj;
     }
 
-    public static Object mapToObject(String str, Class<?> beanClass) throws Exception {
-        Map<String,Object> map =    introspect(str);
-        return mapToObject(map,beanClass);
-    }
 
-    /**
+     /**
      * 通联J黑烦，返回的字符串就是这种类似request请求字符串
      * 如：payDatetime=20170411164636&userName=&credentialsType=&pan=&txOrgId=&ext1=%3CUSER%3E170410792118546%3C%2FUSER%3E&payAmount=1&returnDatetime
      * =20170420185415&credentialsNo=&issuerId=&signMsg=45BAEDDB16EB2665D69F0EB9FC69544F&payType=0&language=1&errorCode=&merchantId=008500189990304

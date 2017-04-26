@@ -1,7 +1,8 @@
 package cn.gotoil.znl.web.controller.api.v1;
 
-import cn.gotoil.bill.exception.BillError;
 import cn.gotoil.bill.exception.BillException;
+import cn.gotoil.bill.web.annotation.Authentication;
+import cn.gotoil.bill.web.interceptor.authentication.AuthenticationType;
 import cn.gotoil.znl.classes.OrderHelper;
 import cn.gotoil.znl.common.tools.ObjectHelper;
 import cn.gotoil.znl.common.tools.date.DateUtils;
@@ -24,7 +25,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -43,7 +43,7 @@ import java.util.TreeMap;
 /**
  * Created by Suyj <suyajiang@gotoil.cn> on 2017/4/7.10:48
  */
-@Controller
+@RestController
 @Api(value = "通联支付", description = "通联支付")
 public class UnionController extends BaseController {
 
@@ -56,30 +56,56 @@ public class UnionController extends BaseController {
     @Autowired
     private SysConfig sysConfig;
 
+     @RequestMapping(value = "getWxCode")
+    public Object wechatLogin(){
+
+        String url = unionService.getWechatGrantUrl();
+//          redirectView = new RedirectView(url);
+         return   "redirect:"+url;
+    }
+
+
+    @RequestMapping(value = "towechatpay")
+    @Authentication(authenticationType = AuthenticationType.None)
+    public Object toPay(@RequestParam @NotNull String code){
+        //先登录微信
+
+        WxPayRequest wxOrder = new WxPayRequest();
+        ModelAndView modelAndView = new ModelAndView("union/wxorder");
+        wxOrder.setAuthCode(code);
+        modelAndView.addObject("wxOrder",wxOrder)  ;
+        modelAndView.addObject("url","/pay/dopay");
+        return modelAndView;
+    }
+
+
+
+
     /**
      * 微信支付
      *
-     * @param code
      * @param wxPayRequest
      * @param bindingResult
      * @param httpServletRequest
      * @return
      * @throws Exception
      */
-    @RequestMapping("dopay")
-    public Object pay(@RequestParam @NotNull String code,
-                      @ModelAttribute @Valid WxPayRequest wxPayRequest,
+    @RequestMapping(value = "dopay",method = RequestMethod.POST)
+    @Authentication(authenticationType = AuthenticationType.None)
+    public Object pay(
+            @Valid WxPayRequest wxPayRequest,
                       BindingResult bindingResult,
                       HttpServletRequest httpServletRequest) throws Exception {
 
-        Map<String, Object> wxSessionMap = unionService.getWxSession(code);
+
+        Map<String, Object> wxSessionMap = unionService.getWxSession(wxPayRequest.getAuthCode());
         if (wxSessionMap == null || wxSessionMap.isEmpty()) {
 //            new WebException(WebExceptionEnum.NoSupportWechatCode);
             return new BillException(UnionError.WxCodeNoSupport);
         }
         //获取异常
         if (wxSessionMap.containsKey("errcode")) {
-            return new BillException((BillError) new UnionException(3101, wxSessionMap.get("errcode").toString()));
+            return  new UnionException(3101, wxSessionMap.get("errcode").toString());
         }
         String wxOpenId = (String) wxSessionMap.get("openid");
 //        String wxOpenId = "oQxUFuCHo8J0HeYa-20oK-MGEYGc"   ;
@@ -108,7 +134,7 @@ public class UnionController extends BaseController {
 
     }
 
-
+    @Authentication(authenticationType = AuthenticationType.None)
     @RequestMapping("wxpaynotify")
     public void wxpaynotify(HttpServletRequest request, HttpServletResponse response) throws Exception {
         logger.info("------------------------------------------------接收到通知-------------");
@@ -167,7 +193,7 @@ public class UnionController extends BaseController {
     }
 
 
-    @RequestMapping(value = "ordersubmit", method = RequestMethod.POST)
+    @RequestMapping(value = "ordersubmit", method = {RequestMethod.GET,RequestMethod.POST})
     public Object orderSubmit(@ModelAttribute @Valid OrderSubmitRequest orderSubmitRequest, HttpServletRequest request, HttpServletResponse response,
                               Model model) throws
             Exception {
@@ -320,6 +346,10 @@ public class UnionController extends BaseController {
 
     @RequestMapping(value = "receiveurl")
     public String receiveUrl(HttpServletRequest request, HttpServletResponse response) {
+        //payDatetime=20170425141157&ext1=%3CUSER%3E170410792118546%3C%2FUSER%3E&payAmount=1&returnDatetime=20170425141157&issuerId=&signMsg=279F4B606DDA211C3A38AD1DC8856611&payType=0&language=1&errorCode=&merchantId=008500189990304&orderDatetime=20170425141137&version=v1.0&orderNo=55165606910763128377819704614762&ext2=&signType=0&orderAmount=1&paymentOrderId=201704251411392187&payResult=1
+        String str =request.getHeader("httpBody");
+//        ((BodyContentHttpServletRequestWrapper) request).getHttpBody()
+        Map<String,String>  map =  ObjectHelper.stringToMap(str)  ;
         logger.info("------------------通联支付异步通知------------------------");
         //通联支付异步通知
         System.out.println(request.getParameterMap().toString());

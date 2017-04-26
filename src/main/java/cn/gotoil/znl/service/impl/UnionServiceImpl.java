@@ -16,6 +16,7 @@ import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -168,6 +169,21 @@ public class UnionServiceImpl implements UnionService {
         return JSON.parseObject(res, Map.class);
     }
 
+    @Override
+    public String getWechatGrantUrl(){
+//        https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx30d2a05655df7746
+// &redirect_uri=http%3A%2F%2Ffastweb.guotongshiyou.com%2Fpay%2Fdopay?trxamt=1
+// &response_type=code&scope=snsapi_base&state=123&&connect_redirect=1#wechat_redirect
+        StringBuilder sb = new StringBuilder("https://open.weixin.qq.com/connect/oauth2/authorize");
+        sb.append("?appid=").append(weChatConfig.getAppId())
+                .append("&redirect_uri=").append(URLEncoder.encode(sysConfig.getFullServerHostAddress()+"/pay/dopay"))
+                .append("&response_type=code")
+                .append("&scope=snsapi_base")
+                .append("&connect_redirect=1")
+                .append("#wechat_redirect");
+        return sb.toString();
+    }
+
 
    /* @Override
     public Map<String, String> unionWxPay(long trxamt, String reqsn, String paytype, String body, String remark, String acct, String authcode,
@@ -184,7 +200,7 @@ public class UnionServiceImpl implements UnionService {
                                          String limit_pay*/) throws Exception {
         // limit_pay 暂时只对微信支付有效,仅支持no_credi
         return sybPayService.pay(wxPayRequest.getTrxamt(), wxPayRequest.getReqsn(), wxPayRequest.getPayType()
-                , wxPayRequest.getBody(), wxPayRequest.getRemark(), openId, wxPayRequest.getAuthCode(),
+                , wxPayRequest.getBody(), wxPayRequest.getRemark(), openId, "",
                 weChatConfig.getNotifyUrl(),
                 wxPayRequest.getLimitPay());
 

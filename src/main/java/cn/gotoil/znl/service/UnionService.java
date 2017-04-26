@@ -26,6 +26,8 @@ public interface UnionService {
     Map<String,String> unionWxPay(long trxamt, String reqsn, String paytype, String body, String remark, String acct, String authcode,
                                   String limit_pay) throws Exception;*/
 
+    String getWechatGrantUrl();
+
     Map<String,String> unionWxPay(WxPayRequest wxPayRequest, String openId
            /* long trxamt,String reqsn,String paytype,String body,String remark,String acct,String authcode,
                                          String limit_pay*/) throws Exception;

@@ -6,7 +6,7 @@
 ## 1.注册
 
 ### 请求方法
-`post`
+`post|get`
 ### 请求路径
 `/pay/ordersubmit`
 

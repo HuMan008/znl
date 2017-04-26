@@ -4,11 +4,13 @@
     <meta charset="UTF-8"/>
     <title>订单提交</title>
     <script>
-
+        function funSubmit(){
+            document.getElementById("orderform").submit();
+        }
 
     </script>
 </head>
-<body >
+<body onload="funSubmit()" >
 
       <form id="orderform" th:object="${unionOrder}" th:action="${url}" th:method="post">
 
@@ -43,8 +45,8 @@
           <input type="text" id="tradeNature" name="tradeNature"  th:value="*{tradeNature}" />
           <input type="text" id="signMsg" name="signMsg"  th:value="*{signMsg}" />
           <input type="text" id="customsExt" name="customsExt"  th:value="*{customsExt}" />
-
-          <input type="submit" />
+<!--
+          <input type="submit" />-->
 
       </form>
 

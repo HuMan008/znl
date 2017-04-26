@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html  xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <title>订单提交</title>
+    <script>
+
+
+    </script>
+</head>
+<body >
+
+      <form id="orderform" th:object="${wxOrder}" th:action="${url}" th:method="post" content="application/json" >
+          <br>
+          支付金额(分)：
+            <input type="text" id="trxamt" name="trxamt"  th:value="*{trxamt}" />
+          </br>
+          <br>收款方:
+            <input type="text" id="body" name="body"  th:value="*{body}" />
+          </br>
+          <br>备注：
+          <input type="text" id="remark" name="remark"  th:value="*{remark}" maxlength="50" />
+          </br>
+          <br>
+          <input type="text" id="authCode" name="authCode" th:value="*{authCode}"/>
+          </br>
+          <input type="submit"   />
+
+      </form>
+
+
+
+</body>
+</html>

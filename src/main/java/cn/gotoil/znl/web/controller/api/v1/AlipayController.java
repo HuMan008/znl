@@ -32,6 +32,9 @@ public class AlipayController {
     @Autowired
     private AlipayService alipayService;
 
+    @Autowired
+    private AlipayConfig alipayConfig;
+
     @RequestMapping(value = "/wap/pay",method = RequestMethod.GET)
     public String pay(Model model, HttpServletRequest request ) throws UnsupportedEncodingException {
 
@@ -131,7 +134,7 @@ public class AlipayController {
         //获取支付宝的通知返回参数，可参考技术文档中页面跳转同步通知参数列表(以上仅供参考)//
         //计算得出通知验证结果
         //boolean AlipaySignature.rsaCheckV1(Map<String, String> params, String publicKey, String charset, String sign_type)
-        boolean verify_result = AlipaySignature.rsaCheckV1(params, AlipayConfig.ALIPAY_PUBLIC_KEY, AlipayConfig.CHARSET, AlipayConfig.SIGNTYPE);
+        boolean verify_result = AlipaySignature.rsaCheckV1(params, alipayConfig.ALIPAY_PUBLIC_KEY, AlipayConfig.CHARSET, AlipayConfig.SIGNTYPE);
 
 //        jc.set("alipay_return_url", new Gson().toJson(params) );
 //        jc.set("alipay_return_url_res", verify_result+"" );
@@ -189,7 +192,7 @@ public class AlipayController {
         //获取支付宝的通知返回参数，可参考技术文档中页面跳转同步通知参数列表(以上仅供参考)//
         //计算得出通知验证结果
         //boolean AlipaySignature.rsaCheckV1(Map<String, String> params, String publicKey, String charset, String sign_type)
-        boolean verify_result = AlipaySignature.rsaCheckV1(params, AlipayConfig.ALIPAY_PUBLIC_KEY, AlipayConfig.CHARSET, AlipayConfig.SIGNTYPE);
+        boolean verify_result = AlipaySignature.rsaCheckV1(params, alipayConfig.ALIPAY_PUBLIC_KEY, AlipayConfig.CHARSET, AlipayConfig.SIGNTYPE);
 
 //        jc.set("alipay_notify_url", new Gson().toJson(params) );
 //        jc.set("alipay_notify_url_status", trade_status );

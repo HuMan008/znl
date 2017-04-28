@@ -6,19 +6,25 @@ package cn.gotoil.znl;
 
 
 
+        import cn.gotoil.znl.config.define.AlipayConfig;
         import org.springframework.boot.SpringApplication;
+        import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
         import org.springframework.boot.autoconfigure.SpringBootApplication;
+        import org.springframework.boot.autoconfigure.web.MultipartAutoConfiguration;
+        import org.springframework.boot.context.properties.EnableConfigurationProperties;
         import org.springframework.context.ApplicationContext;
         import org.springframework.context.annotation.ComponentScan;
         import org.springframework.scheduling.annotation.EnableAsync;
         import org.springframework.scheduling.annotation.EnableScheduling;
         import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+//@EnableAutoConfiguration(exclude = {MultipartAutoConfiguration.class})
 @SpringBootApplication
 @EnableScheduling
 @EnableTransactionManagement
 @EnableAsync
 @ComponentScan({"cn.gotoil.znl", "cn.gotoil.bill"})
+@EnableConfigurationProperties(AlipayConfig.class)
 public class Application {
 
     private static ApplicationContext applicationContext;

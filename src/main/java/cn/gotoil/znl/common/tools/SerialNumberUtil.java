@@ -1,15 +1,8 @@
 package cn.gotoil.znl.common.tools;
 
-import cn.gotoil.znl.model.domain.App;
-import cn.gotoil.znl.web.message.Combobox;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
-
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by wh on 2017/4/26.
@@ -22,18 +15,23 @@ public class SerialNumberUtil {
     private StringRedisTemplate stringRedisTemplate;
 
 
-    public   String  generateSerialNumber(NumberTypeEnum serialType,int length){
+    public  synchronized   String  generateSerialNumber(NumberTypeEnum serialType,int length){
 
         //
         long number = stringRedisTemplate.opsForValue().increment(serialType.getCode(),1);
 
-        StringBuilder bd = new StringBuilder("");
+        // FIXME: 2017/4/28 suyj
+        return String.format("%0"+length+"d",number)   ;
+
+/*        StringBuilder bd = new StringBuilder("");
         for(int i=0;i<length;i++){
             bd.append("0");
         }
         DecimalFormat decimalFormat = new DecimalFormat(bd.toString());
 
-        return decimalFormat.format(number);
+
+        return decimalFormat.format(number);*/
+
 
     }
 

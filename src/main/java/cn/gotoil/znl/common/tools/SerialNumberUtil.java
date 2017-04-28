@@ -1,8 +1,15 @@
 package cn.gotoil.znl.common.tools;
 
+import cn.gotoil.znl.model.domain.App;
+import cn.gotoil.znl.web.message.Combobox;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by wh on 2017/4/26.

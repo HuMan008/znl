@@ -10,7 +10,7 @@
 </head>
 <body >
 
-      <form id="orderform" th:object="${wxOrder}" th:action="${url}" th:method="post" content="application/json" >
+      <form id="orderform" th:object="${wxOrder}" th:action="${url}" th:method="post"  >
           <br>
           支付金额(分)：
             <input type="text" id="trxamt" name="trxamt"  th:value="*{trxamt}" />

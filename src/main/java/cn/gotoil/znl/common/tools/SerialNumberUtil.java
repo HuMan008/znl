@@ -22,18 +22,24 @@ public class SerialNumberUtil {
     private StringRedisTemplate stringRedisTemplate;
 
 
-    public   String  generateSerialNumber(NumberTypeEnum serialType,int length){
+    public  synchronized   String  generateSerialNumber(NumberTypeEnum serialType,int length){
 
         //
         long number = stringRedisTemplate.opsForValue().increment(serialType.getCode(),1);
 
-        StringBuilder bd = new StringBuilder("");
+        // FIXME: 2017/4/28 suyj
+        return String.format("%0"+length+"d",number)   ;
+
+/*        StringBuilder bd = new StringBuilder("");
         for(int i=0;i<length;i++){
             bd.append("0");
         }
         DecimalFormat decimalFormat = new DecimalFormat(bd.toString());
 
-        return decimalFormat.format(number);
+
+        return decimalFormat.format(number);*/
+
+
     }
 
     public enum NumberTypeEnum {
@@ -47,6 +53,7 @@ public class SerialNumberUtil {
 
         private final String code;
         private final String name;
+
 
         NumberTypeEnum(String code,String name){
             this.code = code;

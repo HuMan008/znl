@@ -49,20 +49,13 @@ public class UnionController extends BaseController {
 
     private Logger logger = LoggerFactory.getLogger(UnionController.class);
 
-
     @Autowired
     private UnionService unionService;
 
     @Autowired
     private SysConfig sysConfig;
 
-     @RequestMapping(value = "getWxCode")
-    public Object wechatLogin(){
 
-        String url = unionService.getWechatGrantUrl();
-//          redirectView = new RedirectView(url);
-         return   "redirect:"+url;
-    }
 
 
     @RequestMapping(value = "towechatpay")
@@ -138,16 +131,17 @@ public class UnionController extends BaseController {
     @RequestMapping("wxpaynotify")
     public void wxpaynotify(HttpServletRequest request, HttpServletResponse response) throws Exception {
         logger.info("------------------------------------------------接收到通知-------------");
-        System.out.println("接收到通知");
         request.setCharacterEncoding("gbk");//通知传输的编码为GBK
         response.setCharacterEncoding("gbk");
         TreeMap<String, String> params = SybUtil.getParams(request);//动态遍历获取所有收到的参数,此步非常关键,因为收银宝以后可能会加字段,动态获取可以兼容
         logger.info("参数+" + params.toString());
         try {
             boolean isSign = SybUtil.validSign(params, SybConstants.SYB_APPKEY);// 接受到推送通知,首先验签
-            System.out.println("验签结果:" + isSign);
             logger.info("验签结果" + isSign);
             //验签完毕进行业务处理
+            if(isSign){
+                unionService.processWechatNotify(params);
+            }
         } catch (Exception e) {//处理异常
             // TODO: handle exception
             e.printStackTrace();
@@ -192,7 +186,7 @@ public class UnionController extends BaseController {
         }
     }
 
-
+    @Authentication(authenticationType = AuthenticationType.None)
     @RequestMapping(value = "ordersubmit", method = {RequestMethod.GET,RequestMethod.POST})
     public Object orderSubmit(@ModelAttribute @Valid OrderSubmitRequest orderSubmitRequest, HttpServletRequest request, HttpServletResponse response,
                               Model model) throws
@@ -336,6 +330,7 @@ public class UnionController extends BaseController {
      * @return
      */
     @RequestMapping(value = "dopickup")
+    @Authentication(authenticationType = AuthenticationType.None)
     public String doPickup(PayResultResponse payResultResponse, HttpServletRequest request, HttpServletResponse response, Model model) {
         logger.info("------------------通联支付同步通知------------------------");
         //通联支付同步通知
@@ -345,15 +340,73 @@ public class UnionController extends BaseController {
     }
 
     @RequestMapping(value = "receiveurl")
-    public String receiveUrl(HttpServletRequest request, HttpServletResponse response) {
-        //payDatetime=20170425141157&ext1=%3CUSER%3E170410792118546%3C%2FUSER%3E&payAmount=1&returnDatetime=20170425141157&issuerId=&signMsg=279F4B606DDA211C3A38AD1DC8856611&payType=0&language=1&errorCode=&merchantId=008500189990304&orderDatetime=20170425141137&version=v1.0&orderNo=55165606910763128377819704614762&ext2=&signType=0&orderAmount=1&paymentOrderId=201704251411392187&payResult=1
-        String str =request.getHeader("httpBody");
-//        ((BodyContentHttpServletRequestWrapper) request).getHttpBody()
-        Map<String,String>  map =  ObjectHelper.stringToMap(str)  ;
+    @Authentication(authenticationType = AuthenticationType.None)
+    public String receiveUrl(PayResultResponse payResultResponse,HttpServletRequest request, HttpServletResponse response) throws Exception {
         logger.info("------------------通联支付异步通知------------------------");
-        //通联支付异步通知
-        System.out.println(request.getParameterMap().toString());
+        request.setCharacterEncoding("gbk");//通知传输的编码为GBK
+        response.setCharacterEncoding("gbk");
+        TreeMap<String, String> params = SybUtil.getParams(request);//动态遍历获取所有收到的参数,此步非常关键,因为收银宝以后可能会加字段,动态获取可以兼容
+        logger.info("参数+" + params.toString());
+        try {
+
+//            boolean isSign = SybUtil.validSign(params, SybConstants.SYB_APPKEY);// 接受到推送通知,首先验签
+           boolean isSign =params.get("signMsg")!=null &&   params.get("signMsg").toString().equals(payResultResponse.doSign(SybConstants.GateWayConsts.MERCHANTKEY));
+            logger.info("验签结果" + isSign);
+            //验签完毕进行业务处理
+            if(isSign){
+                unionService.processAllinpayNotify(payResultResponse);
+            }
+        } catch (Exception e) {//处理异常
+            // TODO: handle exception
+            e.printStackTrace();
+        } finally {//收到通知,返回success
+            response.getOutputStream().write("success".getBytes());
+            response.flushBuffer();
+        }
+
+
+
+
+
         return null;
+    }
+
+    @Authentication(authenticationType = AuthenticationType.None)
+    @RequestMapping("/sdk/paydata")
+    public Object payData(@Valid AppPayRequest appPayRequest,HttpServletRequest request,HttpServletResponse response )throws Exception{
+        if(StringUtils.isEmpty(appPayRequest.getOrderNo())){
+            appPayRequest.setOrderNo(OrderHelper.createOrder(request));
+        }
+        if(StringUtils.isEmpty(appPayRequest.getProductName())){
+            appPayRequest.setProductName(sysConfig.getDefaultProductName());
+        }
+        appPayRequest.doSign();
+        Map<String,String> map = ObjectHelper.introspectStringValueMapValueNotEmpty(appPayRequest) ;
+        return map;
+    }
+
+
+    @RequestMapping("sdk/receiveurl")
+    @Authentication(authenticationType = AuthenticationType.None)
+    public void skdNotify(PayResultResponse payResultResponse,HttpServletRequest request,HttpServletResponse response) throws Exception{
+       logger.info("-------SKD 异步通知---------------");System.out.println(payResultResponse.toString());
+        System.out.println("request :\t\n "+request.getParameterMap().toString());
+
+
+        request.setCharacterEncoding("gbk");//通知传输的编码为GBK
+        response.setCharacterEncoding("gbk");
+
+        TreeMap<String, String> params = SybUtil.getParams(request);//动态遍历获取所有收到的参数,此步非常关键,因为收银宝以后可能会加字段,动态获取可以兼容
+        logger.info("参数+" + params.toString());
+        boolean sisSign =params.get("signMsg")!=null &&   params.get("signMsg").toString().equals(payResultResponse.doSign(SybConstants.SDK.MERCHANTKEY));
+        System.out.println("苏亚江的验签结果："+sisSign);
+
+
+
+
+
+
+
     }
 
 

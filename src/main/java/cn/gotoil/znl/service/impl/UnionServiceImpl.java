@@ -2,24 +2,29 @@ package cn.gotoil.znl.service.impl;
 
 import cn.gotoil.znl.common.tools.ObjectHelper;
 import cn.gotoil.znl.common.tools.http.HttpConnectionUtil;
-import cn.gotoil.znl.common.tools.http.HttpUtil;
 import cn.gotoil.znl.common.union.SybPayService;
 import cn.gotoil.znl.config.property.SybConstants;
 import cn.gotoil.znl.config.property.SysConfig;
 import cn.gotoil.znl.config.property.WeChatConfig;
+import cn.gotoil.znl.model.domain.NotifyBean;
+import cn.gotoil.znl.model.enums.union.PayResult;
 import cn.gotoil.znl.service.UnionService;
 import cn.gotoil.znl.web.message.request.union.*;
 import cn.gotoil.znl.web.message.response.union.BatchOrderQueryResponse;
+import cn.gotoil.znl.web.message.response.union.PayResultResponse;
 import cn.gotoil.znl.web.message.response.union.UnionRegisterResponse;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.HashOperations;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -35,6 +40,9 @@ public class UnionServiceImpl implements UnionService {
     private SysConfig sysConfig;
 
     private SybPayService sybPayService = new SybPayService();
+
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
 
 
     /**
@@ -161,7 +169,7 @@ public class UnionServiceImpl implements UnionService {
         sb.append("&code=").append(wxJsCode);
         sb.append("&grant_type=").append(weChatConfig.getGrantType());
 
-        String res = HttpUtil.sendGet(weChatConfig.getSessionHost(), sb.toString());
+        String res = HttpConnectionUtil.sendGet(weChatConfig.getSessionHost(), sb.toString());
         if (res == null || res.equals("")) {
             return null;
         }
@@ -268,4 +276,59 @@ public class UnionServiceImpl implements UnionService {
     }
 
 
+    /**
+     * 微信支付回调业务逻辑处理
+     * @param params
+     */
+    @Override
+    public void processWechatNotify(TreeMap<String, String> params) throws Exception {
+
+        NotifyBean notifyBean =(NotifyBean)ObjectHelper.map2Object(params, NotifyBean.class);
+        String state = getNotifyKey(notifyBean.getAppid(),notifyBean.getChnltrxid());
+        //只有redis里和当前返回的回调为0000时不处理，其他都处理
+        if(PayResult.wx_PaySuccess.getCode().equals(notifyBean.getTrxstatus()) &&  PayResult.wx_PaySuccess.getCode().equals(state) ) {
+           // do nothing
+            System.out.println("------以前处理过，这次我什么都不做----------");
+        } else{
+            //业务处理  todo
+            System.out.println(notifyBean.toString());
+            storeNotifyKey(notifyBean.getAppid(),notifyBean.getChnltrxid(),notifyBean.getTrxstatus());
+        }
+
+
+
+    }
+
+
+    private String getNotifyKey(String appId,String chnltrxid) {
+        String redisKey = redisKey4Notify(appId);
+        HashOperations<String, String, String> hashOperations = stringRedisTemplate.opsForHash();
+        String state1 = hashOperations.get(redisKey, chnltrxid);
+
+        return state1;
+    }
+
+    private String storeNotifyKey(String appId,String chnltrxid,String state) {
+        String redisKey = redisKey4Notify(appId);
+        HashOperations<String, String, String> hashOperations = stringRedisTemplate.opsForHash();
+        hashOperations.put(redisKey,chnltrxid,state);
+        return state;
+    }
+
+    @Override
+    public void processAllinpayNotify(PayResultResponse payResultResponse) {
+        String state = getNotifyKey(payResultResponse.getPaymentOrderId(),payResultResponse.getOrderNo());
+        if(PayResult.allInPay_PaySuccess.getCode().equals(payResultResponse.getPayResult()) && PayResult.allInPay_PaySuccess.getCode().equals(state)  ){
+            
+        } else{
+            //// TODO: 2017/4/27  
+            System.out.println("处理通联异步通知"+ payResultResponse.toString());
+            storeNotifyKey(payResultResponse.getPaymentOrderId(),payResultResponse.getOrderNo(),payResultResponse.getPayResult());
+        }
+       
+    }
+
+    private String redisKey4Notify(String appId){
+        return "NOTIFY:"+appId;
+    }
 }

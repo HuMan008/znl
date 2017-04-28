@@ -3,7 +3,6 @@ package cn.gotoil.znl.web.interceptor;
 import cn.gotoil.bill.web.interceptor.authentication.hashcompare.HashcompareAuthenticationInterceptor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -23,28 +22,7 @@ public class AuthenticationInterceptor  extends HashcompareAuthenticationInterce
         if(!enableAuth)    {
             return true;
         }
-       // TODO: 2017/4/20
-        String uri = request.getRequestURI();
-        if(uri.startsWith("/web")){
-            return true;
-        }
-        super.preHandle(request,response,handler);
-     /*   if(StringUtils.isEmpty(ServletRequestHelper.appId())){
-            throw new WebException(ValidatorEnum.RequestNoAppId)  ;
-        }
-        if(StringUtils.isEmpty(ServletRequestHelper.sign())){
-            throw new WebException(ValidatorEnum.RequestNoSign)  ;
-        }
-        if(StringUtils.isEmpty(ServletRequestHelper.userAgent())){
-            throw new WebException(ValidatorEnum.RequestNoUserAgent);
-        }
-        if(!enableAuth){
-            return true;
-        }*/
-/*        AuthenticationInterceptorSignatureVerifier authenticationInterceptorSignatureVerifier = new AuthenticationInterceptorSignatureVerifier(request);
-        authenticationInterceptorSignatureVerifier.verify();*/
-
-        return true;
+        return super.preHandle(request,response,handler);
     }
 
     @Override

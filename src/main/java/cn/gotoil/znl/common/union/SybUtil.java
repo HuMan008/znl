@@ -101,7 +101,7 @@ public class SybUtil {
 		System.out.println("---------------"+sign);
 		return sign;
 	}
-	
+
 	 public static boolean validSign(TreeMap<String,String> param,String appkey) throws Exception{
 		 if(param!=null&&!param.isEmpty()){
 			 if(!param.containsKey("sign"))

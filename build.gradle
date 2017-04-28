@@ -49,7 +49,7 @@ dependencies {
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.4'
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-redis',version:'1.4.1.RELEASE'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-redis'
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-redis'
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-web'
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-test'

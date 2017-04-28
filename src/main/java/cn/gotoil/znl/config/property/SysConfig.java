@@ -12,14 +12,19 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties("sysconfig")
 @Setter
 @Getter
+
 public class SysConfig {
+
+
 
     private String runServerSchema    ;
     private String runServerHostName;
+     private String defaultProductName;
 
     public String getFullServerHostAddress(){
         return runServerSchema+runServerHostName;
     }
+
 
 
 }

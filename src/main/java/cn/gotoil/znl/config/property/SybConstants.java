@@ -63,7 +63,15 @@ public class SybConstants {
         public static String     URL_RECEIVEURL;       //通联支付异步通知
 
 
+
+
     }
+    public static class SDK{
+        public static String MERCHANTID ;
+        public static String MERCHANTKEY;
+        public static String URL_APPRECEIVEURL ;// 移动支付回调
+    }
+
 
 
 }

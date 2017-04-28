@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
@@ -46,6 +47,17 @@ public class ObjectHelper extends cn.gotoil.bill.tools.ObjectHelper {
         }
 
         return obj;
+    }
+
+
+    public static Object map2Object(Map<String,String> map ,Class<?> beanClass) throws Exception{
+        Object object = beanClass.newInstance();
+        for (String key : map.keySet()){
+            Field temFiels = beanClass.getDeclaredField(key);
+            temFiels.setAccessible(true);
+            temFiels.set(object, map.get(key));
+        }
+        return object;
     }
 
 

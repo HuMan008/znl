@@ -30,12 +30,10 @@ public class ConstantsInitializer {
     private String url_unionregister;
     @Value("${allinpay.gatewayconsts.url_ordersubmit}")
     private String url_ordersubmit;
-
     @Value("${allinpay.gatewayconsts.url_dopickup}")
     private String url_dopickup;
     @Value("${allinpay.gatewayconsts.url_receiveurl}")
     private String url_receiveurl ;
-
     @Value("${allinpay.gatewayconsts.url_orderquery}")
     private String url_orderquery;
     @Value("${allinpay.gatewayconsts.url_orderquerybatch}")
@@ -44,6 +42,17 @@ public class ConstantsInitializer {
     private String url_refund;
     @Value("${allinpay.gatewayconsts.url_refundstatus}")
     private String url_refundstatus;
+
+
+
+
+    @Value("${allinpay.sdk.url_appreceiveurl}")
+    private String url_appreceiveurl ;
+    @Value("${allinpay.sdk.merchantid}")
+    private String skdMerchantId;
+    @Value("${allinpay.sdk.merchantkey}")
+    private String sdkMerchantkey ;
+
 
     @PostConstruct
     public void initConstans(){
@@ -62,5 +71,10 @@ public class ConstantsInitializer {
         SybConstants.GateWayConsts.URL_REFUNDSTATUS=url_refundstatus;
         SybConstants.GateWayConsts.URL_DOPICKUP=url_dopickup;
         SybConstants.GateWayConsts.URL_RECEIVEURL = url_receiveurl;
+
+
+        SybConstants.SDK.URL_APPRECEIVEURL = url_appreceiveurl;
+        SybConstants.SDK.MERCHANTID = skdMerchantId;
+        SybConstants.SDK.MERCHANTKEY = sdkMerchantkey;
     }
 }

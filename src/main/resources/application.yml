@@ -106,4 +106,4 @@ bill:
   exceptBodyContentHttpServletRequestWrapperUrls:
     - "/pay/*"
     - "/upload"
-
+    - "/alipay/*"

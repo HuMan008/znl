@@ -48,7 +48,6 @@ public class SerialNumberUtil {
         private final String code;
         private final String name;
 
-
         NumberTypeEnum(String code,String name){
             this.code = code;
             this.name = name;

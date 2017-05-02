@@ -10,9 +10,10 @@ import org.springframework.stereotype.Controller;
 /**
  * Created by wh on 2017/4/12.
  */
-@ConfigurationProperties
+
 @Getter
 @Setter
+@Component
 public class AlipayConfig {
 
     // 商户appid

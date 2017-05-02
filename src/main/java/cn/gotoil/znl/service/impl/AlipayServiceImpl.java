@@ -15,6 +15,7 @@ import com.alipay.api.request.AlipayTradeQueryRequest;
 import com.alipay.api.request.AlipayTradeWapPayRequest;
 import com.alipay.api.response.AlipayTradeAppPayResponse;
 import com.alipay.api.response.AlipayTradeQueryResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -23,6 +24,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class AlipayServiceImpl implements AlipayService {
 
+    @Autowired
+    private AlipayConfig alipayConfig;
+
     /***
      * wap支付
      */
@@ -30,7 +34,7 @@ public class AlipayServiceImpl implements AlipayService {
         /**********************/
         // SDK 公共请求类，包含公共请求参数，以及封装了签名与验签，开发者无需关注签名与验签
         //调用RSA签名方式
-        AlipayClient client = new DefaultAlipayClient(AlipayConfig.URL, AlipayConfig.APPID, AlipayConfig.RSA_PRIVATE_KEY, AlipayConfig.FORMAT, AlipayConfig.CHARSET, AlipayConfig.ALIPAY_PUBLIC_KEY,AlipayConfig.SIGNTYPE);
+        AlipayClient client = new DefaultAlipayClient(AlipayConfig.URL, alipayConfig.APPID, alipayConfig.RSA_PRIVATE_KEY, AlipayConfig.FORMAT, AlipayConfig.CHARSET, alipayConfig.ALIPAY_PUBLIC_KEY,AlipayConfig.SIGNTYPE);
         AlipayTradeWapPayRequest alipay_request=new AlipayTradeWapPayRequest();
 
         // 封装请求支付信息
@@ -43,9 +47,9 @@ public class AlipayServiceImpl implements AlipayService {
         model.setProductCode(alipayPayRequest.getProduct_code());
         alipay_request.setBizModel(model);
         // 设置异步通知地址
-        alipay_request.setNotifyUrl(AlipayConfig.notify_url);
+        alipay_request.setNotifyUrl(alipayConfig.notify_url);
         // 设置同步地址
-        alipay_request.setReturnUrl(AlipayConfig.return_url);
+        alipay_request.setReturnUrl(alipayConfig.return_url);
 
 
         // form表单生产
@@ -61,7 +65,7 @@ public class AlipayServiceImpl implements AlipayService {
         //
         /**********************/
         // SDK 公共请求类，包含公共请求参数，以及封装了签名与验签，开发者无需关注签名与验签
-        AlipayClient client = new DefaultAlipayClient(AlipayConfig.URL, AlipayConfig.APPID, AlipayConfig.RSA_PRIVATE_KEY, AlipayConfig.FORMAT, AlipayConfig.CHARSET, AlipayConfig.ALIPAY_PUBLIC_KEY,AlipayConfig.SIGNTYPE);
+        AlipayClient client = new DefaultAlipayClient(AlipayConfig.URL, alipayConfig.APPID, alipayConfig.RSA_PRIVATE_KEY, AlipayConfig.FORMAT, AlipayConfig.CHARSET, alipayConfig.ALIPAY_PUBLIC_KEY,AlipayConfig.SIGNTYPE);
         AlipayTradeQueryRequest alipay_request = new AlipayTradeQueryRequest();
 
         AlipayTradeQueryModel model=new AlipayTradeQueryModel();
@@ -81,8 +85,8 @@ public class AlipayServiceImpl implements AlipayService {
     public  String  app_pay(AlipayPayRequest alipayPayRequest) throws AlipayApiException {
 
         //实例化客户端
-        AlipayClient alipayClient = new DefaultAlipayClient(AlipayConfig.URL , AlipayConfig.APPID, AlipayConfig.RSA_PRIVATE_KEY, AlipayConfig.FORMAT,
-                AlipayConfig.CHARSET, AlipayConfig.ALIPAY_PUBLIC_KEY, AlipayConfig.SIGNTYPE);
+        AlipayClient alipayClient = new DefaultAlipayClient(AlipayConfig.URL , alipayConfig.APPID, alipayConfig.RSA_PRIVATE_KEY, AlipayConfig.FORMAT,
+                AlipayConfig.CHARSET, alipayConfig.ALIPAY_PUBLIC_KEY, AlipayConfig.SIGNTYPE);
 
         //实例化具体API对应的request类,类名称和接口名称对应,当前调用接口名称：alipay.trade.app.pay
         AlipayTradeAppPayRequest request = new AlipayTradeAppPayRequest();
@@ -96,8 +100,8 @@ public class AlipayServiceImpl implements AlipayService {
         model.setTotalAmount(alipayPayRequest.getTotal_amount()+"");
         model.setProductCode( alipayPayRequest.getProduct_code() );
         request.setBizModel( model );
-        request.setNotifyUrl( AlipayConfig.notify_url );
-        request.setReturnUrl( AlipayConfig.return_url );
+        request.setNotifyUrl( alipayConfig.notify_url );
+        request.setReturnUrl( alipayConfig.return_url );
 
         //这里和普通的接口调用不同，使用的是sdkExecute
 

@@ -3,18 +3,20 @@
     通联网关下订单、支付、订单查询都需要是通联注册用户
 ```
 
-## 1.注册
+## 1.SDK注册
+
 
 ### 请求方法
 `get`
 ### 请求路径
-`/pay/unionregister?puId=XXX`
+`/pay/unionregister/{puid:^[0-9a-z]{1,32}$}`
 
-`/pay/unionregister`
+### 是否需要请求验证
+   `需要`
 
 ### 请求路径说明
-`XXX表示由第三方传过来的唯一ID；当不传递此参数时，由API服务器分配一个`
-`XXX长度限制为32个字符`
+`XXX表示由第三方传过来的唯一ID；当不传递此参数时，`
+`XXX长度限制为32个字符,有字母的话必须是小写`
 ### 响应
 
 ```
@@ -29,6 +31,9 @@
 | --- | --- | --- |--- |
 | userId | 通联用户ID | string | 根据partnerUserId生成或取得的通联用户id|
 | resultCode | 返回的代码 | string | 0000：成功；0006：已注册； |
-| partnerUserId | 生成依据 | string |  访问路径中puId值；如果访问路径中不包含这个则生成的；|
+| partnerUserId | 生成依据 | string |  访问路径中puId值；|
+
+## 2.网关注册
+
 
 

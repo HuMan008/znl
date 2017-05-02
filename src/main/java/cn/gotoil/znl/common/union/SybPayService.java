@@ -1,8 +1,5 @@
 package cn.gotoil.znl.common.union;
 
-/**
- * 通联微信、支付宝支付的时候才调这个
- */
 
 import cn.gotoil.znl.common.tools.http.HttpConnectionUtil;
 import cn.gotoil.znl.config.property.SybConstants;

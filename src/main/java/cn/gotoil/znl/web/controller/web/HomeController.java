@@ -1,5 +1,7 @@
 package cn.gotoil.znl.web.controller.web;
 
+import cn.gotoil.bill.web.annotation.Authentication;
+import cn.gotoil.bill.web.interceptor.authentication.AuthenticationType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,11 +16,13 @@ import javax.servlet.http.HttpServletRequest;
  */
 @Controller
 //@RequestMapping("/")
+@Authentication(authenticationType = AuthenticationType.None)
 public class HomeController {
 
 
 
     @RequestMapping(value = "/",method=RequestMethod.GET)
+
     public String home(Model model,HttpServletRequest httpServletRequest) {
 
         model.addAttribute("selectedItem", "index"  );

@@ -3,19 +3,19 @@ package cn.gotoil.znl.web.controller.api.v1;
 import cn.gotoil.bill.exception.BillException;
 import cn.gotoil.bill.web.annotation.Authentication;
 import cn.gotoil.bill.web.interceptor.authentication.AuthenticationType;
-import cn.gotoil.znl.classes.OrderHelper;
+import cn.gotoil.bill.web.message.BillApiResponse;
 import cn.gotoil.znl.common.tools.ObjectHelper;
 import cn.gotoil.znl.common.tools.date.DateUtils;
 import cn.gotoil.znl.common.union.SybUtil;
 import cn.gotoil.znl.config.property.SybConstants;
-import cn.gotoil.znl.config.property.SysConfig;
 import cn.gotoil.znl.exception.UnionError;
 import cn.gotoil.znl.exception.UnionException;
-import cn.gotoil.znl.exception.ZnlError;
 import cn.gotoil.znl.service.UnionService;
 import cn.gotoil.znl.web.controller.BaseController;
 import cn.gotoil.znl.web.message.request.union.*;
-import cn.gotoil.znl.web.message.response.union.*;
+import cn.gotoil.znl.web.message.response.union.OrderQueryResponse;
+import cn.gotoil.znl.web.message.response.union.PayResultResponse;
+import cn.gotoil.znl.web.message.response.union.WxPayInfoResponse;
 import com.alibaba.fastjson.JSONObject;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -23,7 +23,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.bouncycastle.util.encoders.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -34,11 +33,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import java.net.ConnectException;
 import java.util.Date;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.regex.Pattern;
 
 /**
  * Created by Suyj <suyajiang@gotoil.cn> on 2017/4/7.10:48
@@ -51,11 +49,6 @@ public class UnionController extends BaseController {
 
     @Autowired
     private UnionService unionService;
-
-    @Autowired
-    private SysConfig sysConfig;
-
-
 
 
     @RequestMapping(value = "towechatpay")
@@ -136,7 +129,7 @@ public class UnionController extends BaseController {
         TreeMap<String, String> params = SybUtil.getParams(request);//动态遍历获取所有收到的参数,此步非常关键,因为收银宝以后可能会加字段,动态获取可以兼容
         logger.info("参数+" + params.toString());
         try {
-            boolean isSign = SybUtil.validSign(params, SybConstants.SYB_APPKEY);// 接受到推送通知,首先验签
+            boolean isSign = SybUtil.validSign4AllInPayWechatRequest(params, SybConstants.SYB_APPKEY);// 接受到推送通知,首先验签
             logger.info("验签结果" + isSign);
             //验签完毕进行业务处理
             if(isSign){
@@ -155,12 +148,23 @@ public class UnionController extends BaseController {
      * 通联用户注册
      */
     @ResponseBody
-    @RequestMapping(value = "unionregister", method = RequestMethod.GET)
+    @RequestMapping(value = "unionregister", method = RequestMethod.POST)
     @ApiOperation(value = "通联用户注册")
-    public Object unionRegisterAction(@RequestParam(required = false) @Size(max = 32, message = "请传入正确的参数") String puid, HttpServletRequest request,
+    public Object unionRegisterAction(@RequestParam(required = false) String puid, HttpServletRequest request,
                                       HttpServletResponse
                                               response) {
-        UnionRegisterRequest registerRequest = new UnionRegisterRequest();
+        Pattern pattern = Pattern.compile("^[0-9a-z]{1,32}");
+        if(pattern.matcher(puid).matches()) {
+            try {
+                return  unionService.unionRegister(puid)  ;
+            } catch (Exception e){
+                return new BillApiResponse(e);
+            }
+        }else {
+            return UnionError.puidError ;
+        }
+
+        /*UnionRegisterRequest registerRequest = new UnionRegisterRequest();
         UnionRegisterRespon4API unionRegisterRespon4API = new UnionRegisterRespon4API();
         unionRegisterRespon4API.setPartnerUserId(puid);
 
@@ -183,8 +187,26 @@ public class UnionController extends BaseController {
         } catch (Exception e1) {
             e1.printStackTrace();
             return new BillException(4000, e1.getMessage());
+        }   */
+    }
+
+
+    /**
+     * 通联用户注册
+     * @param puid
+     * @return
+     */
+    @RequestMapping(value = "unionregister/{puid:^[0-9a-z]{1,32}$}", method = RequestMethod.GET)
+    @Authentication(authenticationType = AuthenticationType.Signature)
+    public Object unionRegister4SdkAction(@PathVariable String puid) {
+
+        try {
+            return  unionService.unionRegister(puid)  ;
+        } catch (Exception e){
+            return new BillApiResponse(e);
         }
     }
+
 
     @Authentication(authenticationType = AuthenticationType.None)
     @RequestMapping(value = "ordersubmit", method = {RequestMethod.GET,RequestMethod.POST})
@@ -202,7 +224,7 @@ public class UnionController extends BaseController {
             orderSubmitRequest.setProductName("国通石油");
         }
         if (StringUtils.isEmpty(orderSubmitRequest.getOrderNo())) {
-            String orderNo = OrderHelper.createOrder(request);
+            String orderNo = orderHelper.createOrder(request);
             if (StringUtils.isEmpty(orderNo)) {
                 return UnionError.AppIdError;
             }
@@ -322,7 +344,7 @@ public class UnionController extends BaseController {
 
 
     /**
-     * 同步支付结果
+     * 通联支付同步支付结果
      *
      * @param request
      * @param response
@@ -339,6 +361,15 @@ public class UnionController extends BaseController {
         return null;
     }
 
+
+    /**
+     * 通联支付异步通知
+     * @param payResultResponse
+     * @param request
+     * @param response
+     * @return
+     * @throws Exception
+     */
     @RequestMapping(value = "receiveurl")
     @Authentication(authenticationType = AuthenticationType.None)
     public String receiveUrl(PayResultResponse payResultResponse,HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -349,7 +380,7 @@ public class UnionController extends BaseController {
         logger.info("参数+" + params.toString());
         try {
 
-//            boolean isSign = SybUtil.validSign(params, SybConstants.SYB_APPKEY);// 接受到推送通知,首先验签
+//            boolean isSign = SybUtil.validSign4AllInPayWechatRequest(params, SybConstants.SYB_APPKEY);// 接受到推送通知,首先验签
            boolean isSign =params.get("signMsg")!=null &&   params.get("signMsg").toString().equals(payResultResponse.doSign(SybConstants.GateWayConsts.MERCHANTKEY));
             logger.info("验签结果" + isSign);
             //验签完毕进行业务处理
@@ -371,11 +402,20 @@ public class UnionController extends BaseController {
         return null;
     }
 
-    @Authentication(authenticationType = AuthenticationType.None)
+
+    /**
+     * SDK支付需要的串
+     * @param appPayRequest
+     * @param request
+     * @param response
+     * @return
+     * @throws Exception
+     */
+    @Authentication(authenticationType = AuthenticationType.Signature)
     @RequestMapping("/sdk/paydata")
-    public Object payData(@Valid AppPayRequest appPayRequest,HttpServletRequest request,HttpServletResponse response )throws Exception{
+    public Object payDataAction(@Valid AppPayRequest appPayRequest,HttpServletRequest request,HttpServletResponse response )throws Exception{
         if(StringUtils.isEmpty(appPayRequest.getOrderNo())){
-            appPayRequest.setOrderNo(OrderHelper.createOrder(request));
+            appPayRequest.setOrderNo(orderHelper.createOrder(request));
         }
         if(StringUtils.isEmpty(appPayRequest.getProductName())){
             appPayRequest.setProductName(sysConfig.getDefaultProductName());
@@ -386,6 +426,13 @@ public class UnionController extends BaseController {
     }
 
 
+    /**
+     * SDK的异步通知
+     * @param payResultResponse
+     * @param request
+     * @param response
+     * @throws Exception
+     */
     @RequestMapping("sdk/receiveurl")
     @Authentication(authenticationType = AuthenticationType.None)
     public void skdNotify(PayResultResponse payResultResponse,HttpServletRequest request,HttpServletResponse response) throws Exception{
@@ -400,12 +447,6 @@ public class UnionController extends BaseController {
         logger.info("参数+" + params.toString());
         boolean sisSign =params.get("signMsg")!=null &&   params.get("signMsg").toString().equals(payResultResponse.doSign(SybConstants.SDK.MERCHANTKEY));
         System.out.println("苏亚江的验签结果："+sisSign);
-
-
-
-
-
-
 
     }
 

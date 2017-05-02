@@ -1,5 +1,7 @@
 package cn.gotoil.znl.web.controller.web;
 
+import cn.gotoil.bill.web.annotation.Authentication;
+import cn.gotoil.bill.web.interceptor.authentication.AuthenticationType;
 import cn.gotoil.znl.common.tools.RetUtil;
 import cn.gotoil.znl.config.define.PageInfo;
 import cn.gotoil.znl.model.domain.App;
@@ -18,6 +20,7 @@ import java.io.UnsupportedEncodingException;
  */
 @Controller
 @RequestMapping("/web/app")
+@Authentication(authenticationType = AuthenticationType.None)
 public class AppController {
 
     @Autowired

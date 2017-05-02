@@ -33,19 +33,7 @@ public class SwaggerConfig {
         return docket;
     }
 
-    /*private SpringSwaggerConfig springSwaggerConfig;
 
-    @Autowired
-    public void setSpringSwaggerConfig(SpringSwaggerConfig springSwaggerConfig) {
-        this.springSwaggerConfig = springSwaggerConfig;
-    }
-
-    public SwaggerSpringMvcPlugin customImplementation() {
-        return new SwaggerSpringMvcPlugin(this.springSwaggerConfig)
-                .apiInfo(new ApiInfo("api", "desc", null, null, null, null))
-                .useDefaultResponseMessages(false)
-                .includePatterns("/test*//*");
-    }*/
 
 
 }

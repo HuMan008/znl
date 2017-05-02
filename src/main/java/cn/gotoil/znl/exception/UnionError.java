@@ -12,6 +12,9 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 public enum  UnionError implements BillError {
+
+    puidError(3000,"puid格式不正确，长度32位，只能包含数字和小写字母")    ,
+
     AppIdError(3001,"请求头中不包含AppId 或者AppId长度限制在0-8位;并且必须已字母或者数字开头，并且不能包含特殊字符")  ,
 
     OrderAmonutError(3002,"订单金额不能小于1")   ,

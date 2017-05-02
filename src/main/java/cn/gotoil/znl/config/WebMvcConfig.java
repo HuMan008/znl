@@ -1,7 +1,7 @@
 package cn.gotoil.znl.config;
 
 
-import cn.gotoil.znl.web.interceptor.AuthenticationInterceptor;
+import cn.gotoil.bill.web.interceptor.authentication.hashcompare.HashcompareAuthenticationInterceptor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.slf4j.Logger;
@@ -13,7 +13,6 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import java.text.SimpleDateFormat;
@@ -25,18 +24,18 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 
     private static Logger logger = LoggerFactory.getLogger(WebMvcConfig.class);
 
-    @Override
+   /* @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         //
         registry.addResourceHandler("swagger-ui.html")
                 .addResourceLocations("classpath:/META-INF/resources/");
 
-        registry.addResourceHandler("/webjars/**")
+        registry.addResourceHandler("/webjars*//**")
                 .addResourceLocations("classpath:/META-INF/resources/webjars/");
 
-        registry.addResourceHandler("/public/**").addResourceLocations("classpath:/public/");
+        registry.addResourceHandler("/public*//**").addResourceLocations("classpath:/public/");
 //        super.addResourceHandlers(registry);
-    }
+    }*/
 
     @Override
     public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
@@ -65,12 +64,13 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 
 
     @Bean
-    public AuthenticationInterceptor authenticationInterceptor() {
-        return new AuthenticationInterceptor();
+    public HashcompareAuthenticationInterceptor authenticationInterceptor() {
+        return new HashcompareAuthenticationInterceptor();
     }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(authenticationInterceptor());
     }
+
 }

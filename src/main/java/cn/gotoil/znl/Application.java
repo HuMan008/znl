@@ -5,20 +5,18 @@ package cn.gotoil.znl;
  */
 
 
-
-        import org.springframework.boot.SpringApplication;
-        import org.springframework.boot.autoconfigure.SpringBootApplication;
-        import org.springframework.context.ApplicationContext;
-        import org.springframework.context.annotation.ComponentScan;
-        import org.springframework.scheduling.annotation.EnableAsync;
-        import org.springframework.scheduling.annotation.EnableScheduling;
-        import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @SpringBootApplication
 @EnableScheduling
 @EnableTransactionManagement
-@EnableAsync
-@ComponentScan({"cn.gotoil.znl", "cn.gotoil.bill"})
+@ComponentScan("cn.gotoil")
+
 public class Application {
 
     private static ApplicationContext applicationContext;
@@ -26,6 +24,9 @@ public class Application {
 
     public static void main(String[] args) {
         applicationContext = SpringApplication.run(Application.class, args);
+        System.out.println("----------------------------------");
+        System.out.println(applicationContext);
+        System.out.println("----------------------------------");
 //        issueServer.checkHaveLose(GameType.CQSSC.getCode(),GameType.CQSSC.getName(),200);
     }
 

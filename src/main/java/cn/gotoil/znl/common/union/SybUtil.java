@@ -102,7 +102,14 @@ public class SybUtil {
 		return sign;
 	}
 
-	 public static boolean validSign(TreeMap<String,String> param,String appkey) throws Exception{
+	/**
+	 * 验签微信请求
+	 * @param param
+	 * @param appkey
+	 * @return
+	 * @throws Exception
+     */
+	 public static boolean validSign4AllInPayWechatRequest(TreeMap<String,String> param, String appkey) throws Exception{
 		 if(param!=null&&!param.isEmpty()){
 			 if(!param.containsKey("sign"))
 	    			return false;

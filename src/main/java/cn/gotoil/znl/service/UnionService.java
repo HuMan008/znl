@@ -13,6 +13,8 @@ import java.util.TreeMap;
 public interface UnionService {
     UnionRegisterResponse unionRegister(UnionRegisterRequest registerRequest) throws Exception;
 
+    Object unionRegister(String puid)  throws Exception;
+
     String orderSubmit(OrderSubmitRequest orderSubmitRequest) throws Exception;
 
     String orderQuery(OrderQueryRequest orderQueryRequest) throws Exception;

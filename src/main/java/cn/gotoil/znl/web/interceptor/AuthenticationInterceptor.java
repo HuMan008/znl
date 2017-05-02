@@ -2,7 +2,6 @@ package cn.gotoil.znl.web.interceptor;
 
 import cn.gotoil.bill.web.interceptor.authentication.hashcompare.HashcompareAuthenticationInterceptor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -11,7 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * Created by Suyj <suyajiang@gotoil.cn> on 2017/4/19.10:22
  */
-@Component
+//@Component
 public class AuthenticationInterceptor  extends HashcompareAuthenticationInterceptor {
 
     @Value(value = "${enableAuth}")

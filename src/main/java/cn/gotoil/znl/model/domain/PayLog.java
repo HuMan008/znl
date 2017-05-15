@@ -54,8 +54,8 @@ public class PayLog extends  BaseEntity    {
     /**
      * 支付方式
      */
-    @Column( name="paytype" , nullable = false )
-    private Byte payType;
+    @Column( name="paytype",length = 15, nullable = false )
+    private String payType;
 
     /**
      * 支付金额

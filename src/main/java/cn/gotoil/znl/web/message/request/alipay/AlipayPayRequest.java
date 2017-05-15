@@ -52,6 +52,11 @@ public class AlipayPayRequest {
      * **/
     private String timeout_express;
 
+    /***
+     *  额外配置 参数
+     * **/
+    private String extendParams;
+
 
     public AlipayPayRequest() {
         this.timeout_express = "2m";

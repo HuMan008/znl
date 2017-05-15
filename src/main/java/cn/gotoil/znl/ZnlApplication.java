@@ -9,27 +9,34 @@ package cn.gotoil.znl;
         import org.springframework.boot.SpringApplication;
         import org.springframework.boot.autoconfigure.SpringBootApplication;
         import org.springframework.context.ApplicationContext;
+        import org.springframework.context.annotation.Bean;
         import org.springframework.context.annotation.ComponentScan;
-        import org.springframework.scheduling.annotation.EnableAsync;
         import org.springframework.scheduling.annotation.EnableScheduling;
         import org.springframework.transaction.annotation.EnableTransactionManagement;
+        import org.springframework.web.client.RestTemplate;
 
 @SpringBootApplication
 @EnableScheduling
 @EnableTransactionManagement
 @ComponentScan("cn.gotoil")
-
-public class Application {
+public class ZnlApplication {
 
     private static ApplicationContext applicationContext;
 
 
     public static void main(String[] args) {
-        applicationContext = SpringApplication.run(Application.class, args);
-        System.out.println("----------------------------------");
-        System.out.println(applicationContext);
-        System.out.println("----------------------------------");
+
+        SpringApplication.run(ZnlApplication.class, args);
+
+//        applicationContext = SpringApplication.run(ZnlApplication.class, args);
+
 //        issueServer.checkHaveLose(GameType.CQSSC.getCode(),GameType.CQSSC.getName(),200);
+    }
+
+    @Bean
+//    @LoadBalanced
+    protected RestTemplate restTemplate() {
+        return new RestTemplate();
     }
 
 

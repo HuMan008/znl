@@ -104,7 +104,10 @@ bill:
   keyOfHashCompareAuthenticationProviderClass: cn.gotoil.znl.classes.HashCompareAuthenticationKeyProvider
   keyOfHashCompareAuthenticationProviderMethod: key
   exceptBodyContentHttpServletRequestWrapperUrls:
+    - "/public/*"
+    - "/error/*"
     - "/pay/*"
+    - "/web/*"
     - "/upload"
     - "/alipay/*"
     - "/web*"

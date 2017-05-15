@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org"
+>
 	<head>
 	<title>支付宝手机网站支付接口</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -149,32 +150,32 @@
             <div id="body" style="clear:left">
 
 
-
+                <input type="hidden" id="orderVirtualID" th:value="${msg.orderVirtualID}" />
                 <dl class="content">
                     <dt>销售产品码：</dt>
                     <dd>
-                        <input id="product_code" name="product_code" value="" />
+                        <input id="product_code" name="product_code" th:value="${msg.product_code}" readonly="readonly" />
                     </dd>
                     <span class="one_line" ></span>
 
                     <dt>商户订单号：</dt>
                     <dd>
-                        <input id="out_trade_no" name="out_trade_no" />
+                        <input id="out_trade_no" name="out_trade_no" th:value="${msg.out_trade_no}" readonly="readonly" />
                     </dd>
                     <span class="one_line" ></span>
                     <dt>订单名称：</dt>
                     <dd>
-                        <input id="subject" name="subject" />
+                        <input id="subject" name="subject" th:value="${msg.subject}" readonly="readonly" />
                     </dd>
                     <span class="one_line" ></span>
                     <dt>付款金额：</dt>
                     <dd>
-                        <input id="total_amount" name="total_amount" />
+                        <input id="total_amount" name="total_amount" th:value="${msg.total_amount}" readonly="readonly" />
                     </dd>
                     <span class="one_line" ></span>
                     <dt>商品描述：</dt>
                     <dd>
-                        <input id="desc" name="desc" />
+                        <input id="desc" name="desc" th:value="${msg.desc}" readonly="readonly" />
                     </dd>
                     <span class="one_line" ></span>
                     <dt></dt>
@@ -221,6 +222,7 @@
 
 	    var param = {};
         param.out_trade_no = $("#out_trade_no").val();
+        param.orderVirtualID = $("#orderVirtualID").val();
         param.subject = $("#subject").val();
         param.total_amount = $("#total_amount").val();
         param.desc = $("#desc").val();

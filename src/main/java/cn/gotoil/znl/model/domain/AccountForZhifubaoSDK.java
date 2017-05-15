@@ -44,13 +44,13 @@ public class AccountForZhifubaoSDK extends  BaseEntity {
     /**
      * 公钥
      */
-    @Column( name="public_key",columnDefinition = "char(400)  " ,nullable = false )
+    @Column( name="public_key",columnDefinition = "text(400)  " ,nullable = false )
     private String publicKey;
 
     /**
      * 私钥
      */
-    @Column( name="private_key",columnDefinition = "char(2000)  " ,nullable = false )
+    @Column( name="private_key",columnDefinition = "text(2000)  " ,nullable = false )
     private String privateKey;
 
     /**

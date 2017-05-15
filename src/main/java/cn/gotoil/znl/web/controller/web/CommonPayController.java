@@ -3,7 +3,10 @@ package cn.gotoil.znl.web.controller.web;
 import cn.gotoil.bill.web.annotation.Authentication;
 import cn.gotoil.bill.web.interceptor.authentication.AuthenticationType;
 import cn.gotoil.znl.model.domain.App;
+import cn.gotoil.znl.service.CommonPayService;
+import cn.gotoil.znl.web.message.request.PayRequest;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,16 +23,15 @@ import javax.servlet.http.HttpServletRequest;
 @Authentication(authenticationType = AuthenticationType.None)
 public class CommonPayController {
 
+    @Autowired
+    private CommonPayService  commonPayService;
 
-    @RequestMapping(value = "/edit",method = RequestMethod.GET)
-    public String index(Model model, HttpServletRequest request,
-                        @RequestParam(value = "id",required = false) String recordID ){
+    @RequestMapping(value = "/pay" )
+    public void index(Model model, HttpServletRequest request,
+                        PayRequest payRequest ){
 
+        commonPayService.pay(payRequest);
 
-        model.addAttribute("selectedItem", "appManage"  );
-        model.addAttribute("app", app );
-        model.addAttribute("stateList", App.StateEnum.getEnumList() );
-        return  "app/form";
     }
 
 }

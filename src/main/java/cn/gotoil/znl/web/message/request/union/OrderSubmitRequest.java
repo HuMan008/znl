@@ -27,9 +27,9 @@ public class OrderSubmitRequest {
     @Size(max = 2)
     private String inputCharset = "1";// 字符集 2 不可空 默认填 1；1 代表 UTF-8、2 代表 GBK、3 代表 GB2312；
     @Size(max = 100)
-    private String pickupUrl; // 付款客户的取货url 地址 100 不为空 客户的取货地址
+    private String pickupUrl= SybConstants.GateWayConsts.URL_DOPICKUP; // 付款客户的取货url 地址 100 不为空 客户的取货地址
     @Size(max = 100)
-    private String receiveUrl;// 服务器接受支 付结果的后台 地址 100 不为空 通知商户网站支付结果的 url 地址
+    private String receiveUrl=SybConstants.GateWayConsts.URL_RECEIVEURL;// 服务器接受支 付结果的后台 地址 100 不为空 通知商户网站支付结果的 url 地址
     @Size(max = 10)
     private String version = "v1.0";//网关接收支付 请求接口版本 10 不可空 固定填 v1.0
     @Size(max = 2)

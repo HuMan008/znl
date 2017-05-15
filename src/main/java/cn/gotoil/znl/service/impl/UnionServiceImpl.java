@@ -72,9 +72,9 @@ public class UnionServiceImpl implements UnionService {
         http.init();
         byte[] bys = http.postParams(ObjectHelper.introspectStringValueMap(registerRequest), true);
         String result = new String(bys, "UTF-8");
-        return JSONObject.toJSONString(ObjectHelper.stringToMap(result) ) ;
-       /* UnionRegisterResponse registerResponse = JSONObject.parseObject(result, UnionRegisterResponse.class);
-        return registerResponse;*/
+//        return JSONObject.toJSONString(ObjectHelper.stringToMap(result) ) ;
+        UnionRegisterResponse registerResponse = JSONObject.parseObject(result, UnionRegisterResponse.class);
+        return registerResponse;
 
        /*
         Pattern pattern = Pattern.compile("^[0-9a-z]{1,32}");

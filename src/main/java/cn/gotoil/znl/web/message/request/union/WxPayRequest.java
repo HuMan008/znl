@@ -20,7 +20,7 @@ public class WxPayRequest  {
     @NotNull(message = "支付金额不能为空")
     @Min(value = 1,message = "支付金额最小值1")
     @Max(value = 999999999999999L,message = "支付金额在1-15位数字")
-    private long trxamt;
+    private long trxamt=1;
 
     @NotNull(message="支付方式不能为空")
     @Size(max = 3,message = "支付方式最大长度不能超过3位")

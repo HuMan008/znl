@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html  xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <title>订单信息</title>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" type="text/javascript"></script>
+
+
+    <script type="application/javascript">
+        /*<![CDATA[*/
+        $.ready(function(){
+            alert(1);
+        });
+
+       function  createUnionId(){
+           var puid = $("#unionId").val()  ;
+           if(puid.length==0){
+               alert("请在通联用户id输入框中输入第三方用户id");
+               return
+           }
+           $.post("/pay/web/unionregister",{puid:puid},function(data
+           ){
+
+              if(data.status==0 && (data.data.resultCode=="0006"||data.data.resultCode=="0000")){
+                  $("#unionId").val(data.data.userId)  ;
+              }
+           })
+       }
+
+        function  pay1(){
+            var param ={
+                unionUserId:  $("#unionId").val(),
+                orderAmount: $("#orderAmount").val()  ,
+                orderNo: $("#orderNo").val() ,
+                productName:$("#productName").val()
+            }
+            $.ajax({
+                type: "POST",
+                url: "/pay/web/ordersubmit",
+                data: param,
+                dataType:"html",
+                success: function(data){
+                   $("#d1").html(data);
+                }
+            });
+            /*$.post("/pay/web/ordersubmit",param,function(data){
+                ss=window.open('about:blank');
+                ss.document.write(data);
+            },"html")  ;*/
+        }
+
+        /*]]>*/
+    </script>
+
+</head>
+<body>
+    <form id="orderform"  th:method="post"  >
+        <br>
+        通联用户id
+        <input id="unionId" name="unionId" value=""/>   <input type="button" value="生成一个" onclick="createUnionId()"/>
+        </br>
+        订单号
+        <input id="orderNo" name="orderNo" th:value="${orderNo}"/>
+        <br>
+        支付商品名称
+        <input id="productName" name="productName" th:value="${productName}"/>
+        </br>
+        <br>
+        支付金额(分)：
+        <input type="text" id="orderAmount" name="orderAmount"  th:value="${orderAmount}" />
+        </br>
+
+        <input type="button"  value="通联网关网页支付" onclick="pay1()"/>
+        <input type="button"  value="通联H5支付" onclick="pay2()"/>
+        <input type="button"  value="通联网关微信支付" onclick="pay3()"/>
+
+    </form>
+
+<div id="d1"></div>
+</body>
+</html>

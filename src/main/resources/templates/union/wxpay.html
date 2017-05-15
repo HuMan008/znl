@@ -47,7 +47,6 @@
                 },
                 function(data){
                     var str = JSON.stringify(data);
-                    alert(str);
                     switch (data.err_msg){
                         case 'get_brand_wcpay_request:cancel':
 
@@ -57,7 +56,7 @@
                              alert('支付失败')    ;
                             break;
                         case 'get_brand_wcpay_request:ok':
-                                alert('9555')
+                            alert('支付成功')
                             break;
                     }
                     window._ajax = null;

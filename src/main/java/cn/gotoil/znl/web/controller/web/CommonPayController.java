@@ -5,6 +5,7 @@ import cn.gotoil.bill.web.interceptor.authentication.AuthenticationType;
 import cn.gotoil.znl.model.domain.App;
 import cn.gotoil.znl.service.CommonPayService;
 import cn.gotoil.znl.web.message.request.PayRequest;
+import cn.gotoil.znl.web.message.response.alipay.WapPayResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -12,6 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -26,12 +28,17 @@ public class CommonPayController {
     @Autowired
     private CommonPayService  commonPayService;
 
-    @RequestMapping(value = "/pay" )
-    public void index(Model model, HttpServletRequest request,
+    @RequestMapping(value = "/wapPay" )
+    @Authentication(authenticationType = AuthenticationType.None)
+    public String index(Model model, HttpServletRequest request,
                         PayRequest payRequest ){
 
-        commonPayService.pay(payRequest);
+        String redirectUrl = commonPayService.wapPay(payRequest);//WapPayResponse wapPayResponse = (WapPayResponse)
 
+//        String paramStr = "?product_code="+wapPayResponse.getProduct_code()+"&out_trade_no="+wapPayResponse.getOut_trade_no()
+//                +"&subject="+wapPayResponse.getDesc()+"&total_amount="+wapPayResponse.getTotal_amount()+"&orderVirtualID="+wapPayResponse.getOrderVirtualID();
+//        return "redirect:/alipay/v1/wap/pay"+paramStr;
+        return  redirectUrl;
     }
 
 }

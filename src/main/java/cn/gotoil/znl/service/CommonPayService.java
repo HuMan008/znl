@@ -7,7 +7,7 @@ import cn.gotoil.znl.web.message.request.PayRequest;
  */
 public interface CommonPayService {
 
-    boolean  pay(PayRequest request);
+    String  wapPay(PayRequest request);
 
 
 }

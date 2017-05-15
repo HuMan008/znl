@@ -4,6 +4,7 @@ import cn.gotoil.bill.tools.string.StringUtils;
 import cn.gotoil.znl.common.tools.SerialNumberUtil;
 import cn.gotoil.znl.config.define.AlipayConfig;
 import cn.gotoil.znl.config.define.PayBaseConfig;
+import cn.gotoil.znl.exception.ZnlError;
 import cn.gotoil.znl.model.domain.*;
 import cn.gotoil.znl.model.repository.*;
 import cn.gotoil.znl.service.AlipayService;
@@ -11,6 +12,7 @@ import cn.gotoil.znl.service.CommonPayService;
 import cn.gotoil.znl.web.message.request.PayRequest;
 import cn.gotoil.znl.web.message.response.alipay.WapPayResponse;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -43,13 +45,11 @@ public class CommonPayServiceImpl implements CommonPayService {
     @Autowired
     private RestTemplate restTemplate;
 
-    public  boolean  pay(PayRequest request){
+    public  String  wapPay(PayRequest request){
 
         //0,参数校验
         Order.PayTypeEnum payType = Order.PayTypeEnum.getEnumByCode( request.getPayType() );
-        if( null == payType ){
-            return false;
-        }
+
         App app = jpaAppRepository.findOne( request.getAppID() );
         if(null == request.getSubject() || org.apache.commons.lang3.StringUtils.isEmpty(request.getSubject()) ){
             request.setSubject( app.getDefaultProductname() );
@@ -97,12 +97,14 @@ public class CommonPayServiceImpl implements CommonPayService {
 
         jpaOrderRepository.save( order );
         //3,发送支付请求
-        if(  payType.equals(Order.PayTypeEnum.Zhifubao_SDK)    ){
+        if(  payType.getCode().equals(Order.PayTypeEnum.Zhifubao_SDK.getCode())    ){
             //
 
 
-        }else if(payType.equals(Order.PayTypeEnum.Zhifubao_WAP)) {
-            //发送http请求
+        }else if(payType.getCode().equals(Order.PayTypeEnum.Zhifubao_WAP.getCode())) {
+//            String httpUrl =  "http://localhost:80/alipay/v1/wap/pay?product_code={product_code}&out_trade_no={out_trade_no}&subject={subject}&total_amount={total_amount}&desc={desc}&orderVirtualID={orderVirtualID}";
+            String httpUrl = "redirect:http://localhost:80/alipay/v1/wap/pay?appID=1111&payType=ZFB_WAP&order_id_actual=sfsdf11&subject=pay_zhifub&amount=125";
+            //发送http get请求
             WapPayResponse wapPayResponse = new WapPayResponse();
             wapPayResponse.setTotal_amount( order.getOrderFee()/(1.0*100) );
             wapPayResponse.setProduct_code( AlipayConfig.Product_Code ) ;
@@ -110,13 +112,15 @@ public class CommonPayServiceImpl implements CommonPayService {
             wapPayResponse.setDesc( "");
             wapPayResponse.setOrderVirtualID( order.getID() );
             wapPayResponse.setSubject( order.getDescp() );
-            restTemplate.getForObject( "/alipay/v1/wap/pay" , String.class,wapPayResponse  );
+//            restTemplate.getForObject( httpUrl  , String.class  );
+
+            return  httpUrl;
         }else {
             //TODO:
         }
         //4,支付日志 入库
 
-        return  true;
+        return  "";
     }
 
 }

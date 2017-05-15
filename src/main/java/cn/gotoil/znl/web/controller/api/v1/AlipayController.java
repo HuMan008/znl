@@ -4,6 +4,7 @@ import cn.gotoil.znl.config.define.AlipayConfig;
 import cn.gotoil.znl.service.AlipayService;
 import cn.gotoil.znl.web.message.request.alipay.AlipayPayRequest;
 import cn.gotoil.znl.web.message.request.alipay.AlipayQueryRequest;
+import cn.gotoil.znl.web.message.response.alipay.WapPayResponse;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.internal.util.AlipaySignature;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,28 +37,30 @@ public class AlipayController {
     private AlipayConfig alipayConfig;
 
     @RequestMapping(value = "/wap/pay",method = RequestMethod.GET)
-    public String pay(Model model, HttpServletRequest request ) throws UnsupportedEncodingException {
+    public String pay(Model model, HttpServletRequest request,WapPayResponse wapPayResponse ) throws UnsupportedEncodingException {
+
+        model.addAttribute( "msg",wapPayResponse );
 
         return  "alipay/pay";
     }
 
     @RequestMapping(value = "/wap/pay",method = RequestMethod.POST )
-    public void wap_pay(@RequestBody @Valid AlipayPayRequest alipayPayRequest
+    public void wap_pay(@RequestParam("orderVirtualID") String orderVirtualID
             ,BindingResult bindingResult
             ,HttpServletRequest request,HttpServletResponse response) throws IOException {
 
         PrintWriter writer = response.getWriter();
-        if(bindingResult.hasErrors()){
-            String errorMsg = bindingResult.getAllErrors().get(0).getDefaultMessage();
-            response.setContentType("application/json;charset=UTF-8");
-            writer.write(errorMsg);
-            writer.flush();
-            return;
-        }
+//        if(bindingResult.hasErrors()){
+//            String errorMsg = bindingResult.getAllErrors().get(0).getDefaultMessage();
+//            response.setContentType("application/json;charset=UTF-8");
+//            writer.write(errorMsg);
+//            writer.flush();
+//            return;
+//        }
 
         try {
             response.setContentType("text/html;charset=UTF-8");
-            writer.write(alipayService.wap_pay(alipayPayRequest));
+            writer.write(alipayService.wap_pay(orderVirtualID));
             writer.flush();
         } catch (AlipayApiException e) {
             e.printStackTrace();
@@ -72,6 +75,7 @@ public class AlipayController {
     @RequestMapping(value = "/query",method = RequestMethod.GET)
     public String query(Model model, HttpServletRequest request ) throws UnsupportedEncodingException {
 
+
         return  "alipay/query";
     }
 
@@ -82,20 +86,20 @@ public class AlipayController {
             ,HttpServletRequest request,HttpServletResponse response ) throws IOException {
 
         PrintWriter writer = response.getWriter();
-        try {
-
-            response.setContentType("application/json;charset=UTF-8");
-            writer.write( alipayService.query( alipayQueryRequest ) );
-            writer.flush();
-
-        } catch (AlipayApiException e) {
-            e.printStackTrace();
-
-            response.setContentType("application/json;charset=UTF-8");
-            writer.write( e.getMessage() );
-            writer.flush();
-
-        }
+//        try {
+//
+//            response.setContentType("application/json;charset=UTF-8");
+//            writer.write( alipayService.query( alipayQueryRequest ) );
+//            writer.flush();
+//
+//        } catch (AlipayApiException e) {
+//            e.printStackTrace();
+//
+//            response.setContentType("application/json;charset=UTF-8");
+//            writer.write( e.getMessage() );
+//            writer.flush();
+//
+//        }
 
 
     }
@@ -242,11 +246,14 @@ public class AlipayController {
             ,BindingResult bindingResult
             ,HttpServletResponse response  )     {
 
-        try {
-            return alipayService.app_pay(alipayPayRequest);
-        } catch (AlipayApiException e) {
-            e.printStackTrace();
-            return  e.getMessage();
-        }
+        String str = "";
+//        try {
+////            str = alipayService.app_pay(alipayPayRequest);
+//            return str;
+//        } catch (AlipayApiException e) {
+//            e.printStackTrace();
+//            return  e.getMessage();
+//        }
+        return  str;
     }
 }

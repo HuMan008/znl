@@ -1,6 +1,12 @@
 package cn.gotoil.znl.service.impl;
 
 import cn.gotoil.znl.config.define.AlipayConfig;
+import cn.gotoil.znl.config.define.PayBaseConfig;
+import cn.gotoil.znl.model.domain.AccountForZhifubaoSDK;
+import cn.gotoil.znl.model.domain.AccountForZhifubaoWAP;
+import cn.gotoil.znl.model.domain.AppPayAccount;
+import cn.gotoil.znl.model.domain.Order;
+import cn.gotoil.znl.model.repository.*;
 import cn.gotoil.znl.service.AlipayService;
 import cn.gotoil.znl.web.message.request.alipay.AlipayPayRequest;
 import cn.gotoil.znl.web.message.request.alipay.AlipayQueryRequest;
@@ -10,12 +16,14 @@ import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.domain.AlipayTradeAppPayModel;
 import com.alipay.api.domain.AlipayTradeQueryModel;
 import com.alipay.api.domain.AlipayTradeWapPayModel;
+import com.alipay.api.domain.ExtendParams;
 import com.alipay.api.request.AlipayTradeAppPayRequest;
 import com.alipay.api.request.AlipayTradeQueryRequest;
 import com.alipay.api.request.AlipayTradeWapPayRequest;
 import com.alipay.api.response.AlipayTradeAppPayResponse;
 import com.alipay.api.response.AlipayTradeQueryResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
 /**
@@ -24,13 +32,52 @@ import org.springframework.stereotype.Service;
 @Service
 public class AlipayServiceImpl implements AlipayService {
 
-    @Autowired
-    private AlipayConfig alipayConfig;
 
+    @Autowired
+    private JPAAppPayAccountRepository jpaAppPayAccountRepository;
+
+    @Autowired
+    private JPAAccountForZhifubaoWAPRepository jpaAccountForZhifubaoWAPRepository;
+
+    @Autowired
+    private JPAAccountForZhifubaoSDKRepository jpaAccountForZhifubaoSDKRepository;
+
+    @Autowired
+    private JPAOrderRepository jpaOrderRepository;
+
+    @Autowired
+    private JPAAppRepository jpaAppRepository;
+
+
+    public String wap_pay(String orderVirtualID) throws AlipayApiException {
+        //参数拼装
+        Order order =  jpaOrderRepository.findOne(orderVirtualID);
+
+        //1,根据应用类别 和 支付方式获得  收款账户的基本配置
+        AppPayAccount appPayAccount = jpaAppPayAccountRepository.findByAppIDAndPayType( order.getAppid(),order.getPayType() );
+        //
+        AccountForZhifubaoWAP configWap =
+                jpaAccountForZhifubaoWAPRepository.findOne(  appPayAccount.getPayAccountID()   );
+        AlipayConfig alipayConfig = new AlipayConfig();
+        alipayConfig.setAPPID( configWap.getAppID() );
+        alipayConfig.setALIPAY_PUBLIC_KEY( configWap.getPublicKey() );
+        alipayConfig.setRSA_PRIVATE_KEY( configWap.getPrivateKey() );
+        //
+        AlipayPayRequest alipayPayRequest = new AlipayPayRequest();
+        alipayPayRequest.setSubject( order.getDescp() );
+        alipayPayRequest.setDesc( "" );
+        alipayPayRequest.setOut_trade_no(  orderVirtualID );
+        alipayPayRequest.setProduct_code( alipayConfig.Product_Code );
+        alipayPayRequest.setTimeout_express( order.getExpire_time_minute()+"m" );
+        double  orderFee = order.getOrderFee()/(1.0*100);//分转元
+        alipayPayRequest.setTotal_amount( orderFee );
+        //
+        return  wap_pay(alipayPayRequest,alipayConfig);
+    }
     /***
      * wap支付
      */
-    public String wap_pay(AlipayPayRequest alipayPayRequest) throws AlipayApiException {
+    public String wap_pay(AlipayPayRequest alipayPayRequest,AlipayConfig alipayConfig) throws AlipayApiException {
         /**********************/
         // SDK 公共请求类，包含公共请求参数，以及封装了签名与验签，开发者无需关注签名与验签
         //调用RSA签名方式
@@ -45,6 +92,11 @@ public class AlipayServiceImpl implements AlipayService {
         model.setBody(alipayPayRequest.getDesc());
         model.setTimeoutExpress(alipayPayRequest.getTimeout_express());
         model.setProductCode(alipayPayRequest.getProduct_code());
+
+        ExtendParams extendParams = new ExtendParams();
+        extendParams.setHbFqNum(alipayPayRequest.getExtendParams());
+        model.setExtendParams( extendParams );
+
         alipay_request.setBizModel(model);
         // 设置异步通知地址
         alipay_request.setNotifyUrl(alipayConfig.notify_url);
@@ -60,7 +112,7 @@ public class AlipayServiceImpl implements AlipayService {
     /**
      *  支付结果查询
      * **/
-    public String query( AlipayQueryRequest alipayQueryRequest ) throws AlipayApiException {
+    public String query( AlipayQueryRequest alipayQueryRequest,AlipayConfig alipayConfig ) throws AlipayApiException {
 
         //
         /**********************/
@@ -82,7 +134,7 @@ public class AlipayServiceImpl implements AlipayService {
     /**
      *  app支付
      * **/
-    public  String  app_pay(AlipayPayRequest alipayPayRequest) throws AlipayApiException {
+    public  String  app_pay(AlipayPayRequest alipayPayRequest,AlipayConfig alipayConfig) throws AlipayApiException {
 
         //实例化客户端
         AlipayClient alipayClient = new DefaultAlipayClient(AlipayConfig.URL , alipayConfig.APPID, alipayConfig.RSA_PRIVATE_KEY, AlipayConfig.FORMAT,

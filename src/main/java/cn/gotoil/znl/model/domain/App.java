@@ -28,7 +28,7 @@ public class App extends  BaseEntity   {
      * 主键
      */
     @Id
-    @Column(name = "appid",columnDefinition = "char(24)  COMMENT '主键'",unique = true,nullable = false)
+    @Column(name = "appid",columnDefinition = "char(32)  COMMENT '主键'",unique = true,nullable = false)
     private String appID;
 
     /**
@@ -39,10 +39,43 @@ public class App extends  BaseEntity   {
 
 
     /**
+     * 加密盐值
+     */
+    @Column(length = 8,name="salt",columnDefinition = "char(8)  COMMENT '加密盐值'" ,nullable = false )
+    private String salt;
+
+    /**
      * 密钥
      */
     @Column( columnDefinition = "char(24)  COMMENT '密钥'" ,nullable = false )
     private String appkey;
+
+
+    /**
+     * 当前接入应用的 默认 异步回调地址
+     */
+    @Column(name="default_notify_url",length = 500,nullable = false )
+    private String defaultNotifyUrl;
+
+    /**
+     * 当前接入应用的 默认 同步 通知地址
+     */
+    @Column(name="default_return_url",length = 500,nullable = false )
+    private String defaultReturnUrl;
+
+
+    /**
+     * 当前应用 支付 默认的商品名称
+     */
+    @Column(name="default_productname",length = 60,nullable = false )
+    private String defaultProductname;
+
+
+    /**
+     * 订单 默认 有效时间（分钟）
+     */
+    @Column( name="default_order_exprise_time" , nullable = false )
+    private int defaultOrderExpriseTime;
 
     /**
      * 状态
@@ -57,7 +90,7 @@ public class App extends  BaseEntity   {
     private String remark;
 
     /**
-     * 到期日期
+     * 应用 接入 到期日期
      */
     @Column(  name="expire_date" ,nullable = false  )
     @JsonFormat(timezone = "GMT+8", pattern = "YYYY-MM-dd HH:mm")

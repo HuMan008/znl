@@ -25,10 +25,11 @@ public class ZnlApplication {
 
 
     public static void main(String[] args) {
-        applicationContext = SpringApplication.run(ZnlApplication.class, args);
-        System.out.println("----------------------------------");
-        System.out.println(applicationContext);
-        System.out.println("----------------------------------");
+
+        SpringApplication.run(ZnlApplication.class, args);
+
+//        applicationContext = SpringApplication.run(ZnlApplication.class, args);
+
 //        issueServer.checkHaveLose(GameType.CQSSC.getCode(),GameType.CQSSC.getName(),200);
     }
 

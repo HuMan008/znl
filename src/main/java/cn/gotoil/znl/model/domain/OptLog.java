@@ -3,7 +3,7 @@ package cn.gotoil.znl.model.domain;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.data.annotation.Id;
+
 
 import javax.persistence.*;
 
@@ -20,6 +20,7 @@ public class OptLog  extends  BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id", nullable = false)
     private  Integer  ID;
 
     /**

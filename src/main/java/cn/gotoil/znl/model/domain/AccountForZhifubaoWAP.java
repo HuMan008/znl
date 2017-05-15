@@ -8,7 +8,6 @@ import cn.gotoil.znl.web.message.Combobox;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.data.annotation.Id;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -26,6 +25,7 @@ public class AccountForZhifubaoWAP extends  BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id", nullable = false)
     private  Integer  id;
 
 

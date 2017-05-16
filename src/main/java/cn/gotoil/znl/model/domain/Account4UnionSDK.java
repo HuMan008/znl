@@ -25,7 +25,6 @@ public class Account4UnionSDK  extends BaseAccount {
     @Column(name = "id", nullable = false)
     private  Integer  id;
 
-
     /**
      * 账户 昵称
      */

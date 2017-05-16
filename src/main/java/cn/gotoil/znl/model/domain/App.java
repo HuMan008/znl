@@ -28,13 +28,13 @@ public class App extends  BaseEntity   {
      * 主键
      */
     @Id
-    @Column(name = "appid",columnDefinition = "char(32)  COMMENT '主键'",unique = true,nullable = false)
+    @Column(name = "appid",length = 32,unique = true,nullable = false)
     private String appID;
 
     /**
      * 名称
      */
-    @Column(length = 50,name="appname",columnDefinition = "char(50)  COMMENT '名称'" ,nullable = false )
+    @Column(length = 50,name="appname" ,nullable = false )
     private String name;
 
 
@@ -47,7 +47,7 @@ public class App extends  BaseEntity   {
     /**
      * 密钥
      */
-    @Column( columnDefinition = "char(24)  COMMENT '密钥'" ,nullable = false )
+    @Column( length = 24,nullable = false )
     private String appkey;
 
 
@@ -67,7 +67,7 @@ public class App extends  BaseEntity   {
     /**
      * 当前应用 支付 默认的商品名称
      */
-    @Column(name="default_productname",length = 60,nullable = false )
+    @Column(name="default_productname",length = 40,nullable = false )
     private String defaultProductname;
 
 
@@ -86,7 +86,7 @@ public class App extends  BaseEntity   {
     /**
      * 备注
      */
-    @Column(length = 4000   )
+    @Column(length = 500   )
     private String remark;
 
     /**

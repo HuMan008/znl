@@ -38,7 +38,7 @@ public class OptLog  extends  BaseEntity {
     /**
      *   操作内容
      */
-    @Column( name="content",length = 4000  ,nullable = false )
+    @Column( name="content",length = 500  ,nullable = false )
     private String content;
 
 

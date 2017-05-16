@@ -1,10 +1,7 @@
 package cn.gotoil.znl.service.impl;
 
-import cn.gotoil.bill.tools.string.StringUtils;
 import cn.gotoil.znl.common.tools.SerialNumberUtil;
 import cn.gotoil.znl.config.define.AlipayConfig;
-import cn.gotoil.znl.config.define.PayBaseConfig;
-import cn.gotoil.znl.exception.ZnlError;
 import cn.gotoil.znl.model.domain.*;
 import cn.gotoil.znl.model.enums.TimeUnitEnum;
 import cn.gotoil.znl.model.repository.*;
@@ -15,7 +12,6 @@ import cn.gotoil.znl.web.message.request.alipay.AlipayPayRequest;
 import cn.gotoil.znl.web.message.response.alipay.WapPayResponse;
 import com.alipay.api.AlipayApiException;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -117,7 +113,7 @@ public class CommonPayServiceImpl implements CommonPayService {
             alipayPayRequest.setExtendParams( request.getExtra_param() );
             alipayPayRequest.setOut_trade_no(  order.getAppOrderID() );
 
-            AccountForZhifubaoSDK configSdk =
+            AccountAlipaySDK configSdk =
                     jpaAccountForZhifubaoSDKRepository.findOne(  appPayAccount.getPayAccountID()   );
 
             AlipayConfig alipayConfig = new AlipayConfig();

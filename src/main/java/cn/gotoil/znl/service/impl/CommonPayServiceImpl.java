@@ -6,6 +6,7 @@ import cn.gotoil.znl.config.define.AlipayConfig;
 import cn.gotoil.znl.config.define.PayBaseConfig;
 import cn.gotoil.znl.exception.ZnlError;
 import cn.gotoil.znl.model.domain.*;
+import cn.gotoil.znl.model.enums.TimeUnitEnum;
 import cn.gotoil.znl.model.repository.*;
 import cn.gotoil.znl.service.AlipayService;
 import cn.gotoil.znl.service.CommonPayService;
@@ -19,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Date;
 
 /**
@@ -49,7 +51,7 @@ public class CommonPayServiceImpl implements CommonPayService {
     private RestTemplate restTemplate;
 
 
-    public  String  sdkPay(PayRequest request) throws AlipayApiException {
+    public  String  sdkPay(PayRequest request) throws AlipayApiException, UnsupportedEncodingException {
 
         //返回字符串
         String returnStr = "";
@@ -109,7 +111,7 @@ public class CommonPayServiceImpl implements CommonPayService {
             AlipayPayRequest alipayPayRequest = new AlipayPayRequest();
             alipayPayRequest.setSubject( order.getDescp() );
             alipayPayRequest.setTotal_amount( order.getOrderFee()/(1.0*100) );
-            alipayPayRequest.setTimeout_express(  request.getTimeout_minute() +"m");
+            alipayPayRequest.setTimeout_express(  request.getTimeout_minute() + TimeUnitEnum.Minute.getCode() );
             alipayPayRequest.setDesc( "" );
             alipayPayRequest.setProduct_code( AlipayConfig.Product_Code );
             alipayPayRequest.setExtendParams( request.getExtra_param() );

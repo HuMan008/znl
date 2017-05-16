@@ -35,9 +35,9 @@ public class CommonPayController {
     public String wapPay(Model model, HttpServletRequest request,
                         PayRequest payRequest ){
 
-        String redirectUrl = commonPayService.wapPay(payRequest);
+        String forwardUrl = commonPayService.wapPay(payRequest);
 
-        return  redirectUrl;
+        return  forwardUrl;
     }
 
     /**sdk支付**/

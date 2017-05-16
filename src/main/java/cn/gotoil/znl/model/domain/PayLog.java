@@ -1,12 +1,15 @@
 package cn.gotoil.znl.model.domain;
 
 
+import cn.gotoil.znl.web.message.Combobox;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 支付日志
@@ -27,58 +30,81 @@ public class PayLog extends  BaseEntity    {
     private Integer id;
 
     /**
-     * 应用id
+     * 订单id
      */
-    @Column( name="appid",columnDefinition = "char(32)  COMMENT '应用id'" ,nullable = false )
-    private String appID;
+    @Column(  columnDefinition = "char(50)  " ,nullable = false )
+    private String orderid;
 
     /**
-     * 用户id
+     * 日志类型
      */
-    @Column( name="uid",columnDefinition = "char(50)  COMMENT '用户id'" ,nullable = false )
-    private String userID;
+    @Column( name="log_type" , nullable = false )
+    private Byte logType;
 
     /**
-     * 订单号
+     * 请求报文
      */
-    @Column( name="orderno",columnDefinition = "char(50)  COMMENT '订单号'" ,nullable = false )
-    private String orderNo;
-
-    /**
-     * 商品id
-     */
-    @Column( name="productId",columnDefinition = "char(50)  COMMENT '商品id'" ,nullable = true )
-    private String productID;
+    @Column(  nullable = false , columnDefinition = "text(3000)  " )
+    private String content;
 
 
     /**
-     * 支付方式
+     * 创建时间
      */
-    @Column( name="paytype",length = 15, nullable = false )
-    private String payType;
-
-    /**
-     * 支付金额
-     */
-    @Column( nullable = false )
-    private Integer amount;
-
-
-    /**
-     * 支付时间
-     */
-    @Column( nullable = false , name = "paytime" ,updatable = false  )
-    private Date payTime;
-
-    /**
-     * 支付结果
-     */
-    @Column(  nullable = false )
-    private Byte state;
-
-
+    @Column(  nullable = false , name = "created_at" )
+    private Date createdAt;
 
     public PayLog() {
+
+    }
+
+    public enum LogTypeEnum {
+
+        /**
+         *  1、支付
+         2、订单查询
+         3、支付结果查询
+         4、同步通知
+         5、异步通知
+         */
+        Pay( (byte)1,"支付"),
+        OrderSearch( (byte)2,"订单查询"),
+        ResultSearch( (byte)3,"支付结果查询"),
+        SyncNotify( (byte)4,"同步通知"),
+        ASyncNotify( (byte)5,"异步通知"),
+
+        ;
+
+        private final Byte code;
+        private final String name;
+
+
+        LogTypeEnum(Byte code,String name ){
+            this.code = code;
+            this.name = name;
+        }
+
+        /**
+         *  转换类型
+         *  @return
+         */
+        public static LogTypeEnum getEnumByCode(byte code) {
+
+            for (   LogTypeEnum en :   LogTypeEnum.values()) {
+                if ( code == en.getCode() ) {
+                    return en;
+                }
+            }
+            return null;
+        }
+
+        public byte getCode() {
+            return code;
+        }
+
+        public String getName() {
+            return name;
+        }
 
     }
 

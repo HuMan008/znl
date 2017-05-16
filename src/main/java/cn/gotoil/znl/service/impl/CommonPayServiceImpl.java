@@ -47,7 +47,8 @@ public class CommonPayServiceImpl implements CommonPayService {
 
     public  String  wapPay(PayRequest request){
 
-        String redirectUrl = "";
+        //转发 路径
+        String forwardUrl = "";
         //0,参数校验
         Order.PayTypeEnum payType = Order.PayTypeEnum.getEnumByCode( request.getPayType() );
 
@@ -103,7 +104,7 @@ public class CommonPayServiceImpl implements CommonPayService {
 
 
         }else if(payType.getCode().equals(Order.PayTypeEnum.Zhifubao_WAP.getCode())) {
-            redirectUrl =  "redirect:http://localhost:80/alipay/v1/wap/pay?product_code={product_code}&out_trade_no={out_trade_no}&subject={subject}&total_amount={total_amount}&desc={desc}&orderVirtualID={orderVirtualID}";
+            forwardUrl =  "forward:/alipay/v1/wap/pay?";
             //发送http get请求
             WapPayResponse wapPayResponse = new WapPayResponse();
             wapPayResponse.setTotal_amount( order.getOrderFee()/(1.0*100) );
@@ -114,7 +115,14 @@ public class CommonPayServiceImpl implements CommonPayService {
             wapPayResponse.setSubject( order.getDescp() );
 //            restTemplate.getForObject( httpUrl  , String.class  );
 
-            return  redirectUrl;
+            StringBuilder bd = new StringBuilder("");
+            bd.append("product_code=").append(wapPayResponse.getProduct_code());
+            bd.append("&out_trade_no=").append(wapPayResponse.getOut_trade_no());
+            bd.append("&subject=").append(wapPayResponse.getSubject());
+            bd.append("&total_amount=").append(wapPayResponse.getTotal_amount());
+            bd.append("&desc=").append(wapPayResponse.getDesc());
+            bd.append("&orderVirtualID=").append(wapPayResponse.getOrderVirtualID());
+            return  forwardUrl+bd.toString();
         }else {
             //TODO:
         }

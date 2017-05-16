@@ -4,12 +4,16 @@ import cn.gotoil.bill.exception.BillException;
 import cn.gotoil.bill.web.annotation.Authentication;
 import cn.gotoil.bill.web.interceptor.authentication.AuthenticationType;
 import cn.gotoil.bill.web.message.BillApiResponse;
+import cn.gotoil.znl.adapter.PayAccountAdapter;
+import cn.gotoil.znl.adapter.PayConfigTarget;
 import cn.gotoil.znl.classes.OrderHelper;
 import cn.gotoil.znl.common.tools.ObjectHelper;
 import cn.gotoil.znl.common.tools.date.DateUtils;
 import cn.gotoil.znl.config.property.SybConstants;
 import cn.gotoil.znl.exception.UnionError;
 import cn.gotoil.znl.exception.UnionException;
+import cn.gotoil.znl.model.domain.Account4UnionSDK;
+import cn.gotoil.znl.model.enums.EnumPayType;
 import cn.gotoil.znl.service.UnionService;
 import cn.gotoil.znl.web.controller.BaseController;
 import cn.gotoil.znl.web.message.request.union.*;
@@ -30,7 +34,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
@@ -47,6 +53,9 @@ public class UnionController extends BaseController {
 
     @Autowired
     private UnionService unionService;
+
+    @Autowired
+    private PayAccountAdapter payAccountAdapter;
 
 
     @RequestMapping("/web/orderPage")
@@ -92,6 +101,7 @@ public class UnionController extends BaseController {
             BindingResult bindingResult,
             HttpServletRequest httpServletRequest) throws Exception {
 
+        PayConfigTarget<Account4UnionSDK> payConfigTarget = payAccountAdapter.getPayconfig(EnumPayType.UnionSdk,"1");
 
         Map<String, Object> wxSessionMap = unionService.getWxSession(code);
         if (wxSessionMap == null || wxSessionMap.isEmpty()) {

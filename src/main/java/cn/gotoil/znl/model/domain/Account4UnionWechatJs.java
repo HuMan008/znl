@@ -17,18 +17,7 @@ import javax.persistence.*;
 @Table(name = "dk_account_for_union_wechantjs")
 @Getter
 @Setter
-public class Account4UnionWechatJs<T> extends BaseAccount implements PayConfigTarget {
-
-
-//    https://api.weixin.qq.com/sns/oauth2/access_token
-    public static  String sessionHost;
-
-//    authorization_code
-    public static String grantType;
-
-
-//    通知地址
-    public static String notifyUrl;
+public class Account4UnionWechatJs<T> extends BaseAccount  {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

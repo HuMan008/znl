@@ -1,7 +1,6 @@
 package cn.gotoil.znl.model.domain;
 
 import cn.gotoil.znl.adapter.PayConfigTarget;
-import cn.gotoil.znl.adapter.listener.AccountAdaptee;
 import cn.gotoil.znl.model.enums.EnumStatus;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,14 +10,15 @@ import javax.persistence.*;
 
 /**
  * Created by think on 2017/5/16.
- * 通联SDK支付
+ * 通联网关支付
  */
 @Component
 @Entity
-@Table(name = "dk_account_for_union_sdk")
+@Table(name = "dk_account_for_union_gateway")
 @Getter
 @Setter
-public class Account4UnionSDK  extends BaseAccount {
+public class Account4UnionGateWay extends BaseAccount  {
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -41,17 +41,14 @@ public class Account4UnionSDK  extends BaseAccount {
     @Column(name = "status",nullable = true)
     private byte status;
 
-
-
-
     @Override
-    public Account4UnionSDK getPayConfig(String appId) {
-        Account4UnionSDK account4UnionSDK = new Account4UnionSDK();
-        account4UnionSDK.setId(1);
-        account4UnionSDK.setName("测试通联SDK配置");
-        account4UnionSDK.setStatus(EnumStatus.Enable.getCode());
-        account4UnionSDK.setMerchantId("008500179950010");
-        account4UnionSDK.setMerchantKey("086a172d073d991a8a4e3fb8bb0101ad");
-        return account4UnionSDK;
+    public Account4UnionGateWay getPayConfig(String appId) {
+        Account4UnionGateWay account4UnionGateWay = new Account4UnionGateWay();
+        account4UnionGateWay.setId(1);
+        account4UnionGateWay.setName("通联网关支付");
+        account4UnionGateWay.setMerchantId("008500189990304");
+        account4UnionGateWay.setMerchantKey("fcc3c40d59c191b3e91f47a03c010900");
+        account4UnionGateWay.setStatus(EnumStatus.Enable.getCode());
+        return account4UnionGateWay;
     }
 }

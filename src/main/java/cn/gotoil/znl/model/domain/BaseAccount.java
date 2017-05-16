@@ -5,11 +5,11 @@ import cn.gotoil.znl.adapter.PayConfigTarget;
 /**
  * Created by think on 2017/5/15.
  */
-public  class BaseAccount<T extends BaseAccount> extends BaseEntity implements PayConfigTarget {
+public  abstract class BaseAccount<T extends BaseAccount> extends BaseEntity implements PayConfigTarget {
 
 
-    @Override
+ /*   @Override
     public T getPayConfig(String appId) {
         return null;
-    }
+    }*/
 }

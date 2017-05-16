@@ -12,6 +12,7 @@ import cn.gotoil.znl.common.tools.date.DateUtils;
 import cn.gotoil.znl.config.property.SybConstants;
 import cn.gotoil.znl.exception.UnionError;
 import cn.gotoil.znl.exception.UnionException;
+import cn.gotoil.znl.model.domain.Account4UnionGateWay;
 import cn.gotoil.znl.model.domain.Account4UnionSDK;
 import cn.gotoil.znl.model.enums.EnumPayType;
 import cn.gotoil.znl.service.UnionService;
@@ -102,6 +103,7 @@ public class UnionController extends BaseController {
             HttpServletRequest httpServletRequest) throws Exception {
 
         PayConfigTarget<Account4UnionSDK> payConfigTarget = payAccountAdapter.getPayconfig(EnumPayType.UnionSdk,"1");
+        PayConfigTarget<Account4UnionGateWay> account4UnionGateWayPayConfigTarget = payAccountAdapter.getPayconfig(EnumPayType.UnionGateWay,"1");
 
         Map<String, Object> wxSessionMap = unionService.getWxSession(code);
         if (wxSessionMap == null || wxSessionMap.isEmpty()) {

@@ -13,7 +13,8 @@ import lombok.ToString;
 @AllArgsConstructor
 public enum EnumPayType {
     UnionWechatJs("UnionWechatJs","通联微信JS支付 "),
-    UnionSdk("UnionSdk","通联SDK支付")
+    UnionSdk("UnionSdk","通联SDK支付"),
+    UnionGateWay("UnionGateWay","通联网关支付")
     ;
 
     private String code;

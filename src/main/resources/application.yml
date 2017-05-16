@@ -68,6 +68,22 @@ sysconfig:
   #默认商品名称
   defaultProductName: 国通石油
 
+unionconfig:
+  wechat:
+    sessionHost: https://api.weixin.qq.com/sns/oauth2/access_token
+    grantType: authorization_code
+    notifyUrl: http://suyj.ngrok.cc/pay/wxpaynotify
+  sdk:
+    notifyUrl: http://suyj.ngrok.cc/pay/sdk/receiveurl #移动支付异步通知
+
+
+
+
+
+
+
+
+
 
 #微信配置
 wechatconfig:

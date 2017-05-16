@@ -1,5 +1,7 @@
 package cn.gotoil.znl.config.property;
 
+import cn.gotoil.znl.model.domain.Account4UnionSDK;
+import cn.gotoil.znl.model.domain.Account4UnionWechatJs;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
@@ -12,7 +14,19 @@ import javax.annotation.PostConstruct;
  */
 @Configuration
 public class ConstantsInitializer {
+//new --start
+    @Value("${unionconfig.wechat.sessionHost}")
+    private String union_wechat_sessionHost;
+    @Value("${unionconfig.wechat.grantType}")
+    private String union_wechat_grantType;
+    @Value("${unionconfig.wechat.notifyUrl}")
+    private String union_wechat_notifyUrl;
 
+    @Value("${unionconfig.sdk.notifyUrl}")
+    private String union_sdk_notifyUrl;
+
+
+//    new --end
     @Value("${allinpay.syb_cusid}")
     private String syb_cusid;
     @Value("${allinpay.syb_appid}")
@@ -76,5 +90,15 @@ public class ConstantsInitializer {
         SybConstants.SDK.URL_APPRECEIVEURL = url_appreceiveurl;
         SybConstants.SDK.MERCHANTID = skdMerchantId;
         SybConstants.SDK.MERCHANTKEY = sdkMerchantkey;
+
+// new ----start
+//        通联微信JS
+        Account4UnionWechatJs.sessionHost = union_wechat_sessionHost;
+        Account4UnionWechatJs.grantType = union_wechat_grantType;
+        Account4UnionWechatJs.notifyUrl = union_wechat_notifyUrl;
+
+//        通联SDK
+        Account4UnionSDK.notifyUrl =  union_sdk_notifyUrl;
+//new --end
     }
 }

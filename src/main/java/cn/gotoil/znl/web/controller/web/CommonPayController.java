@@ -6,6 +6,7 @@ import cn.gotoil.znl.model.domain.App;
 import cn.gotoil.znl.service.CommonPayService;
 import cn.gotoil.znl.web.message.request.PayRequest;
 import cn.gotoil.znl.web.message.response.alipay.WapPayResponse;
+import com.alipay.api.AlipayApiException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -28,17 +29,27 @@ public class CommonPayController {
     @Autowired
     private CommonPayService  commonPayService;
 
+    /**网页支付**/
     @RequestMapping(value = "/wapPay" )
     @Authentication(authenticationType = AuthenticationType.None)
-    public String index(Model model, HttpServletRequest request,
+    public String wapPay(Model model, HttpServletRequest request,
                         PayRequest payRequest ){
 
-        String redirectUrl = commonPayService.wapPay(payRequest);//WapPayResponse wapPayResponse = (WapPayResponse)
+        String redirectUrl = commonPayService.wapPay(payRequest);
 
-//        String paramStr = "?product_code="+wapPayResponse.getProduct_code()+"&out_trade_no="+wapPayResponse.getOut_trade_no()
-//                +"&subject="+wapPayResponse.getDesc()+"&total_amount="+wapPayResponse.getTotal_amount()+"&orderVirtualID="+wapPayResponse.getOrderVirtualID();
-//        return "redirect:/alipay/v1/wap/pay"+paramStr;
         return  redirectUrl;
+    }
+
+    /**sdk支付**/
+    @RequestMapping(value = "/sdkPay" )
+    @ResponseBody
+    @Authentication(authenticationType = AuthenticationType.None)
+    public String sdkPay(Model model, HttpServletRequest request,
+                        PayRequest payRequest ) throws AlipayApiException {
+
+        String str = commonPayService.sdkPay(payRequest);
+
+        return  str;
     }
 
 }

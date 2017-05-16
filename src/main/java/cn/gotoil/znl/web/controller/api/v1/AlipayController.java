@@ -53,13 +53,6 @@ public class AlipayController {
             ,HttpServletRequest request,HttpServletResponse response) throws IOException {
 
         PrintWriter writer = response.getWriter();
-//        if(bindingResult.hasErrors()){
-//            String errorMsg = bindingResult.getAllErrors().get(0).getDefaultMessage();
-//            response.setContentType("application/json;charset=UTF-8");
-//            writer.write(errorMsg);
-//            writer.flush();
-//            return;
-//        }
 
         try {
             response.setContentType("text/html;charset=UTF-8");
@@ -256,7 +249,7 @@ public class AlipayController {
 
         String str = "";
 //        try {
-////            str = alipayService.app_pay(alipayPayRequest);
+//            str = alipayService.app_pay(alipayPayRequest);
 //            return str;
 //        } catch (AlipayApiException e) {
 //            e.printStackTrace();

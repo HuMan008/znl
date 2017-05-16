@@ -228,9 +228,9 @@
         param.desc = $("#desc").val();
         param.product_code = $("#product_code").val();
         $.ajax({
-            url:"/alipay/v1/wap/pay",
+            url:"/alipay/v1/wap/pay?orderVirtualID="+$("#orderVirtualID").val(),
             type: 'post',
-            data: JSON.stringify(param),
+//            data: JSON.stringify(param),
             dataType:"text",
             headers : {
                 'Content-Type' : 'application/json;charset=utf-8'

@@ -21,7 +21,7 @@ import java.util.List;
 @JsonIgnoreProperties(value={"hibernateLazyInitializer","handler","fieldHandler"})
 @Getter
 @Setter
-public class AccountForZhifubaoWAP extends  BaseEntity {
+public class AccountForAlipayWAP extends  BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -44,13 +44,13 @@ public class AccountForZhifubaoWAP extends  BaseEntity {
     /**
      * 公钥
      */
-    @Column( name="public_key",columnDefinition = "text(400)  " ,nullable = false )
+    @Column( name="public_key",length = 400,nullable = false )
     private String publicKey;
 
     /**
      * 私钥
      */
-    @Column( name="private_key",columnDefinition = "text(2000)  " ,nullable = false )
+    @Column( name="private_key",length = 2000 , nullable = false )
     private String privateKey;
 
     /**
@@ -59,7 +59,7 @@ public class AccountForZhifubaoWAP extends  BaseEntity {
     @Column( name="status"  ,nullable = false )
     private Byte status;
 
-    public AccountForZhifubaoWAP() {
+    public AccountForAlipayWAP() {
     }
 
     public enum StateEnum {

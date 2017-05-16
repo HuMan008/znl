@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -19,7 +20,7 @@ import java.util.List;
 @JsonIgnoreProperties(value={"hibernateLazyInitializer","handler","fieldHandler"})
 @Getter
 @Setter
-public class PayLog extends  BaseEntity    {
+public class PayLog  implements Serializable {
 
     /**
      * 主键
@@ -30,9 +31,9 @@ public class PayLog extends  BaseEntity    {
     private Integer id;
 
     /**
-     * 订单id
+     * 订单id(虚拟订单id)
      */
-    @Column(  columnDefinition = "char(50)  " ,nullable = false )
+    @Column( length = 50,nullable = false )
     private String orderid;
 
     /**
@@ -44,7 +45,7 @@ public class PayLog extends  BaseEntity    {
     /**
      * 请求报文
      */
-    @Column(  nullable = false , columnDefinition = "text(3000)  " )
+    @Column(  nullable = false , length = 1000)
     private String content;
 
 

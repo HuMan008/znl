@@ -26,7 +26,6 @@ public class Account4UnionSDK  extends BaseAccount implements PayConfigTarget {
     @Column(name = "id", nullable = false)
     private  Integer  id;
 
-
     /**
      * 账户 昵称
      */

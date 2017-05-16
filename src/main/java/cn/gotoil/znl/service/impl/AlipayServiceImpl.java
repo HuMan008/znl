@@ -1,11 +1,7 @@
 package cn.gotoil.znl.service.impl;
 
 import cn.gotoil.znl.config.define.AlipayConfig;
-import cn.gotoil.znl.config.define.PayBaseConfig;
-import cn.gotoil.znl.model.domain.AccountForZhifubaoSDK;
-import cn.gotoil.znl.model.domain.AccountForZhifubaoWAP;
-import cn.gotoil.znl.model.domain.AppPayAccount;
-import cn.gotoil.znl.model.domain.Order;
+import cn.gotoil.znl.model.domain.*;
 import cn.gotoil.znl.model.enums.TimeUnitEnum;
 import cn.gotoil.znl.model.repository.*;
 import cn.gotoil.znl.service.AlipayService;
@@ -17,18 +13,18 @@ import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.domain.AlipayTradeAppPayModel;
 import com.alipay.api.domain.AlipayTradeQueryModel;
 import com.alipay.api.domain.AlipayTradeWapPayModel;
-import com.alipay.api.domain.ExtendParams;
 import com.alipay.api.request.AlipayTradeAppPayRequest;
 import com.alipay.api.request.AlipayTradeQueryRequest;
 import com.alipay.api.request.AlipayTradeWapPayRequest;
 import com.alipay.api.response.AlipayTradeAppPayResponse;
 import com.alipay.api.response.AlipayTradeQueryResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Date;
 
 /**
  * Created by wh on 2017/4/18.
@@ -50,6 +46,9 @@ public class AlipayServiceImpl implements AlipayService {
     private JPAOrderRepository jpaOrderRepository;
 
     @Autowired
+    private   JPAPayLogRepository  jpaPayLogRepository;
+
+    @Autowired
     private JPAAppRepository jpaAppRepository;
 
 
@@ -60,7 +59,7 @@ public class AlipayServiceImpl implements AlipayService {
         //1,根据应用类别 和 支付方式获得  收款账户的基本配置
         AppPayAccount appPayAccount = jpaAppPayAccountRepository.findByAppIDAndPayType( order.getAppid(),order.getPayType() );
         //
-        AccountForZhifubaoWAP configWap =
+        AccountForAlipayWAP configWap =
                 jpaAccountForZhifubaoWAPRepository.findOne(  appPayAccount.getPayAccountID()   );
         AlipayConfig alipayConfig = new AlipayConfig();
         alipayConfig.setAPPID( configWap.getAppID() );
@@ -98,7 +97,7 @@ public class AlipayServiceImpl implements AlipayService {
         model.setProductCode(alipayPayRequest.getProduct_code());
 
 
-        model.setPassbackParams(URLEncoder.encode(alipayPayRequest.getExtendParams(),"UTF-8"));
+        model.setPassbackParams(URLEncoder.encode(alipayPayRequest.getExtendParams()==null?"{}":alipayPayRequest.getExtendParams(),"UTF-8"));
 
         alipay_request.setBizModel(model);
         // 设置异步通知地址
@@ -106,12 +105,34 @@ public class AlipayServiceImpl implements AlipayService {
         // 设置同步地址
         alipay_request.setReturnUrl(alipayConfig.return_url);
 
-
         // form表单生产
         String form = client.pageExecute(alipay_request).getBody();
+
+        //
+        payLogInsert(form,alipayPayRequest.getOut_trade_no());
+
+        System.out.println("------3333----------");
+
         return  form;
     }
 
+    @Async
+    public  void  payLogInsert(String form,String virtualOrderID){
+
+
+        //
+        PayLog payLog = new PayLog();
+        payLog.setCreatedAt( new Date() );
+        payLog.setContent(  form    );
+        payLog.setLogType( PayLog.LogTypeEnum.Pay.getCode() );
+        payLog.setOrderid(  virtualOrderID );
+        jpaPayLogRepository.save( payLog );
+
+        //
+        System.out.println("----------------");
+        System.out.println("----------:"+form);
+        System.out.println("---------------------");
+    }
     /**
      *  支付结果查询
      * **/
@@ -155,15 +176,17 @@ public class AlipayServiceImpl implements AlipayService {
         model.setTotalAmount(alipayPayRequest.getTotal_amount()+"");
         model.setProductCode( alipayPayRequest.getProduct_code() );
 
-        model.setPassbackParams(URLEncoder.encode(alipayPayRequest.getExtendParams(),"UTF-8"));
+        model.setPassbackParams(URLEncoder.encode(alipayPayRequest.getExtendParams()==null?"{}":alipayPayRequest.getExtendParams(),"UTF-8"));
+//        model.setPassbackParams(URLEncoder.encode(alipayPayRequest.getExtendParams(),"UTF-8"));
 
         request.setBizModel( model );
         request.setNotifyUrl( alipayConfig.notify_url );
         request.setReturnUrl( alipayConfig.return_url );
 
         //这里和普通的接口调用不同，使用的是sdkExecute
-
         AlipayTradeAppPayResponse response = alipayClient.sdkExecute(request);
+
+        payLogInsert(  response.getBody() ,alipayPayRequest.getOut_trade_no() );
 
         return  response.getBody() ;
 

@@ -63,13 +63,13 @@ public class AppPayAccount  extends  BaseEntity {
         /**
          *  支付宝-SDK
          */
-        Zhifubao_SDK( "ZFB_SDK","支付宝-SDK",AccountForZhifubaoSDK.class),
+        Zhifubao_SDK( "ZFB_SDK","支付宝-SDK",AccountAlipaySDK.class),
 
 
         /**
          *  支付宝-wap
          */
-        Zhifubao_WAP( "ZFB_WAP","支付宝-wap",AccountForZhifubaoWAP.class),
+        Zhifubao_WAP( "ZFB_WAP","支付宝-wap",AccountForAlipayWAP.class),
 
 
         ;

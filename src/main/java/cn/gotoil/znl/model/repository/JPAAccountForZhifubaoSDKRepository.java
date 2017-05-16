@@ -1,7 +1,6 @@
 package cn.gotoil.znl.model.repository;
 
-import cn.gotoil.znl.model.domain.AccountForZhifubaoSDK;
-import cn.gotoil.znl.model.domain.AccountForZhifubaoWAP;
+import cn.gotoil.znl.model.domain.AccountAlipaySDK;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -12,9 +11,9 @@ import org.springframework.stereotype.Repository;
  *
  */
 @Repository
-public interface JPAAccountForZhifubaoSDKRepository extends JpaRepository<AccountForZhifubaoSDK, Integer> {
+public interface JPAAccountForZhifubaoSDKRepository extends JpaRepository<AccountAlipaySDK, Integer> {
 
 
-    Page<AccountForZhifubaoSDK> findAll(Specification<AccountForZhifubaoSDK> condition, Pageable pageable);
+    Page<AccountAlipaySDK> findAll(Specification<AccountAlipaySDK> condition, Pageable pageable);
 
 }

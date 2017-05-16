@@ -256,7 +256,8 @@ public class Order  extends  BaseEntity{
                 return  null;
             }
             for (   PayTypeEnum en :   PayTypeEnum.values()) {
-                if ( en.getCode().equals(code) ) {
+                String codeStr = en.getCode();
+                if ( codeStr.equals(code) ) {
                     return en;
                 }
             }

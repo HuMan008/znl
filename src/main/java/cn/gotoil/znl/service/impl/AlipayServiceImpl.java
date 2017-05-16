@@ -6,6 +6,7 @@ import cn.gotoil.znl.model.domain.AccountForZhifubaoSDK;
 import cn.gotoil.znl.model.domain.AccountForZhifubaoWAP;
 import cn.gotoil.znl.model.domain.AppPayAccount;
 import cn.gotoil.znl.model.domain.Order;
+import cn.gotoil.znl.model.enums.TimeUnitEnum;
 import cn.gotoil.znl.model.repository.*;
 import cn.gotoil.znl.service.AlipayService;
 import cn.gotoil.znl.web.message.request.alipay.AlipayPayRequest;
@@ -25,6 +26,9 @@ import com.alipay.api.response.AlipayTradeQueryResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 /**
  * Created by wh on 2017/4/18.
@@ -49,7 +53,7 @@ public class AlipayServiceImpl implements AlipayService {
     private JPAAppRepository jpaAppRepository;
 
 
-    public String wap_pay(String orderVirtualID) throws AlipayApiException {
+    public String wap_pay(String orderVirtualID) throws AlipayApiException, UnsupportedEncodingException {
         //参数拼装
         Order order =  jpaOrderRepository.findOne(orderVirtualID);
 
@@ -68,7 +72,7 @@ public class AlipayServiceImpl implements AlipayService {
         alipayPayRequest.setDesc( "" );
         alipayPayRequest.setOut_trade_no(  orderVirtualID );
         alipayPayRequest.setProduct_code( alipayConfig.Product_Code );
-        alipayPayRequest.setTimeout_express( order.getExpire_time_minute()+"m" );
+        alipayPayRequest.setTimeout_express( order.getExpire_time_minute()+ TimeUnitEnum.Minute.getCode() );
         double  orderFee = order.getOrderFee()/(1.0*100);//分转元
         alipayPayRequest.setTotal_amount( orderFee );
         //
@@ -77,7 +81,7 @@ public class AlipayServiceImpl implements AlipayService {
     /***
      * wap支付
      */
-    public String wap_pay(AlipayPayRequest alipayPayRequest,AlipayConfig alipayConfig) throws AlipayApiException {
+    public String wap_pay(AlipayPayRequest alipayPayRequest,AlipayConfig alipayConfig) throws AlipayApiException, UnsupportedEncodingException {
         /**********************/
         // SDK 公共请求类，包含公共请求参数，以及封装了签名与验签，开发者无需关注签名与验签
         //调用RSA签名方式
@@ -93,9 +97,8 @@ public class AlipayServiceImpl implements AlipayService {
         model.setTimeoutExpress(alipayPayRequest.getTimeout_express());
         model.setProductCode(alipayPayRequest.getProduct_code());
 
-        ExtendParams extendParams = new ExtendParams();
-        extendParams.setHbFqNum(alipayPayRequest.getExtendParams());
-        model.setExtendParams( extendParams );
+
+        model.setPassbackParams(URLEncoder.encode(alipayPayRequest.getExtendParams(),"UTF-8"));
 
         alipay_request.setBizModel(model);
         // 设置异步通知地址
@@ -134,7 +137,7 @@ public class AlipayServiceImpl implements AlipayService {
     /**
      *  app支付
      * **/
-    public  String  app_pay(AlipayPayRequest alipayPayRequest,AlipayConfig alipayConfig) throws AlipayApiException {
+    public  String  app_pay(AlipayPayRequest alipayPayRequest,AlipayConfig alipayConfig) throws AlipayApiException, UnsupportedEncodingException {
 
         //实例化客户端
         AlipayClient alipayClient = new DefaultAlipayClient(AlipayConfig.URL , alipayConfig.APPID, alipayConfig.RSA_PRIVATE_KEY, AlipayConfig.FORMAT,
@@ -151,6 +154,9 @@ public class AlipayServiceImpl implements AlipayService {
         model.setTimeoutExpress( alipayPayRequest.getTimeout_express() );
         model.setTotalAmount(alipayPayRequest.getTotal_amount()+"");
         model.setProductCode( alipayPayRequest.getProduct_code() );
+
+        model.setPassbackParams(URLEncoder.encode(alipayPayRequest.getExtendParams(),"UTF-8"));
+
         request.setBizModel( model );
         request.setNotifyUrl( alipayConfig.notify_url );
         request.setReturnUrl( alipayConfig.return_url );

@@ -13,7 +13,9 @@ import lombok.ToString;
 @AllArgsConstructor
 public enum ZnlError  implements BillError {
 
-    NetConnectTimeOut(0001,"Net Connect Time Out")
+    NetConnectTimeOut(0001,"Net Connect Time Out"),
+
+    ParamIllegal(0002,"参数不合法！")
     ;
 
 

@@ -1,5 +1,7 @@
 package cn.gotoil.znl.web.controller.api.v1;
 
+import cn.gotoil.bill.web.annotation.Authentication;
+import cn.gotoil.bill.web.interceptor.authentication.AuthenticationType;
 import cn.gotoil.znl.config.define.AlipayConfig;
 import cn.gotoil.znl.service.AlipayService;
 import cn.gotoil.znl.web.message.request.alipay.AlipayPayRequest;
@@ -37,6 +39,7 @@ public class AlipayController {
     private AlipayConfig alipayConfig;
 
     @RequestMapping(value = "/wap/pay",method = RequestMethod.GET)
+    @Authentication(authenticationType = AuthenticationType.None)
     public String pay(Model model, HttpServletRequest request,WapPayResponse wapPayResponse ) throws UnsupportedEncodingException {
 
         model.addAttribute( "msg",wapPayResponse );
@@ -45,18 +48,11 @@ public class AlipayController {
     }
 
     @RequestMapping(value = "/wap/pay",method = RequestMethod.POST )
+    @Authentication(authenticationType = AuthenticationType.None)
     public void wap_pay(@RequestParam("orderVirtualID") String orderVirtualID
-            ,BindingResult bindingResult
             ,HttpServletRequest request,HttpServletResponse response) throws IOException {
 
         PrintWriter writer = response.getWriter();
-//        if(bindingResult.hasErrors()){
-//            String errorMsg = bindingResult.getAllErrors().get(0).getDefaultMessage();
-//            response.setContentType("application/json;charset=UTF-8");
-//            writer.write(errorMsg);
-//            writer.flush();
-//            return;
-//        }
 
         try {
             response.setContentType("text/html;charset=UTF-8");
@@ -73,6 +69,7 @@ public class AlipayController {
 
 
     @RequestMapping(value = "/query",method = RequestMethod.GET)
+    @Authentication(authenticationType = AuthenticationType.None)
     public String query(Model model, HttpServletRequest request ) throws UnsupportedEncodingException {
 
 
@@ -80,6 +77,7 @@ public class AlipayController {
     }
 
     @RequestMapping(value = "/query" ,method = RequestMethod.POST)
+    @Authentication(authenticationType = AuthenticationType.None)
 //    @ResponseBody
     public void  query(  @RequestBody @Valid AlipayQueryRequest alipayQueryRequest
             ,BindingResult bindingResult
@@ -106,6 +104,7 @@ public class AlipayController {
 
     @RequestMapping(value = "/return_url" )
     @ResponseBody
+    @Authentication(authenticationType = AuthenticationType.None)
     public String return_url(Model model, HttpServletRequest request ) throws UnsupportedEncodingException, AlipayApiException {
 
         //获取支付宝GET过来反馈信息
@@ -162,6 +161,7 @@ public class AlipayController {
 
     @RequestMapping(value = "/notify_url" )
     @ResponseBody
+    @Authentication(authenticationType = AuthenticationType.None)
     public String notify_url(Model model, HttpServletRequest request ) throws UnsupportedEncodingException, AlipayApiException {
 
         //获取支付宝POST过来反馈信息
@@ -242,13 +242,14 @@ public class AlipayController {
      * **/
     @RequestMapping(value = "/app/pay"  ,produces = "application/json;charset=UTF-8" )
     @ResponseBody
+    @Authentication(authenticationType = AuthenticationType.None)
     public String formOrder( @ModelAttribute @Valid AlipayPayRequest alipayPayRequest
             ,BindingResult bindingResult
             ,HttpServletResponse response  )     {
 
         String str = "";
 //        try {
-////            str = alipayService.app_pay(alipayPayRequest);
+//            str = alipayService.app_pay(alipayPayRequest);
 //            return str;
 //        } catch (AlipayApiException e) {
 //            e.printStackTrace();

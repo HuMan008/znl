@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
 
 /**
  * Created by wh on 2017/5/11.
@@ -45,7 +46,7 @@ public class CommonPayController {
     @ResponseBody
     @Authentication(authenticationType = AuthenticationType.None)
     public String sdkPay(Model model, HttpServletRequest request,
-                        PayRequest payRequest ) throws AlipayApiException {
+                        PayRequest payRequest ) throws AlipayApiException, UnsupportedEncodingException {
 
         String str = commonPayService.sdkPay(payRequest);
 

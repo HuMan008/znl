@@ -8,6 +8,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  *
  */
@@ -15,5 +17,6 @@ import org.springframework.stereotype.Repository;
 public interface JPAOrderRepository extends JpaRepository<Order, String> {
 
 
+    List<Order> findByAppOrderIDAndAppid(String orderActualID, String appid);
 
 }

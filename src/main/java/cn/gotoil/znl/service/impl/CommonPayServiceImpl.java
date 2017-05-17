@@ -164,7 +164,7 @@ public class CommonPayServiceImpl implements CommonPayService {
         order.setExpire_time_minute( request.getTimeout_minute() );
         order.setAppid( request.getAppID() );
         order.setAppOrderID( request.getOrder_id_actual()  );
-        order.setAppuserID(  "" );
+        order.setAppuserID( request.getAppUserID()  );
         order.setDescp( request.getSubject()  );
         order.setExtraParam( request.getExtra_param() );
         order.setID( System.currentTimeMillis()+serialNumberUtil.generateSerialNumber(SerialNumberUtil.NumberTypeEnum.Order, 8));

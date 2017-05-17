@@ -26,6 +26,11 @@ public class PayRequest {
     @NotNull(message = "支付方式不得为空!")
     private  String  payType;
 
+    /***
+     * 订单用户id[发起者]
+     * **/
+    @Size(max=50)
+    private  String  appUserID ;
 
     private  String order_id_actual;
 

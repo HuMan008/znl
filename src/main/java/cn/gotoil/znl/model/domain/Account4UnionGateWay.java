@@ -51,4 +51,9 @@ public class Account4UnionGateWay extends BaseAccount  {
         account4UnionGateWay.setStatus(EnumStatus.Enable.getCode());
         return account4UnionGateWay;
     }
+
+    @Override
+    public Account4UnionGateWay getConfig() {
+        return this;
+    }
 }

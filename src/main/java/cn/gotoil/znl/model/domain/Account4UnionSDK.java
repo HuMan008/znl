@@ -53,4 +53,9 @@ public class Account4UnionSDK  extends BaseAccount {
         account4UnionSDK.setMerchantKey("086a172d073d991a8a4e3fb8bb0101ad");
         return account4UnionSDK;
     }
+
+    @Override
+    public Account4UnionSDK getConfig() {
+        return this;
+    }
 }

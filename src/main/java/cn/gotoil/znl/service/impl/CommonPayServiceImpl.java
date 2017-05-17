@@ -1,14 +1,19 @@
 package cn.gotoil.znl.service.impl;
 
+import cn.gotoil.znl.adapter.PayAccountAdapter;
+import cn.gotoil.znl.adapter.PayConfigTarget;
 import cn.gotoil.znl.common.tools.SerialNumberUtil;
 import cn.gotoil.znl.config.define.AlipayConfig;
+import cn.gotoil.znl.config.property.UnionConsts;
 import cn.gotoil.znl.model.domain.*;
+import cn.gotoil.znl.model.enums.EnumPayType;
 import cn.gotoil.znl.model.enums.TimeUnitEnum;
 import cn.gotoil.znl.model.repository.*;
 import cn.gotoil.znl.service.AlipayService;
 import cn.gotoil.znl.service.CommonPayService;
 import cn.gotoil.znl.web.message.request.PayRequest;
 import cn.gotoil.znl.web.message.request.alipay.AlipayPayRequest;
+import cn.gotoil.znl.web.message.request.union.OrderSubmitRequest;
 import cn.gotoil.znl.web.message.response.alipay.WapPayResponse;
 import com.alipay.api.AlipayApiException;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -45,6 +50,9 @@ public class CommonPayServiceImpl implements CommonPayService {
 
     @Autowired
     private RestTemplate restTemplate;
+
+    @Autowired
+    private PayAccountAdapter payAccountAdapter;
 
 
     public  String  sdkPay(PayRequest request) throws AlipayApiException, UnsupportedEncodingException {
@@ -203,8 +211,22 @@ public class CommonPayServiceImpl implements CommonPayService {
             bd.append("&desc=").append(wapPayResponse.getDesc());
             bd.append("&orderVirtualID=").append(wapPayResponse.getOrderVirtualID());
             return  forwardUrl+bd.toString();
-        }else {
+        }else if(EnumPayType.UnionGateWay.getCode().equals(request.getPayType())){
+
+
+//            PayConfigTarget<Account4UnionGateWay> payConfigTarget = payAccountAdapter.getPayconfig(EnumPayType.UnionSdk,appPayAccount.getAppID());
+            PayConfigTarget<Account4UnionGateWay> payConfigTarget = payAccountAdapter.getPayconfig(EnumPayType.UnionGateWay,"1");
+
+            OrderSubmitRequest orderSubmitRequest = new OrderSubmitRequest();
+            orderSubmitRequest.setPickupUrl(UnionConsts.GateWay.pick);
+            orderSubmitRequest.setReceiveUrl(UnionConsts.GateWay.receive);
+            orderSubmitRequest.setMerchantId(payConfigTarget.getConfig().getMerchantId());
+//            orderSubmitRequest.
+
+
+        }else{
             //TODO:
+
         }
         //4,支付日志 入库
 

@@ -8,7 +8,7 @@ import cn.gotoil.znl.model.repository.JPAAppRepository;
  * Created by think on 2017/5/12.
  */
 public interface PayConfigTarget<T extends BaseAccount>  {
-
+     T getConfig();
      T getPayConfig(String appId);
 
 }

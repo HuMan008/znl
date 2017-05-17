@@ -88,7 +88,6 @@ public class OrderSubmitRequest {
         //unionUserId 必填
         if (StringUtils.isEmpty(unionUserId)) return;
 
-        setMerchantId(SybConstants.GateWayConsts.MERCHANTID);
         StringBuilder sb = new StringBuilder("");
         sb.append("inputCharset=").append(getInputCharset())
                 .append("&pickupUrl=").append(getPickupUrl())

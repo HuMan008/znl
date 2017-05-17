@@ -1,5 +1,6 @@
 package cn.gotoil.znl.service;
 
+import cn.gotoil.znl.web.message.request.PayRequest;
 import cn.gotoil.znl.web.message.request.union.*;
 import cn.gotoil.znl.web.message.response.union.PayResultResponse;
 import cn.gotoil.znl.web.message.response.union.UnionRegisterResponse;
@@ -11,6 +12,10 @@ import java.util.TreeMap;
  * Created by Suyj <suyajiang@gotoil.cn> on 2017/4/7.13:57
  */
 public interface UnionService {
+
+    Object payRequest2UnionRequest(PayRequest payRequest);
+
+
     UnionRegisterResponse unionRegister(UnionRegisterRequest registerRequest) throws Exception;
 
     Object unionRegister(String puid)  throws Exception;

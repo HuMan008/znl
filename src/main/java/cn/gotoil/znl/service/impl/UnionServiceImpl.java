@@ -1,14 +1,22 @@
 package cn.gotoil.znl.service.impl;
 
+import cn.gotoil.znl.adapter.PayAccountAdapter;
+import cn.gotoil.znl.adapter.PayConfigTarget;
 import cn.gotoil.znl.common.tools.ObjectHelper;
 import cn.gotoil.znl.common.tools.http.HttpConnectionUtil;
 import cn.gotoil.znl.common.union.SybPayService;
 import cn.gotoil.znl.config.property.SybConstants;
 import cn.gotoil.znl.config.property.SysConfig;
+import cn.gotoil.znl.config.property.UnionConsts;
 import cn.gotoil.znl.config.property.WeChatConfig;
+import cn.gotoil.znl.model.domain.Account4UnionSDK;
+import cn.gotoil.znl.model.domain.AppPayAccount;
 import cn.gotoil.znl.model.domain.NotifyBean;
+import cn.gotoil.znl.model.enums.EnumPayType;
 import cn.gotoil.znl.model.enums.union.PayResult;
+import cn.gotoil.znl.model.repository.JPAAppPayAccountRepository;
 import cn.gotoil.znl.service.UnionService;
+import cn.gotoil.znl.web.message.request.PayRequest;
 import cn.gotoil.znl.web.message.request.union.*;
 import cn.gotoil.znl.web.message.response.union.BatchOrderQueryResponse;
 import cn.gotoil.znl.web.message.response.union.PayResultResponse;
@@ -44,6 +52,11 @@ public class UnionServiceImpl implements UnionService {
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
 
+    @Autowired
+    private JPAAppPayAccountRepository jpaAppPayAccountRepository;
+
+    @Autowired
+    private PayAccountAdapter payAccountAdapter;
 
     /**
      * 通联 用户注册请求接口
@@ -352,5 +365,30 @@ public class UnionServiceImpl implements UnionService {
 
     private String redisKey4Notify(String appId){
         return "NOTIFY:"+appId;
+    }
+
+
+    /**
+     * 把统一请求订单请求转换成通联需要的订单
+     * @param payRequest
+     * @return
+     */
+    @Override
+    public Object payRequest2UnionRequest(PayRequest payRequest) {
+        //通联网关
+        if(EnumPayType.UnionGateWay.getCode().equals(payRequest.getPayType())){
+            //根据请求找到支付账户
+            AppPayAccount appPayAccount = jpaAppPayAccountRepository.findByAppIDAndPayType( payRequest.getAppID(),payRequest.getPayType() );
+            //找到配置
+            //// FIXME: 2017/5/17 这个应该根据appPayAccount取 暂时写死 用1
+            PayConfigTarget<Account4UnionSDK> payConfigTarget = payAccountAdapter.getPayconfig(EnumPayType.UnionSdk,"1");
+
+            OrderSubmitRequest orderSubmitRequest = new OrderSubmitRequest();
+            orderSubmitRequest.setPickupUrl(UnionConsts.GateWay.pick);
+            orderSubmitRequest.setReceiveUrl(UnionConsts.GateWay.receive);
+            orderSubmitRequest.setMerchantId(payConfigTarget.getConfig().getMerchantId());
+
+        }
+        return null;
     }
 }

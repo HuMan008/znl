@@ -68,4 +68,9 @@ public class Account4UnionWechatJs<T> extends BaseAccount  {
         account4UnionWechatJs.setStatus(EnumStatus.Enable.getCode());
         return account4UnionWechatJs;
     }
+
+    @Override
+    public Account4UnionWechatJs getConfig() {
+        return this;
+    }
 }

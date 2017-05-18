@@ -69,6 +69,14 @@ public class UnionRegisterRequest {
     }
 
 
+    public void doSign(String key) {
+        setMerchantId(SybConstants.GateWayConsts.MERCHANTID);
+        String signMsg = "&signType=" + getSignType() + "&merchantId=" + getMerchantId()
+                + "&partnerUserId=" + getPartnerUserId() + "&key=" +key+ "&";
+        setSignMsg(Hash.md5(signMsg).toUpperCase());
+    }
+
+
     @Override
     public String toString() {
         return "UnionRegisterRequest{" +

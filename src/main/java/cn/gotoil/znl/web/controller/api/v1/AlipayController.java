@@ -40,9 +40,9 @@ public class AlipayController {
 
     @RequestMapping(value = "/wap/pay",method = RequestMethod.GET)
     @Authentication(authenticationType = AuthenticationType.None)
-    public String pay(Model model, HttpServletRequest request,WapPayResponse wapPayResponse ) throws UnsupportedEncodingException {
+    public String pay(Model model, HttpServletRequest request,WapPayResponse wapPayResponse ,@ModelAttribute("wapPayResponse") WapPayResponse xx) throws UnsupportedEncodingException {
 
-        model.addAttribute( "msg",wapPayResponse );
+        model.addAttribute( "msg",xx );
 
         return  "alipay/pay";
     }

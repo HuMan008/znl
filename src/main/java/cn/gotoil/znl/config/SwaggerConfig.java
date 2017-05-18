@@ -15,9 +15,11 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
  * 访问方式  http://127.0.0.1:8080/swagger/index.html
  * http://localhost:18081/swagger-ui.html
  */
+/*
 @Configuration
 @EnableWebMvc
 @EnableSwagger2
+*/
 
 public class SwaggerConfig {
 

@@ -16,8 +16,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
 
 /**
@@ -34,12 +38,12 @@ public class CommonPayController {
     /**网页支付**/
     @RequestMapping(value = "/wapPay" )
     @Authentication(authenticationType = AuthenticationType.None)
-    public String wapPay(Model model, HttpServletRequest request,
-                        PayRequest payRequest ){
+    public ModelAndView wapPay( HttpServletRequest request,Model model,HttpServletResponse httpServletResponse,
+                         PayRequest payRequest , RedirectAttributes redirectAttributes){
 
-        String forwardUrl = commonPayService.wapPay(payRequest);
+        ModelAndView modelAndView = commonPayService.wapPay(payRequest,model,redirectAttributes,request,httpServletResponse);
 
-        return  forwardUrl;
+        return  modelAndView;
     }
 
     /**sdk支付**/

@@ -11,3 +11,5 @@ gradle*
 settings.gradle
 *.iml
 out
+*.yml
+.gitignore

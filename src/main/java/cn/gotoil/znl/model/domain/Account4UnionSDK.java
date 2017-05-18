@@ -44,13 +44,20 @@ public class Account4UnionSDK  extends BaseAccount {
 
 
     @Override
-    public Account4UnionSDK getPayConfig(String appId) {
-        Account4UnionSDK account4UnionSDK = new Account4UnionSDK();
+    public Account4UnionSDK getPayConfig(int payAccountId) {
+        //// TODO: 2017/5/17
+        return null;
+      /*  Account4UnionSDK account4UnionSDK = new Account4UnionSDK();
         account4UnionSDK.setId(1);
         account4UnionSDK.setName("测试通联SDK配置");
         account4UnionSDK.setStatus(EnumStatus.Enable.getCode());
         account4UnionSDK.setMerchantId("008500179950010");
         account4UnionSDK.setMerchantKey("086a172d073d991a8a4e3fb8bb0101ad");
-        return account4UnionSDK;
+        return account4UnionSDK;*/
+    }
+
+    @Override
+    public Account4UnionSDK getConfig() {
+        return this;
     }
 }

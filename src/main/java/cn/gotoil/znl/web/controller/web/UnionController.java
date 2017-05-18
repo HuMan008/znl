@@ -102,8 +102,8 @@ public class UnionController extends BaseController {
             BindingResult bindingResult,
             HttpServletRequest httpServletRequest) throws Exception {
 
-        PayConfigTarget<Account4UnionSDK> payConfigTarget = payAccountAdapter.getPayconfig(EnumPayType.UnionSdk,"1");
-        PayConfigTarget<Account4UnionGateWay> account4UnionGateWayPayConfigTarget = payAccountAdapter.getPayconfig(EnumPayType.UnionGateWay,"1");
+
+        PayConfigTarget<Account4UnionGateWay> account4UnionGateWayPayConfigTarget = payAccountAdapter.getPayconfig(EnumPayType.UnionGateWay,1);
 
         Map<String, Object> wxSessionMap = unionService.getWxSession(code);
         if (wxSessionMap == null || wxSessionMap.isEmpty()) {

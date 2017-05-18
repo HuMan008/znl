@@ -1,24 +1,36 @@
 package cn.gotoil.znl.service.impl;
 
+import cn.gotoil.znl.adapter.PayAccountAdapter;
+import cn.gotoil.znl.adapter.PayConfigTarget;
 import cn.gotoil.znl.common.tools.SerialNumberUtil;
 import cn.gotoil.znl.config.define.AlipayConfig;
 import cn.gotoil.znl.exception.DataException;
+import cn.gotoil.znl.config.property.SybConstants;
+import cn.gotoil.znl.config.property.UnionConsts;
 import cn.gotoil.znl.model.domain.*;
+import cn.gotoil.znl.model.enums.EnumPayType;
 import cn.gotoil.znl.model.enums.TimeUnitEnum;
 import cn.gotoil.znl.model.repository.*;
 import cn.gotoil.znl.service.AlipayService;
 import cn.gotoil.znl.service.CommonPayService;
+import cn.gotoil.znl.service.UnionService;
 import cn.gotoil.znl.web.message.request.PayRequest;
 import cn.gotoil.znl.web.message.request.QueryRequest;
 import cn.gotoil.znl.web.message.request.alipay.AlipayPayRequest;
+import cn.gotoil.znl.web.message.request.union.OrderSubmitRequest;
 import cn.gotoil.znl.web.message.response.alipay.WapPayResponse;
 import com.alipay.api.AlipayApiException;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.List;
@@ -50,6 +62,8 @@ public class CommonPayServiceImpl implements CommonPayService {
     @Autowired
     private RestTemplate restTemplate;
 
+    @Autowired
+    private UnionService unionService;
 
     public  String orderStatusQuery(QueryRequest queryRequest) throws AlipayApiException {
         //1,参数校验
@@ -166,7 +180,7 @@ public class CommonPayServiceImpl implements CommonPayService {
         return  "";
     }
 
-    public  String  wapPay(PayRequest request){
+    public ModelAndView wapPay(PayRequest request, Model model, RedirectAttributes attributes, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse){
 
         //转发 路径
         String forwardUrl = "";
@@ -220,7 +234,7 @@ public class CommonPayServiceImpl implements CommonPayService {
 
         jpaOrderRepository.save( order );
         //3,发送支付请求
-        if(payType.getCode().equals(Order.PayTypeEnum.Zhifubao_WAP.getCode())) {
+        if(payType!=null && payType.getCode().equals(Order.PayTypeEnum.Zhifubao_WAP.getCode())) {
             forwardUrl =  "forward:/alipay/v1/wap/pay?";
             //发送http get请求
             WapPayResponse wapPayResponse = new WapPayResponse();
@@ -239,13 +253,30 @@ public class CommonPayServiceImpl implements CommonPayService {
             bd.append("&total_amount=").append(wapPayResponse.getTotal_amount());
             bd.append("&desc=").append(wapPayResponse.getDesc());
             bd.append("&orderVirtualID=").append(wapPayResponse.getOrderVirtualID());
-            return  forwardUrl+bd.toString();
-        }else {
+            attributes.addFlashAttribute("wapPayResponse",wapPayResponse);
+            return  new ModelAndView("redirect:/alipay/v1/wap/pay");
+        }else if(EnumPayType.UnionGateWay.getCode().equals(request.getPayType())){
+            try{
+                OrderSubmitRequest orderSubmitRequest = (OrderSubmitRequest)unionService.payRequest2UnionRequest(request);
+                model.addAttribute("unionOrder", orderSubmitRequest);
+//                redirectAttributes.a("unionOrder",orderSubmitRequest);
+                model.addAttribute("url", SybConstants.GateWayConsts.URL_ORDERSUBMIT);//表单提交的url;
+//                redirectAttributes.addAttribute("url",SybConstants.GateWayConsts.URL_ORDERSUBMIT);
+//                return  new Mo"redirect:/pay/web/ordersubmit";
+                return new ModelAndView("union/ordersubmit");
+            }
+            catch (Exception e){
+                e.printStackTrace();
+            }
+
+
+        }else{
             //TODO:
+
         }
         //4,支付日志 入库
 
-        return  "";
+        return  null;
     }
 
 }

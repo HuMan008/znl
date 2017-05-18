@@ -54,7 +54,7 @@ public class Account4UnionWechatJs<T> extends BaseAccount  {
     private byte status;
 
 @Override
-    public Account4UnionWechatJs getPayConfig(String appId) {
+    public Account4UnionWechatJs getPayConfig(int payAccountId) {
         Account4UnionWechatJs account4UnionWechatJs = new Account4UnionWechatJs();
         account4UnionWechatJs.setId(1);
         account4UnionWechatJs.setName("测试通联微信支付1");
@@ -67,5 +67,10 @@ public class Account4UnionWechatJs<T> extends BaseAccount  {
 
         account4UnionWechatJs.setStatus(EnumStatus.Enable.getCode());
         return account4UnionWechatJs;
+    }
+
+    @Override
+    public Account4UnionWechatJs getConfig() {
+        return this;
     }
 }

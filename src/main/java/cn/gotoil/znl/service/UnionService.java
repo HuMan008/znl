@@ -46,4 +46,6 @@ public interface UnionService {
     void processWechatNotify(TreeMap<String, String> params) throws Exception;
 
     void processAllinpayNotify(PayResultResponse payResult);
+
+    AppPayRequest payRequest2UnionSdkRequest(PayRequest request);
 }

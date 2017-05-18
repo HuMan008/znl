@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import java.io.UnsupportedEncodingException;
 import java.util.Date;
 
 /**
@@ -109,6 +110,35 @@ public class AppPayRequest {
         sb.append("&key=").append(SybConstants.SDK.MERCHANTKEY) ;
 
         System.out.println(sb.toString());
+
+        this.setSignMsg(Hash.md5(new String(sb.toString().getBytes("utf-8"))).toUpperCase());
+
+
+    }
+
+
+    public void doSign(String key) throws UnsupportedEncodingException {
+        this.ext1  = "<USER>"+getUnionUserId()+"</USER>";
+        StringBuilder sb = new StringBuilder();
+        sb.append("inputCharset=").append(getInputCharset())
+                .append("&receiveUrl=").append(getReceiveUrl())
+                .append("&version=").append(getVersion())
+                .append("&language=").append(getLanguage())
+                .append("&signType=").append(getSignType())
+                .append("&merchantId=") .append(getMerchantId())
+                .append("&orderNo=") .append(getOrderNo())
+                .append("&orderAmount=").append(getOrderAmount())
+                .append("&orderCurrency=").append(getOrderCurrency())
+                .append("&orderDatetime=").append(getOrderDatetime());
+        if(StringUtils.isNotEmpty(getOrderExpireDatetime()+""))  sb.append("&orderExpireDatetime=").append(getOrderExpireDatetime())  ;
+        sb.append("&productName=").append(getProductName());
+        sb.append("&ext1=").append("<USER>").append(getUnionUserId()).append("</USER>");
+        if(StringUtils.isNotEmpty(getExt2()))  sb.append("&ext2=").append(getExt2())  ;
+        if(StringUtils.isNotEmpty(getExtTL()))  sb.append("&extTL=").append(getExtTL())  ;
+        sb.append("&payType=") .append(getPayType())   ;
+        if(StringUtils.isNotEmpty(getIssuerId()))  sb.append("&issuerId=").append(getIssuerId())  ;
+        if(StringUtils.isNotEmpty(getTradeNature()))  sb.append("&tradeNature=").append(getTradeNature())  ;
+        sb.append("&key=").append(key) ;
 
         this.setSignMsg(Hash.md5(new String(sb.toString().getBytes("utf-8"))).toUpperCase());
 

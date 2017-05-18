@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository;
  * Created by think on 2017/5/17.
  */
 @Repository
-public interface JPAAccountUnionSDKRepository  extends JpaRepository<Account4UnionSDK, Integer> {
+public interface JPAAccount4UnionSDKRepository extends JpaRepository<Account4UnionSDK, Integer> {
 }

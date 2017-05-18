@@ -1,8 +1,10 @@
 package cn.gotoil.znl.model.domain;
 
+import cn.gotoil.bill.ApplicationContextProvider;
 import cn.gotoil.znl.adapter.PayConfigTarget;
 import cn.gotoil.znl.adapter.listener.AccountAdaptee;
 import cn.gotoil.znl.model.enums.EnumStatus;
+import cn.gotoil.znl.model.repository.JPAAccount4UnionSDKRepository;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.stereotype.Component;
@@ -45,15 +47,8 @@ public class Account4UnionSDK  extends BaseAccount {
 
     @Override
     public Account4UnionSDK getPayConfig(int payAccountId) {
-        //// TODO: 2017/5/17
-        return null;
-      /*  Account4UnionSDK account4UnionSDK = new Account4UnionSDK();
-        account4UnionSDK.setId(1);
-        account4UnionSDK.setName("测试通联SDK配置");
-        account4UnionSDK.setStatus(EnumStatus.Enable.getCode());
-        account4UnionSDK.setMerchantId("008500179950010");
-        account4UnionSDK.setMerchantKey("086a172d073d991a8a4e3fb8bb0101ad");
-        return account4UnionSDK;*/
+        return ApplicationContextProvider.getApplicationContext().getBean(JPAAccount4UnionSDKRepository.class).findOne(payAccountId);
+
     }
 
     @Override

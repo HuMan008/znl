@@ -30,6 +30,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,11 +39,9 @@ import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipError;
@@ -387,6 +386,45 @@ public class UnionServiceImpl implements UnionService {
     }
 
 
+
+    public AppPayRequest payRequest2UnionSdkRequest(PayRequest payRequest){
+
+        AppPayAccount appPayAccount = jpaAppPayAccountRepository.findByAppIDAndPayType( payRequest.getAppID(),payRequest.getPayType() );
+        if(null ==appPayAccount){
+            throw new BillException(ZnlError.AppUnSupportPayeType);
+        }
+        //找appUserId是否用过通联网关支付
+        String unionId =findUnionUserIdByAppUserId(appPayAccount,payRequest.getAppUserID()) ;
+        if(StringUtils.isEmpty(unionId)){
+            throw new BillException(ZnlError.UnionRegersterFail);
+        }
+
+        //找到配置
+        PayConfigTarget<Account4UnionSDK> payConfigTarget = payAccountAdapter.getPayconfig(EnumPayType.UnionSdk,appPayAccount.getPayAccountID());
+        if(payConfigTarget==null){
+            throw new BillException(ZnlError.GetAccountConfigError);
+        }
+
+        AppPayRequest appPayRequest = new AppPayRequest();
+
+        appPayRequest.setReceiveUrl(UnionConsts.SDK.notifyUrl);
+        appPayRequest.setMerchantId(payConfigTarget.getConfig().getMerchantId());
+        appPayRequest.setOrderNo(payRequest.getOrder_id_actual());
+        appPayRequest.setOrderAmount(payRequest.getAmount());
+        appPayRequest.setOrderDatetime(cn.gotoil.znl.common.tools.date.DateUtils.SimpleDatetimeNoConnectorFormat().format(DateUtils.addMinutes(new Date(),payRequest.getTimeout_minute())));
+        appPayRequest.setUnionUserId(unionId);
+        appPayRequest.setProductName(payRequest.getSubject());
+        appPayRequest.setExt2(payRequest.getExtra_param());
+        try {
+            appPayRequest.doSign(payConfigTarget.getConfig().getMerchantKey());
+        }catch (UnsupportedEncodingException e){
+            logger.error("加签转码错误！");
+        }
+        return appPayRequest;
+
+    }
+
+
     /**
      * 把统一请求订单请求转换成通联需要的订单
      * @param payRequest
@@ -431,7 +469,9 @@ public class UnionServiceImpl implements UnionService {
     }
 
     public String findUnionUserIdByAppUserId(AppPayAccount payAccount,String appUserId) {
-        if(StringUtils.isEmpty(appUserId)) appUserId = RandomStringUtils.randomAlphabetic(32);
+        if(StringUtils.isEmpty(appUserId)) {
+            appUserId = RandomStringUtils.randomAlphabetic(32);
+        }
         String redisKey = redisKeyForAppUser(payAccount.getAppID(), appUserId);
         String unionUserId = (String)stringRedisTemplate.opsForHash().get(redisKey,appUserId);
         if (unionUserId != null) {

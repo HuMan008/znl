@@ -2,6 +2,7 @@ package cn.gotoil.znl.service.impl;
 
 import cn.gotoil.znl.adapter.PayAccountAdapter;
 import cn.gotoil.znl.adapter.PayConfigTarget;
+import cn.gotoil.znl.common.tools.ObjectHelper;
 import cn.gotoil.znl.common.tools.SerialNumberUtil;
 import cn.gotoil.znl.config.define.AlipayConfig;
 import cn.gotoil.znl.config.property.SybConstants;
@@ -15,6 +16,7 @@ import cn.gotoil.znl.service.CommonPayService;
 import cn.gotoil.znl.service.UnionService;
 import cn.gotoil.znl.web.message.request.PayRequest;
 import cn.gotoil.znl.web.message.request.alipay.AlipayPayRequest;
+import cn.gotoil.znl.web.message.request.union.AppPayRequest;
 import cn.gotoil.znl.web.message.request.union.OrderSubmitRequest;
 import cn.gotoil.znl.web.message.response.alipay.WapPayResponse;
 import com.alipay.api.AlipayApiException;
@@ -115,7 +117,7 @@ public class CommonPayServiceImpl implements CommonPayService {
 
         jpaOrderRepository.save( order );
         //3,发送支付请求
-        if(payType.getCode().equals(Order.PayTypeEnum.Zhifubao_SDK.getCode())) {
+        if(payType!=null && payType.getCode().equals(Order.PayTypeEnum.Zhifubao_SDK.getCode())) {
 
             //
             AlipayPayRequest alipayPayRequest = new AlipayPayRequest();
@@ -135,8 +137,9 @@ public class CommonPayServiceImpl implements CommonPayService {
             alipayConfig.setALIPAY_PUBLIC_KEY( configSdk.getPublicKey()  );
             alipayConfig.setAPPID( configSdk.getAppID()  );
             return  alipayService.app_pay(alipayPayRequest,alipayConfig);
-        }else {
-            //TODO:
+        }else if(EnumPayType.UnionSdk.getCode().equals(request.getPayType())) {
+            AppPayRequest appPayRequest = unionService.payRequest2UnionSdkRequest(request);
+           return ObjectHelper.jsonString(appPayRequest);
         }
         //4,支付日志 入库
 

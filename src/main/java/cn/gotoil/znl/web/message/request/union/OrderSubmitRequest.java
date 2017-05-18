@@ -124,6 +124,44 @@ public class OrderSubmitRequest {
         this.setSignMsg(Hash.md5(new String(sb.toString().getBytes("utf-8"))).toUpperCase());
     }
 
+    public void doSign(String key) throws UnsupportedEncodingException {
+        //unionUserId 必填
+        if (StringUtils.isEmpty(unionUserId)) return;
 
+        StringBuilder sb = new StringBuilder("");
+        sb.append("inputCharset=").append(getInputCharset())
+                .append("&pickupUrl=").append(getPickupUrl())
+                .append("&receiveUrl=").append(getReceiveUrl()).
+                append("&version=").append(getVersion()).
+                append("&language=").append(getLanguage()).
+                append("&signType=").append(getSignType())
+                .append("&merchantId=").append(getMerchantId());
+        if (StringUtils.isNotEmpty(getPayerName())) sb.append("&payerName=").append(getPayerName());
+        if (StringUtils.isNotEmpty(getPayerEmail())) sb.append("&payerEmail=").append(getPayerEmail());
+        if (StringUtils.isNotEmpty(getPayerTelephone())) sb.append("&payerTelephone=").append(getPayerTelephone());
+        if (StringUtils.isNotEmpty(getPayerIDCard())) sb.append("&payerIDCard=").append(getPayerIDCard());
+        if (StringUtils.isNotEmpty(getPid())) sb.append("&pid=").append(getPid());
+        sb.append("&orderNo=").append(getOrderNo()).
+                append("&orderAmount=").append(getOrderAmount())
+                .append("&orderCurrency=").append(getOrderCurrency())
+                .append("&orderDatetime=").append(getOrderDatetime());
+        if (StringUtils.isNotEmpty(getOrderExpireDatetime() + "")) sb.append("&orderExpireDatetime=").append(getOrderExpireDatetime());
+        if (StringUtils.isNotEmpty(getProductName())) sb.append("&productName=").append(getProductName());
+        if (StringUtils.isNotEmpty(getProductPrice() + "")) sb.append("&productPrice=").append(getProductPrice());
+        if (StringUtils.isNotEmpty(getProductNum() + "")) sb.append("&productNum=").append(getProductNum());
+        if (StringUtils.isNotEmpty(getProductId())) sb.append("&productId=").append(getProductId());
+        if (StringUtils.isNotEmpty(getProductDesc())) sb.append("&productDesc=").append(getProductDesc());
+        sb.append("&ext1=").append("<USER>").append(getUnionUserId()).append("</USER>");
+        if (StringUtils.isNotEmpty(getExt2())) sb.append("&ext2=").append(getExt2());
+        if (StringUtils.isNotEmpty(getExtTL())) sb.append("&extTL=").append(getExtTL());
+        sb.append("&payType=").append(getPayType());
+        if (StringUtils.isNotEmpty(getIssuerId())) sb.append("&issuerId=").append(getIssuerId());
+        if (StringUtils.isNotEmpty(getPan())) sb.append("&pan=").append(getPan());
+        if (StringUtils.isNotEmpty(getTradeNature())) sb.append("&tradeNature=").append(getTradeNature());
+        sb.append("&key=").append(key);
+//        System.out.println(sb);
+        this.ext1  = "<USER>"+getUnionUserId()+"</USER>";
+        this.setSignMsg(Hash.md5(new String(sb.toString().getBytes("utf-8"))).toUpperCase());
+    }
 
 }

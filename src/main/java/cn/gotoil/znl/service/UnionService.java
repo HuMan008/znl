@@ -13,7 +13,7 @@ import java.util.TreeMap;
  */
 public interface UnionService {
 
-    Object payRequest2UnionRequest(PayRequest payRequest);
+    Object payRequest2UnionRequest(PayRequest payRequest) throws Exception;
 
 
     UnionRegisterResponse unionRegister(UnionRegisterRequest registerRequest) throws Exception;

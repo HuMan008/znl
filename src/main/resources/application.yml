@@ -25,8 +25,8 @@ spring:
 
   datasource:
 #      url: jdbc:mysql://120.25.91.237:3306/znl?useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true&autoReconnect=true&failOverReadOnly=false
-#      url: jdbc:mysql://201.201.201.173:3306/znl?useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true&autoReconnect=true&failOverReadOnly=false&useSSL=false&allowMultiQueries=true
-      url: jdbc:mysql://localhost:3306/znl?useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true&autoReconnect=true&failOverReadOnly=false&useSSL=false&allowMultiQueries=true
+      url: jdbc:mysql://201.201.201.173:3306/znl?useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true&autoReconnect=true&failOverReadOnly=false&useSSL=false&allowMultiQueries=true
+#      url: jdbc:mysql://localhost:3306/znl?useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true&autoReconnect=true&failOverReadOnly=false&useSSL=false&allowMultiQueries=true
 #      username: root
 #      password: open123
       username:  developer
@@ -75,7 +75,15 @@ unionconfig:
     notifyUrl: http://suyj.ngrok.cc/pay/wxpaynotify
   sdk:
     notifyUrl: http://suyj.ngrok.cc/pay/sdk/receiveurl #移动支付异步通知
-
+  gateway:
+    register: https://cashier.allinpay.com/usercenter/merchant/UserInfo/reg.do #通联用户注册地址
+    ordersubmit: https://cashier.allinpay.com/mobilepayment/mobile/SaveMchtOrderServlet.action #订单提交
+    dopickup: http://suyj.ngrok.cc/pay/dopickup #通联支付同步通知
+    receiveurl: http://suyj.ngrok.cc/pay/receiveurl #通联支付异步通知
+    orderquery: https://cashier.allinpay.com/gateway/index.do #订单查询（单个）
+    orderquerybatch: https://cashier.allinpay.com/mchtoq/index.do #订单查询（批量）
+    refund: https://cashier.allinpay.com/gateway/index.do #退款申请
+    refundstatus: https://cashier.allinpay.com/mchtoq/refundQuery #退款状态查询
 
 
 

@@ -56,13 +56,13 @@ public class PayAccountAdapter implements PayConfigListener,AccountAdaptee {
     }*/
 
     @Override
-    public BaseAccount getPayconfig(EnumPayType enumPayType, String appId) {
+    public BaseAccount getPayconfig(EnumPayType enumPayType, int payAccountId) {
         if(EnumPayType.UnionWechatJs.equals(enumPayType)){
-            return account4UnionWechatJs.getPayConfig(appId);
+            return account4UnionWechatJs.getPayConfig(payAccountId);
         }else if(EnumPayType.UnionSdk.equals(enumPayType)){
-            return account4UnionSDK.getPayConfig(appId) ;
+            return account4UnionSDK.getPayConfig(payAccountId) ;
         }else if(EnumPayType.UnionGateWay.equals(enumPayType)){
-            return account4UnionGateWay.getPayConfig(appId);
+            return account4UnionGateWay.getPayConfig(payAccountId);
         }
         return null;
     }

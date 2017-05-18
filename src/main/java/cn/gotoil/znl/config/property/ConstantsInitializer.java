@@ -1,8 +1,5 @@
 package cn.gotoil.znl.config.property;
 
-import cn.gotoil.znl.model.domain.Account4UnionGateWay;
-import cn.gotoil.znl.model.domain.Account4UnionSDK;
-import cn.gotoil.znl.model.domain.Account4UnionWechatJs;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
@@ -31,19 +28,19 @@ public class ConstantsInitializer {
     @Value("${unionconfig.gateway.register}")
     private String union_gateway_register;
     @Value("${unionconfig.gateway.ordersubmit}")
-    private String unionconfig_gateway_ordersubmit;
+    private String union_gateway_ordersubmit;
     @Value("${unionconfig.gateway.dopickup}")
-    private String unionconfig_gateway_dopickup;
+    private String union_gateway_dopickup;
     @Value("${unionconfig.gateway.receiveurl}")
-    private String unionconfig_gateway_receiveurl;
+    private String union_gateway_receiveurl;
     @Value("${unionconfig.gateway.orderquery}")
-    private String  unionconfig_gateway_orderquery;
+    private String union_gateway_orderquery;
     @Value("${unionconfig.gateway.orderquerybatch}")
-    private String  unionconfig_gateway_orderquerybatch;
+    private String union_gateway_orderquerybatch;
     @Value("${unionconfig.gateway.refund}")
-    private String  unionconfig_gateway_refund;
+    private String union_gateway_refund;
     @Value("${unionconfig.gateway.refundstatus}")
-    private String  unionconfig_gateway_refundstatus;
+    private String union_gateway_refundstatus;
 
 
 
@@ -122,13 +119,13 @@ public class ConstantsInitializer {
 
 //        通联网关
         UnionConsts.GateWay.register = union_gateway_register;
-        UnionConsts.GateWay.orderSubmit = unionconfig_gateway_ordersubmit;
-        UnionConsts.GateWay.pick = unionconfig_gateway_dopickup;
-        UnionConsts.GateWay.receive = unionconfig_gateway_receiveurl;
-        UnionConsts.GateWay.orderQuery = unionconfig_gateway_orderquery;
-        UnionConsts.GateWay.orderBatchQuery = unionconfig_gateway_orderquerybatch;
-        UnionConsts.GateWay.refund = unionconfig_gateway_refund;
-        UnionConsts.GateWay.refundStatusQuery = unionconfig_gateway_refundstatus;
+        UnionConsts.GateWay.orderSubmit = union_gateway_ordersubmit;
+        UnionConsts.GateWay.pick = union_gateway_dopickup;
+        UnionConsts.GateWay.receive = union_gateway_receiveurl;
+        UnionConsts.GateWay.orderQuery = union_gateway_orderquery;
+        UnionConsts.GateWay.orderBatchQuery = union_gateway_orderquerybatch;
+        UnionConsts.GateWay.refund = union_gateway_refund;
+        UnionConsts.GateWay.refundStatusQuery = union_gateway_refundstatus;
 
 
 //new ---------------------------------------------------------------------------------------------------end

@@ -9,6 +9,6 @@ import cn.gotoil.znl.model.repository.JPAAppRepository;
  */
 public interface PayConfigTarget<T extends BaseAccount>  {
      T getConfig();
-     T getPayConfig(String appId);
+     T getPayConfig(int payAccountId);
 
 }

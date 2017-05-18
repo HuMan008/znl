@@ -2,12 +2,14 @@ package cn.gotoil.znl.web.message.response.alipay;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 /**
  * Created by wh on 2017/5/15.
  */
 @Getter
 @Setter
+@ToString
 public class WapPayResponse {
 
 

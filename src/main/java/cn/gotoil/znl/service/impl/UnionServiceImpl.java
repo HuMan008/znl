@@ -1,7 +1,9 @@
 package cn.gotoil.znl.service.impl;
 
+import cn.gotoil.bill.exception.BillException;
 import cn.gotoil.znl.adapter.PayAccountAdapter;
 import cn.gotoil.znl.adapter.PayConfigTarget;
+import cn.gotoil.znl.classes.RedisHashHelper;
 import cn.gotoil.znl.common.tools.ObjectHelper;
 import cn.gotoil.znl.common.tools.http.HttpConnectionUtil;
 import cn.gotoil.znl.common.union.SybPayService;
@@ -9,11 +11,14 @@ import cn.gotoil.znl.config.property.SybConstants;
 import cn.gotoil.znl.config.property.SysConfig;
 import cn.gotoil.znl.config.property.UnionConsts;
 import cn.gotoil.znl.config.property.WeChatConfig;
+import cn.gotoil.znl.exception.ZnlError;
+import cn.gotoil.znl.model.domain.Account4UnionGateWay;
 import cn.gotoil.znl.model.domain.Account4UnionSDK;
 import cn.gotoil.znl.model.domain.AppPayAccount;
 import cn.gotoil.znl.model.domain.NotifyBean;
 import cn.gotoil.znl.model.enums.EnumPayType;
 import cn.gotoil.znl.model.enums.union.PayResult;
+import cn.gotoil.znl.model.repository.JPAAccount4UnionGateWayRepository;
 import cn.gotoil.znl.model.repository.JPAAppPayAccountRepository;
 import cn.gotoil.znl.service.UnionService;
 import cn.gotoil.znl.web.message.request.PayRequest;
@@ -23,8 +28,13 @@ import cn.gotoil.znl.web.message.response.union.PayResultResponse;
 import cn.gotoil.znl.web.message.response.union.UnionRegisterResponse;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.HashOperations;
+import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -35,12 +45,15 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.zip.ZipError;
 
 /**
  * Created by Suyj <suyajiang@gotoil.cn> on 2017/4/7.13:38
  */
 @Service
 public class UnionServiceImpl implements UnionService {
+
+    private Logger logger  = LoggerFactory.getLogger(UnionService.class);
 
     @Autowired
     private WeChatConfig weChatConfig;
@@ -57,6 +70,12 @@ public class UnionServiceImpl implements UnionService {
 
     @Autowired
     private PayAccountAdapter payAccountAdapter;
+
+    @Autowired
+    private JPAAccount4UnionGateWayRepository jpaAccount4UnionGateWayRepository;
+
+    @Autowired
+    private RedisHashHelper redisHashHelper;
 
     /**
      * 通联 用户注册请求接口
@@ -374,21 +393,81 @@ public class UnionServiceImpl implements UnionService {
      * @return
      */
     @Override
-    public Object payRequest2UnionRequest(PayRequest payRequest) {
+    public Object payRequest2UnionRequest(PayRequest payRequest) throws Exception{
         //通联网关
         if(EnumPayType.UnionGateWay.getCode().equals(payRequest.getPayType())){
             //根据请求找到支付账户
             AppPayAccount appPayAccount = jpaAppPayAccountRepository.findByAppIDAndPayType( payRequest.getAppID(),payRequest.getPayType() );
+            if(null ==appPayAccount){
+                throw new BillException(ZnlError.AppUnSupportPayeType);
+            }
+            //找appUserId是否用过通联网关支付
+            String unionId =findUnionUserIdByAppUserId(appPayAccount,payRequest.getAppUserID()) ;
+            if(StringUtils.isEmpty(unionId)){
+                throw new BillException(ZnlError.UnionRegersterFail);
+            }
+
             //找到配置
-            //// FIXME: 2017/5/17 这个应该根据appPayAccount取 暂时写死 用1
-            PayConfigTarget<Account4UnionSDK> payConfigTarget = payAccountAdapter.getPayconfig(EnumPayType.UnionSdk,"1");
+            PayConfigTarget<Account4UnionGateWay> payConfigTarget = payAccountAdapter.getPayconfig(EnumPayType.UnionGateWay,appPayAccount.getPayAccountID());
+            if(payConfigTarget==null){
+                throw new BillException(ZnlError.GetAccountConfigError);
+            }
 
             OrderSubmitRequest orderSubmitRequest = new OrderSubmitRequest();
             orderSubmitRequest.setPickupUrl(UnionConsts.GateWay.pick);
             orderSubmitRequest.setReceiveUrl(UnionConsts.GateWay.receive);
             orderSubmitRequest.setMerchantId(payConfigTarget.getConfig().getMerchantId());
+            orderSubmitRequest.setOrderNo(payRequest.getOrder_id_actual());
+            orderSubmitRequest.setOrderAmount(payRequest.getAmount());
+            orderSubmitRequest.setUnionUserId(unionId);
+            orderSubmitRequest.setOrderExpireDatetime(payRequest.getTimeout_minute());
+            orderSubmitRequest.setProductName(payRequest.getSubject());
+            orderSubmitRequest.setPayType("0");
+            orderSubmitRequest.doSign(payConfigTarget.getConfig().getMerchantKey());
 
+            return orderSubmitRequest;
         }
         return null;
     }
+
+    public String findUnionUserIdByAppUserId(AppPayAccount payAccount,String appUserId) {
+        if(StringUtils.isEmpty(appUserId)) appUserId = RandomStringUtils.randomAlphabetic(32);
+        String redisKey = redisKeyForAppUser(payAccount.getAppID(), appUserId);
+        String unionUserId = (String)stringRedisTemplate.opsForHash().get(redisKey,appUserId);
+        if (unionUserId != null) {
+            return unionUserId;
+        }
+        //找到这个AppId对应的通联网关配置信息
+        Account4UnionGateWay account4UnionGateWay=jpaAccount4UnionGateWayRepository.getOne(payAccount.getPayAccountID());
+
+        UnionRegisterRequest unionRegisterRequest = new UnionRegisterRequest();
+        unionRegisterRequest.setMerchantId(account4UnionGateWay.getMerchantId());
+        unionRegisterRequest.setPartnerUserId(appUserId);
+        unionRegisterRequest.doSign(account4UnionGateWay.getMerchantKey());
+
+        HttpConnectionUtil http = new HttpConnectionUtil(SybConstants.GateWayConsts.URL_UNIONREGISTER);
+        try {
+            http.init();
+            byte[] bys = http.postParams(ObjectHelper.introspectStringValueMap(unionRegisterRequest), true);
+            String result = new String(bys, "UTF-8");
+            UnionRegisterResponse registerResponse = JSONObject.parseObject(result, UnionRegisterResponse.class);
+            if("0000".equals(registerResponse.getResultCode()) ||"0006".equals(registerResponse.getResultCode())){
+                    stringRedisTemplate.opsForHash().put(redisKey,appUserId,registerResponse.getUserId());
+                return  registerResponse.getUserId();
+            }else {
+                return "";
+            }
+        }catch (Exception e ){
+            logger.error(e.getMessage());
+            return "";
+        }
+
+    }
+
+
+    private static String redisKeyForAppUser(String appId,String appUserId) {
+        return "unionpay_user_" + appId+":"+appUserId;
+    }
+
+
 }

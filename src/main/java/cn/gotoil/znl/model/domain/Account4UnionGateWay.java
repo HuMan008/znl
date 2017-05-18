@@ -1,9 +1,12 @@
 package cn.gotoil.znl.model.domain;
 
+import cn.gotoil.bill.ApplicationContextProvider;
 import cn.gotoil.znl.adapter.PayConfigTarget;
 import cn.gotoil.znl.model.enums.EnumStatus;
+import cn.gotoil.znl.model.repository.JPAAccount4UnionGateWayRepository;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
@@ -19,6 +22,10 @@ import javax.persistence.*;
 @Setter
 public class Account4UnionGateWay extends BaseAccount  {
 
+
+    @Autowired
+    @Transient
+    private JPAAccount4UnionGateWayRepository jpaAccount4UnionGateWayRepository;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -42,14 +49,8 @@ public class Account4UnionGateWay extends BaseAccount  {
     private byte status;
 
     @Override
-    public Account4UnionGateWay getPayConfig(String appId) {
-        Account4UnionGateWay account4UnionGateWay = new Account4UnionGateWay();
-        account4UnionGateWay.setId(1);
-        account4UnionGateWay.setName("通联网关支付");
-        account4UnionGateWay.setMerchantId("008500189990304");
-        account4UnionGateWay.setMerchantKey("fcc3c40d59c191b3e91f47a03c010900");
-        account4UnionGateWay.setStatus(EnumStatus.Enable.getCode());
-        return account4UnionGateWay;
+    public Account4UnionGateWay getPayConfig(int payAccountId) {
+        return ApplicationContextProvider.getApplicationContext().getBean(JPAAccount4UnionGateWayRepository.class).findOne(payAccountId);
     }
 
     @Override

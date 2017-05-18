@@ -18,7 +18,7 @@ public interface CommonPayService {
 
     String orderStatusQuery(QueryRequest queryRequest) throws AlipayApiException ;
 
-    String  wapPay(PayRequest request);
+//    String  wapPay(PayRequest request);
     ModelAndView wapPay(PayRequest request, Model model, RedirectAttributes attributes, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse);
 
     String  sdkPay(PayRequest request) throws AlipayApiException, UnsupportedEncodingException;

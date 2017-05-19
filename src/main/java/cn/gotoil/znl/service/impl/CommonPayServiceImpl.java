@@ -2,9 +2,12 @@ package cn.gotoil.znl.service.impl;
 
 import cn.gotoil.znl.adapter.PayAccountAdapter;
 import cn.gotoil.znl.adapter.PayConfigTarget;
+import cn.gotoil.znl.common.tools.ObjectHelper;
 import cn.gotoil.znl.common.tools.SerialNumberUtil;
 import cn.gotoil.znl.config.define.AlipayConfig;
+import cn.gotoil.znl.exception.DataException;
 import cn.gotoil.znl.config.property.SybConstants;
+import cn.gotoil.znl.config.property.SysConfig;
 import cn.gotoil.znl.config.property.UnionConsts;
 import cn.gotoil.znl.model.domain.*;
 import cn.gotoil.znl.model.enums.EnumPayType;
@@ -36,8 +39,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by wh on 2017/5/11.
@@ -286,7 +289,7 @@ public class CommonPayServiceImpl implements CommonPayService {
             try{map = ObjectHelper.introspect(wxPayRequest);
                 String x = cn.gotoil.znl.common.tools.ObjectHelper.getUrlParamsByMap(map);
                 mydirect = mydirect+x;
-                mydirect=URLEncoder.encode(mydirect,"UTF-8");
+                mydirect= URLEncoder.encode(mydirect,"UTF-8");
             }catch (Exception e){
                 e.printStackTrace();
             }

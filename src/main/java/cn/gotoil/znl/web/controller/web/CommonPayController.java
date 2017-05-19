@@ -5,6 +5,7 @@ import cn.gotoil.bill.web.interceptor.authentication.AuthenticationType;
 import cn.gotoil.znl.model.domain.App;
 import cn.gotoil.znl.service.CommonPayService;
 import cn.gotoil.znl.web.message.request.PayRequest;
+import cn.gotoil.znl.web.message.request.QueryRequest;
 import cn.gotoil.znl.web.message.response.alipay.WapPayResponse;
 import com.alipay.api.AlipayApiException;
 import org.apache.commons.lang3.StringUtils;
@@ -53,6 +54,18 @@ public class CommonPayController {
                         PayRequest payRequest ) throws AlipayApiException, UnsupportedEncodingException {
 
         String str = commonPayService.sdkPay(payRequest);
+
+        return  str;
+    }
+
+    /**订单 支付状态 主动查询**/
+    @RequestMapping(value = "/orderStatusQuery" )
+    @ResponseBody
+    @Authentication(authenticationType = AuthenticationType.None)
+    public String orderStatusQuery(Model model, HttpServletRequest request,
+                                   QueryRequest queryRequest ) throws AlipayApiException, UnsupportedEncodingException {
+
+        String str = commonPayService.orderStatusQuery(queryRequest);
 
         return  str;
     }

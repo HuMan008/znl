@@ -1,12 +1,10 @@
 package cn.gotoil.znl.service.impl;
 
-import cn.gotoil.bill.tools.ObjectHelper;
 import cn.gotoil.znl.adapter.PayAccountAdapter;
 import cn.gotoil.znl.adapter.PayConfigTarget;
 import cn.gotoil.znl.common.tools.SerialNumberUtil;
 import cn.gotoil.znl.config.define.AlipayConfig;
 import cn.gotoil.znl.config.property.SybConstants;
-import cn.gotoil.znl.config.property.SysConfig;
 import cn.gotoil.znl.config.property.UnionConsts;
 import cn.gotoil.znl.model.domain.*;
 import cn.gotoil.znl.model.enums.EnumPayType;
@@ -16,6 +14,7 @@ import cn.gotoil.znl.service.AlipayService;
 import cn.gotoil.znl.service.CommonPayService;
 import cn.gotoil.znl.service.UnionService;
 import cn.gotoil.znl.web.message.request.PayRequest;
+import cn.gotoil.znl.web.message.request.QueryRequest;
 import cn.gotoil.znl.web.message.request.alipay.AlipayPayRequest;
 import cn.gotoil.znl.web.message.request.union.AppPayRequest;
 import cn.gotoil.znl.web.message.request.union.OrderSubmitRequest;
@@ -23,6 +22,7 @@ import cn.gotoil.znl.web.message.request.union.WxPayRequest;
 import cn.gotoil.znl.web.message.response.alipay.WapPayResponse;
 import com.alipay.api.AlipayApiException;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
@@ -37,6 +37,7 @@ import java.net.URLEncoder;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
 
 /**
  * Created by wh on 2017/5/11.
@@ -70,6 +71,39 @@ public class CommonPayServiceImpl implements CommonPayService {
 
     @Autowired
     private SysConfig sysConfig;
+
+    public  String orderStatusQuery(QueryRequest queryRequest) throws AlipayApiException {
+        //1,参数校验
+        boolean flagA = StringUtils.isNotEmpty( queryRequest.getOrderVirtualID() );
+        boolean flagB = StringUtils.isNotEmpty( queryRequest.getOrderActualID() ) && StringUtils.isNotEmpty( queryRequest.getAppID()    );
+        if( !flagA && !flagB   ){
+            //
+            throw  new DataException(false,"参数校验未通过[虚拟订单ID和实际订单ID不能同时为空]！");
+        }
+        //2，订单 信息获取
+        Order order = null ;
+        if(flagA){
+            order = jpaOrderRepository.findOne( queryRequest.getOrderVirtualID() );
+        }else {
+            List<Order> orderList = jpaOrderRepository.findByAppOrderIDAndAppid( queryRequest.getOrderActualID(),queryRequest.getAppID() );
+            if( orderList.size()==0 ){
+                throw new DataException(false,"订单不存在！");
+            }else if( orderList.size()>1 ){
+                throw new DataException(false,"当前查询条件 所获得的 订单不唯一！");
+            }else {
+                order = orderList.get(0);
+            }
+        }
+        //3，根据 不同的支付方式，进行 查询
+        if( order.getPayType().equals( Order.PayTypeEnum.Zhifubao_SDK.getCode() ) || order.getPayType().equals( Order.PayTypeEnum.Zhifubao_WAP.getCode() ) ){
+            //
+            return  alipayService.query( order.getID() );
+        }else{
+            //TODO
+        }
+
+        return  "";
+    }
 
     public  String  sdkPay(PayRequest request) throws AlipayApiException, UnsupportedEncodingException {
 

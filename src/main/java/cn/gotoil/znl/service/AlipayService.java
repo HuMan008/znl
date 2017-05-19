@@ -12,6 +12,11 @@ import java.io.UnsupportedEncodingException;
  */
 public interface AlipayService {
 
+    /**
+     *  支付结果查询
+     * **/
+    String query( String orderVirtualID ) throws AlipayApiException ;
+
     String wap_pay(String orderVirtualID) throws AlipayApiException, UnsupportedEncodingException;
 
     /**

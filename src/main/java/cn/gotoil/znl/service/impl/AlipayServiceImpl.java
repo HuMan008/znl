@@ -51,6 +51,30 @@ public class AlipayServiceImpl implements AlipayService {
     @Autowired
     private JPAAppRepository jpaAppRepository;
 
+    /**
+     *  支付结果查询
+     * **/
+    public String query( String orderVirtualID ) throws AlipayApiException {
+
+        //参数拼装
+        Order order =  jpaOrderRepository.findOne(orderVirtualID);
+
+        //1,根据应用类别 和 支付方式获得  收款账户的基本配置
+        AppPayAccount appPayAccount = jpaAppPayAccountRepository.findByAppIDAndPayType( order.getAppid(),order.getPayType() );
+        //
+        AccountForAlipayWAP configWap =
+                jpaAccountForZhifubaoWAPRepository.findOne(  appPayAccount.getPayAccountID()   );
+        AlipayConfig alipayConfig = new AlipayConfig();
+        alipayConfig.setAPPID( configWap.getAppID() );
+        alipayConfig.setALIPAY_PUBLIC_KEY( configWap.getPublicKey() );
+        alipayConfig.setRSA_PRIVATE_KEY( configWap.getPrivateKey() );
+
+        AlipayQueryRequest alipayQueryRequest = new AlipayQueryRequest();
+        alipayQueryRequest.setOut_trade_no( order.getID() );
+        alipayQueryRequest.setTrade_no( order.getThirdOrderNO() );
+
+        return  query(  alipayQueryRequest , alipayConfig );
+    }
 
     public String wap_pay(String orderVirtualID) throws AlipayApiException, UnsupportedEncodingException {
         //参数拼装

@@ -30,7 +30,7 @@ public interface UnionService {
 
     String refundStatus(RefundStatusRequest refundStatusRequest) throws Exception;
 
-    Map getWxSession(String wxJsCode);
+    Map getWxSession(String wxJsCode,WxPayRequest wxPayRequest);
 /*
     Map<String,String> unionWxPay(long trxamt, String reqsn, String paytype, String body, String remark, String acct, String authcode,
                                   String limit_pay) throws Exception;*/
@@ -48,4 +48,6 @@ public interface UnionService {
     void processAllinpayNotify(PayResultResponse payResult);
 
     AppPayRequest payRequest2UnionSdkRequest(PayRequest request);
+
+    WxPayRequest payRequest2UnionWechatRequest(PayRequest request);
 }

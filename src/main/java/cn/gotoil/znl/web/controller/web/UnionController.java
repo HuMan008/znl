@@ -21,6 +21,7 @@ import cn.gotoil.znl.web.message.request.union.*;
 import cn.gotoil.znl.web.message.response.union.OrderQueryResponse;
 import cn.gotoil.znl.web.message.response.union.WxPayInfoResponse;
 import com.alibaba.fastjson.JSONObject;
+import com.sun.tracing.dtrace.Attributes;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.bouncycastle.util.encoders.Base64;
@@ -29,6 +30,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -59,29 +61,6 @@ public class UnionController extends BaseController {
     private PayAccountAdapter payAccountAdapter;
 
 
-    @RequestMapping("/web/orderPage")
-    public ModelAndView orderPage(HttpServletRequest request){
-        ModelAndView modelAndView = new ModelAndView("union/orderPage");
-        modelAndView.addObject("orderNo",orderHelper.createOrder(request));
-        modelAndView.addObject("orderAmount",1);
-        modelAndView.addObject("productName",sysConfig.getDefaultProductName())   ;
-        return    modelAndView  ;
-    }
-
-
-    @RequestMapping(value = "towechatpay")
-    @Authentication(authenticationType = AuthenticationType.None)
-    public Object toPay(@RequestParam @NotNull String code){
-        //先登录微信
-
-        WxPayRequest wxOrder = new WxPayRequest();
-        ModelAndView modelAndView = new ModelAndView("union/wxorder");
-        wxOrder.setAuthCode(code);
-        modelAndView.addObject("wxOrder",wxOrder)  ;
-        modelAndView.addObject("url","/pay/dopay");
-        return modelAndView;
-    }
-
 
 
 
@@ -97,15 +76,15 @@ public class UnionController extends BaseController {
     @RequestMapping(value = "dopay",method = RequestMethod.GET)
     @Authentication(authenticationType = AuthenticationType.None)
     public Object pay(
-            @RequestParam String code,
-            @Valid WxPayRequest wxPayRequest,
+            @RequestParam(required = true) String code,
+            @RequestParam(required = false) String state,
+             WxPayRequest wxPayRequest,
             BindingResult bindingResult,
             HttpServletRequest httpServletRequest) throws Exception {
 
 
-        PayConfigTarget<Account4UnionGateWay> account4UnionGateWayPayConfigTarget = payAccountAdapter.getPayconfig(EnumPayType.UnionGateWay,1);
 
-        Map<String, Object> wxSessionMap = unionService.getWxSession(code);
+        Map<String, Object> wxSessionMap = unionService.getWxSession(code,wxPayRequest);
         if (wxSessionMap == null || wxSessionMap.isEmpty()) {
 //            new WebException(WebExceptionEnum.NoSupportWechatCode);
             return new BillException(UnionError.WxCodeNoSupport);

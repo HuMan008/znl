@@ -12,10 +12,7 @@ import cn.gotoil.znl.config.property.SysConfig;
 import cn.gotoil.znl.config.property.UnionConsts;
 import cn.gotoil.znl.config.property.WeChatConfig;
 import cn.gotoil.znl.exception.ZnlError;
-import cn.gotoil.znl.model.domain.Account4UnionGateWay;
-import cn.gotoil.znl.model.domain.Account4UnionSDK;
-import cn.gotoil.znl.model.domain.AppPayAccount;
-import cn.gotoil.znl.model.domain.NotifyBean;
+import cn.gotoil.znl.model.domain.*;
 import cn.gotoil.znl.model.enums.EnumPayType;
 import cn.gotoil.znl.model.enums.union.PayResult;
 import cn.gotoil.znl.model.repository.JPAAccount4UnionGateWayRepository;
@@ -214,15 +211,15 @@ public class UnionServiceImpl implements UnionService {
     }
 
     @Override
-    public Map getWxSession(String wxJsCode) {
+    public Map getWxSession(String wxJsCode,WxPayRequest wxPayRequest) {
         StringBuffer sb = new StringBuffer();
-        sb.append("appid=").append(weChatConfig.getAppId());
-        sb.append("&secret=").append(weChatConfig.getSecret());
+        sb.append("appid=").append(wxPayRequest.getWxAppid());
+        sb.append("&secret=").append(wxPayRequest.getWxAppKey());
 //        sb.append("&js_code=").append(wxJsCode);
         sb.append("&code=").append(wxJsCode);
-        sb.append("&grant_type=").append(weChatConfig.getGrantType());
+        sb.append("&grant_type=").append(UnionConsts.WechatJs.grantType);
 
-        String res = HttpConnectionUtil.sendGet(weChatConfig.getSessionHost(), sb.toString());
+        String res = HttpConnectionUtil.sendGet(UnionConsts.WechatJs.sessionHost, sb.toString());
         if (res == null || res.equals("")) {
             return null;
         }
@@ -260,10 +257,12 @@ public class UnionServiceImpl implements UnionService {
            /* long trxamt,String reqsn,String paytype,String body,String remark,String acct,String authcode,
                                          String limit_pay*/) throws Exception {
         // limit_pay 暂时只对微信支付有效,仅支持no_credi
-        return sybPayService.pay(wxPayRequest.getTrxamt(), wxPayRequest.getReqsn(), wxPayRequest.getPayType()
+        return sybPayService.pay(wxPayRequest.getCusid(),wxPayRequest.getAppid(), wxPayRequest.getTrxamt(), wxPayRequest.getReqsn(), wxPayRequest.getPayType()
                 , wxPayRequest.getBody(), wxPayRequest.getRemark(), openId, "",
-                weChatConfig.getNotifyUrl(),
-                wxPayRequest.getLimitPay());
+                wxPayRequest.getNotifyUrl(),
+                wxPayRequest.getLimitPay(),
+                wxPayRequest.getValidtime(),
+                wxPayRequest.getAppKey());
 
 
     }
@@ -386,6 +385,33 @@ public class UnionServiceImpl implements UnionService {
     }
 
 
+    @Override
+    public WxPayRequest payRequest2UnionWechatRequest(PayRequest payRequest) {
+        AppPayAccount appPayAccount = jpaAppPayAccountRepository.findByAppIDAndPayType( payRequest.getAppID(),payRequest.getPayType() );
+        if(null ==appPayAccount){
+            throw new BillException(ZnlError.AppUnSupportPayeType);
+        }
+
+
+        //找到配置
+        PayConfigTarget<Account4UnionWechatJs> payConfigTarget = payAccountAdapter.getPayconfig(EnumPayType.UnionWechatJs,appPayAccount.getPayAccountID());
+        if(payConfigTarget==null){
+            throw new BillException(ZnlError.GetAccountConfigError);
+        }
+
+        WxPayRequest wxPayRequest = new WxPayRequest();
+        wxPayRequest.setAppid(payConfigTarget.getConfig().getUnionAppId());
+        wxPayRequest.setAppKey(payConfigTarget.getConfig().getUnionAppKey());
+        wxPayRequest.setCusid(payConfigTarget.getConfig().getUnionUserId());
+        wxPayRequest.setWxAppid(payConfigTarget.getConfig().getWechatAppId());
+        wxPayRequest.setWxAppKey(payConfigTarget.getConfig().getWechatAppKey());
+        wxPayRequest.setBody(payRequest.getSubject());
+        wxPayRequest.setReqsn(payRequest.getOrder_id_actual());
+        wxPayRequest.setNotifyUrl(UnionConsts.WechatJs.notifyUrl);
+        wxPayRequest.setValidtime(payRequest.getTimeout_minute());
+
+        return wxPayRequest;
+    }
 
     public AppPayRequest payRequest2UnionSdkRequest(PayRequest payRequest){
 

@@ -59,6 +59,9 @@ public class UnionConsts {
     }
 
     public static class WechatJs{
+//        https://vsp.allinpay.com/apiweb/unitorder
+        public static String aipUrl;
+
         //    https://api.weixin.qq.com/sns/oauth2/access_token
         public static  String sessionHost;
 

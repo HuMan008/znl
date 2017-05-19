@@ -21,6 +21,9 @@ public class ConstantsInitializer {
     private String union_wechat_grantType;
     @Value("${unionconfig.wechat.notifyUrl}")
     private String union_wechat_notifyUrl;
+    @Value("${unionconfig.wechat.apiUrl}")
+    private String union_wechat_apiUrl;
+
 
     @Value("${unionconfig.sdk.notifyUrl}")
     private String union_sdk_notifyUrl;
@@ -110,6 +113,7 @@ public class ConstantsInitializer {
 
 // new -----------------------------------------------------------------------------------------start
 //        通联微信JS
+        UnionConsts.WechatJs.aipUrl = union_wechat_apiUrl;
         UnionConsts.WechatJs.sessionHost = union_wechat_sessionHost;
         UnionConsts.WechatJs.grantType = union_wechat_grantType;
         UnionConsts.WechatJs.notifyUrl = union_wechat_notifyUrl;

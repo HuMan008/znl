@@ -1,11 +1,12 @@
 package cn.gotoil.znl.service.impl;
 
+import cn.gotoil.bill.tools.ObjectHelper;
 import cn.gotoil.znl.adapter.PayAccountAdapter;
 import cn.gotoil.znl.adapter.PayConfigTarget;
-import cn.gotoil.znl.common.tools.ObjectHelper;
 import cn.gotoil.znl.common.tools.SerialNumberUtil;
 import cn.gotoil.znl.config.define.AlipayConfig;
 import cn.gotoil.znl.config.property.SybConstants;
+import cn.gotoil.znl.config.property.SysConfig;
 import cn.gotoil.znl.config.property.UnionConsts;
 import cn.gotoil.znl.model.domain.*;
 import cn.gotoil.znl.model.enums.EnumPayType;
@@ -18,6 +19,7 @@ import cn.gotoil.znl.web.message.request.PayRequest;
 import cn.gotoil.znl.web.message.request.alipay.AlipayPayRequest;
 import cn.gotoil.znl.web.message.request.union.AppPayRequest;
 import cn.gotoil.znl.web.message.request.union.OrderSubmitRequest;
+import cn.gotoil.znl.web.message.request.union.WxPayRequest;
 import cn.gotoil.znl.web.message.response.alipay.WapPayResponse;
 import com.alipay.api.AlipayApiException;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -31,7 +33,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by wh on 2017/5/11.
@@ -62,6 +67,9 @@ public class CommonPayServiceImpl implements CommonPayService {
 
     @Autowired
     private UnionService unionService;
+
+    @Autowired
+    private SysConfig sysConfig;
 
     public  String  sdkPay(PayRequest request) throws AlipayApiException, UnsupportedEncodingException {
 
@@ -234,6 +242,25 @@ public class CommonPayServiceImpl implements CommonPayService {
             catch (Exception e){
                 e.printStackTrace();
             }
+
+
+        } else if(EnumPayType.UnionWechatJs.getCode().equals(request.getPayType())){ //通联微信支付
+
+            WxPayRequest wxPayRequest = unionService.payRequest2UnionWechatRequest(request);
+            Map<String, Object> map = new HashMap<>();
+            String mydirect =sysConfig.getFullServerHostAddress()+"/pay/dopay?t="+System.currentTimeMillis()+"&";
+            try{map = ObjectHelper.introspect(wxPayRequest);
+                String x = cn.gotoil.znl.common.tools.ObjectHelper.getUrlParamsByMap(map);
+                mydirect = mydirect+x;
+                mydirect=URLEncoder.encode(mydirect,"UTF-8");
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            String url = "https://open.weixin.qq.com/connect/oauth2/authorize" +
+                    "?appid="+wxPayRequest.getWxAppid() +
+                    "&redirect_uri=" + mydirect+
+                    "&response_type=code&scope=snsapi_base&state="+RandomStringUtils.randomAscii(4)+/*ObjectHelper.jsonString(wxPayRequest)*/""+"&connect_redirect=1#wechat_redirect";
+            return new ModelAndView("redirect:"+url);
 
 
         }else{

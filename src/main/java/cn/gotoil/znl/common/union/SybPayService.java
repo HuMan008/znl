@@ -3,30 +3,33 @@ package cn.gotoil.znl.common.union;
 
 import cn.gotoil.znl.common.tools.http.HttpConnectionUtil;
 import cn.gotoil.znl.config.property.SybConstants;
+import cn.gotoil.znl.config.property.UnionConsts;
 
 
 import java.util.Map;
 import java.util.TreeMap;
 
 public class SybPayService {
-	public Map<String,String> pay(long trxamt,String reqsn,String paytype,String body,String remark,String acct,String authcode,String notify_url,String limit_pay) throws Exception{
-		HttpConnectionUtil http = new HttpConnectionUtil(SybConstants.SYB_APIURL +"/pay");
+	public Map<String,String> pay(String cusid,String appid, long trxamt,String reqsn,String paytype,String body,String remark,String acct,String authcode,String notify_url,String limit_pay,int validtime,
+								  String key) throws Exception{
+		HttpConnectionUtil http = new HttpConnectionUtil(UnionConsts.WechatJs.aipUrl +"/pay");
 		http.init();
 		TreeMap<String,String> params = new TreeMap<String,String>();
-		params.put("cusid", SybConstants.SYB_CUSID);
-		params.put("appid", SybConstants.SYB_APPID);
+		params.put("cusid", cusid);
+		params.put("appid", appid);
 		params.put("version", "11");
 		params.put("trxamt", String.valueOf(trxamt));
 		params.put("reqsn", reqsn);
 		params.put("paytype", paytype);
 		params.put("randomstr", SybUtil.getValidatecode(8));
 		params.put("body", body);
+		params.put("validtime",validtime+"");
 		params.put("remark", remark);
 		params.put("acct", acct);
 		params.put("authcode", authcode);
 		params.put("notify_url", notify_url);
 		params.put("limit_pay", limit_pay);
-		params.put("sign", SybUtil.sign(params,SybConstants.SYB_APPKEY));
+		params.put("sign", SybUtil.sign(params,key));
 		byte[] bys = http.postParams(params, true);
 		String result = new String(bys,"UTF-8");
 		Map<String,String> map = handleResult(result);

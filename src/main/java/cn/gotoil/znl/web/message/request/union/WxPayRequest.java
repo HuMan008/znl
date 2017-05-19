@@ -36,6 +36,19 @@ public class WxPayRequest  {
 
 
     private String limitPay = "no_credit"   ;
+@Max(99)
+    private int validtime =15;
 
-    private String authCode ="";
+    private String notifyUrl ="";
+
+//    @NotNull
+    private String cusid;
+//@NotNull
+    private String appid;
+
+    private String appKey;
+
+    private String wxAppid;
+
+    private String wxAppKey;
 }

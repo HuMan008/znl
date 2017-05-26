@@ -20,7 +20,6 @@ import javax.xml.bind.annotation.XmlRegistry;
 @EnableScheduling
 @EnableRabbit
 @EnableAutoConfiguration
-@ImportResource("classpath*:rabbitmq.xml")
 @ComponentScan("cn.gotoil")
 public class ZnlApplication {
 

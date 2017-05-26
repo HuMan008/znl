@@ -52,12 +52,14 @@ spring:
       max-wait: -1
   freemarker:
     prefer-file-system-access:
-#  rabbitmq:
-#    host: 192.168.62.129
-#    port: 5672
-#    username: gtsy
-#    password: gtsy
-#    virtual-host: vhost
+  rabbitmq:
+    host: 192.168.62.129
+    port: 5672
+    username: gtsy
+    password: gtsy
+    virtual-host: vhost
+    publisher-confirms: true
+    publisher-returns: true
 
 logging:
   level: debug

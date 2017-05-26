@@ -1,7 +1,6 @@
 package cn.gotoil.znl.web.controller;
 
-import cn.gotoil.znl.service.MessageProducerService;
-import cn.gotoil.znl.service.MqRabbitServer;
+import cn.gotoil.znl.classes.RabbitMqSender;
 import cn.gotoil.znl.web.message.request.union.WxPayRequest;
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/mq")
 public class MqRabbitController  {
 
+/*    @Autowired
+    private MessageProducerService messageProducerService;*/
+
     @Autowired
-    private MessageProducerService messageProducerService;
+    private RabbitMqSender rabbitMqSender;
 //    private MqRabbitServiceImpl mqRabbitService;
 /*
     @Autowired
@@ -30,7 +32,9 @@ public class MqRabbitController  {
     public Object send(@PathVariable String gameType,@PathVariable String appid){
 
         WxPayRequest wxPayRequest = new WxPayRequest();
-        messageProducerService.delayMsg(JSONObject.parseObject(JSONObject.toJSONString(wxPayRequest)),0);
+        wxPayRequest.setBody("苏亚江是个帅哥");
+//        messageProducerService.delayMsg(JSONObject.parseObject(JSONObject.toJSONString(wxPayRequest)),0);
+        rabbitMqSender.send(JSONObject.toJSONString(wxPayRequest), 0);
  /*int x=0;
 
 try {

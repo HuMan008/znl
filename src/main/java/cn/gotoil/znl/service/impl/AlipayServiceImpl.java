@@ -40,7 +40,7 @@ public class AlipayServiceImpl implements AlipayService {
     private JPAAccountForZhifubaoWAPRepository jpaAccountForZhifubaoWAPRepository;
 
     @Autowired
-    private JPAAccountForZhifubaoSDKRepository jpaAccountForZhifubaoSDKRepository;
+    private JPAAccount4AlipaySDKRepository jpaAccount4AlipaySDKRepository;
 
     @Autowired
     private JPAOrderRepository jpaOrderRepository;

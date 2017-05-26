@@ -51,4 +51,6 @@ public class WxPayRequest  {
     private String wxAppid;
 
     private String wxAppKey;
+
+    private int notifyCount=1;
 }

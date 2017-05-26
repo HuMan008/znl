@@ -1,14 +1,11 @@
 package cn.gotoil.znl.service.impl;
 
-import cn.gotoil.znl.adapter.PayAccountAdapter;
-import cn.gotoil.znl.adapter.PayConfigTarget;
 import cn.gotoil.znl.common.tools.ObjectHelper;
 import cn.gotoil.znl.common.tools.SerialNumberUtil;
 import cn.gotoil.znl.config.define.AlipayConfig;
 import cn.gotoil.znl.exception.DataException;
 import cn.gotoil.znl.config.property.SybConstants;
 import cn.gotoil.znl.config.property.SysConfig;
-import cn.gotoil.znl.config.property.UnionConsts;
 import cn.gotoil.znl.model.domain.*;
 import cn.gotoil.znl.model.enums.EnumPayType;
 import cn.gotoil.znl.model.enums.TimeUnitEnum;
@@ -29,7 +26,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -52,7 +48,7 @@ public class CommonPayServiceImpl implements CommonPayService {
     private AlipayService alipayService;
 
     @Autowired
-    private  JPAAccountForZhifubaoSDKRepository  jpaAccountForZhifubaoSDKRepository;
+    private JPAAccount4AlipaySDKRepository jpaAccount4AlipaySDKRepository;
 
     @Autowired
     private JPAAppPayAccountRepository jpaAppPayAccountRepository;
@@ -65,9 +61,6 @@ public class CommonPayServiceImpl implements CommonPayService {
 
     @Autowired
     private JPAAppRepository jpaAppRepository;
-
-    @Autowired
-    private RestTemplate restTemplate;
 
     @Autowired
     private UnionService unionService;
@@ -175,7 +168,7 @@ public class CommonPayServiceImpl implements CommonPayService {
             alipayPayRequest.setOut_trade_no(  order.getAppOrderID() );
 
             AccountAlipaySDK configSdk =
-                    jpaAccountForZhifubaoSDKRepository.findOne(  appPayAccount.getPayAccountID()   );
+                    jpaAccount4AlipaySDKRepository.findOne(  appPayAccount.getPayAccountID()   );
 
             AlipayConfig alipayConfig = new AlipayConfig();
             alipayConfig.setRSA_PRIVATE_KEY( configSdk.getPrivateKey() );

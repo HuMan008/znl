@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:util="http://www.springframework.org/schema/util" xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:rabbit="http://www.springframework.org/schema/rabbit"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+                            http://www.springframework.org/schema/context
+                            http://www.springframework.org/schema/context/spring-context-3.1.xsd
+                            http://www.springframework.org/schema/tx
+                            http://www.springframework.org/schema/tx/spring-tx.xsd
+                            http://www.springframework.org/schema/aop
+                            http://www.springframework.org/schema/aop/spring-aop.xsd
+                            http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd
+                            http://www.springframework.org/schema/rabbit http://www.springframework.org/schema/rabbit/spring-rabbit-1.6.xsd">
+    <context:property-placeholder location="classpath:rmq-config.properties" ignore-unresolvable="true"/>
+
+
+
+
+    <bean id="connectionFactory" class="org.springframework.amqp.rabbit.connection.CachingConnectionFactory">
+        <property name="host" value="${rabbitmq.host}" />
+        <property name="port" value="${rabbitmq.port}" />
+        <property name="username" value="${rabbitmq.username}" />
+        <property name="password" value="${rabbitmq.password}" />
+        <property name="virtualHost" value="${rabbitmq.virtualHost}"/>
+        <property name="channelCacheSize" value="${rabbitmq.channel.cacheSize}" />
+        <property name="requestedHeartBeat" value="60"/>
+
+    </bean>
+
+    <bean id="orderConsumer" class="cn.gotoil.znl.service.impl.OrderConsumer"></bean>
+    <bean id="messageConverter" class="org.springframework.amqp.support.converter.SimpleMessageConverter" />
+    <bean id="jsonMessageConverter" class="org.springframework.amqp.support.converter.Jackson2JsonMessageConverter" />
+
+    <rabbit:admin connection-factory="connectionFactory" />
+
+    <!-- 延迟消息start -->
+    <rabbit:topic-exchange name="delay_exchange" delayed="true">
+        <rabbit:bindings>
+            <rabbit:binding queue="delay_queue" pattern="order.delay.notify"  />
+        </rabbit:bindings>
+    </rabbit:topic-exchange>
+
+    <rabbit:queue name="delay_queue" durable="true" auto-declare="true" auto-delete="false" />
+
+    <rabbit:template id="delayMsgTemplate" connection-factory="connectionFactory" message-converter="jsonMessageConverter" exchange="delay_exchange" />
+
+    <rabbit:listener-container connection-factory="connectionFactory" channel-transacted="false" acknowledge="auto" message-converter="jsonMessageConverter">
+        <rabbit:listener queues="delay_queue" ref="orderConsumer" method="delayMsg" />
+    </rabbit:listener-container>
+    <!-- 延迟消息end -->
+</beans>

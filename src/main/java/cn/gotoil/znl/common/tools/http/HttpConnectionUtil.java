@@ -167,4 +167,8 @@ public class HttpConnectionUtil {
         return result;
     }
 
+    public static String postMessage(String notifyUrl, String notifyContent) {
+        //todo
+        return notifyContent;
+    }
 }

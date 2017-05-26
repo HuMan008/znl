@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
  *
  */
 @Repository
-public interface JPAAccountForZhifubaoSDKRepository extends JpaRepository<AccountAlipaySDK, Integer> {
+public interface JPAAccount4AlipaySDKRepository extends JpaRepository<AccountAlipaySDK, Integer> {
 
 
     Page<AccountAlipaySDK> findAll(Specification<AccountAlipaySDK> condition, Pageable pageable);

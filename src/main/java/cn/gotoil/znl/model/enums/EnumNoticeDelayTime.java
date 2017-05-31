@@ -19,8 +19,6 @@ public enum EnumNoticeDelayTime {
     EightMinute("EightMinute",8*60*1000,"8分钟",5),
     OneHalfHour("OneHalfHour",30*60*1000,"半小时",6),
     ;
-
-
     public static EnumNoticeDelayTime geByCount(int count){
        return Lists.newArrayList(EnumNoticeDelayTime.values()).stream().filter(enumNoticeDelayTime->enumNoticeDelayTime.getCount()==count)
        .findFirst().get()

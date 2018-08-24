@@ -18,7 +18,7 @@ public enum ZnlError  implements BillError {
     ParamIllegal(0002,"参数不合法！"),
 
     AppUnSupportPayeType(0003,"APP不支持此类支付"),
-    UnionRegersterFail(0004,"通联用户注册失败"),
+
     GetAccountConfigError(0005,"获取配置文件出错"),
 
     ;

@@ -5,22 +5,14 @@ package cn.gotoil.znl;
  */
 
 
-import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.ImportResource;
-import org.springframework.scheduling.annotation.EnableScheduling;
-
-import javax.xml.bind.annotation.XmlRegistry;
 
 @SpringBootApplication
-@EnableScheduling
-@EnableRabbit
-@EnableAutoConfiguration
-@ComponentScan("cn.gotoil")
+//@EnableScheduling
+@ComponentScan({"cn.gotoil.znl", "cn.gotoil.bill"})
 public class ZnlApplication {
 
     private static ApplicationContext applicationContext;

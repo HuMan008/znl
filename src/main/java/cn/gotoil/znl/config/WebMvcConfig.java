@@ -56,9 +56,6 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
     //拦截器配置
     public FilterRegistrationBean filterRegistrationBean() {
         FilterRegistrationBean registrationBean = new FilterRegistrationBean();
-        /*registrationBean.setFilter(new UnionFilter());
-        registrationBean.addUrlPatterns("/v1/ordersubmit");
-        registrationBean.setOrder(99);*/
         return registrationBean;
     }
 
